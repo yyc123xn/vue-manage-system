@@ -1,37 +1,37 @@
 <template>
-    <div>
-        <div class="crumbs">
+    <el-col>
+        <el-col class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item><i class="el-icon-lx-calendar"></i> 表单</el-breadcrumb-item>
                 <el-breadcrumb-item>图片上传</el-breadcrumb-item>
             </el-breadcrumb>
-        </div>
-        <div class="container">
-            <div class="content-title">支持拖拽</div>
-            <div class="plugins-tips">
+        </el-col>
+        <el-col class="container">
+            <el-col class="content-title">支持拖拽</el-col>
+            <el-col class="plugins-tips">
                 Element UI自带上传组件。
                 访问地址：<a href="http://element.eleme.io/#/zh-CN/component/upload" target="_blank">Element UI Upload</a>
-            </div>
+            </el-col>
             <el-upload
                 class="upload-demo"
                 drag
                 action="/api/posts/"
                 multiple>
                 <i class="el-icon-upload"></i>
-                <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-                <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
+                <el-col class="el-upload__text">将文件拖到此处，或<em>点击上传</em></el-col>
+                <el-col class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</el-col>
             </el-upload>
-            <div class="content-title">支持裁剪</div>
-            <div class="plugins-tips">
+            <el-col class="content-title">支持裁剪</el-col>
+            <el-col class="plugins-tips">
                 vue-cropperjs：一个封装了 cropperjs 的 Vue 组件。
                 访问地址：<a href="https://github.com/Agontuk/vue-cropperjs" target="_blank">vue-cropperjs</a>
-            </div>
-            <div class="crop-demo">
+            </el-col>
+            <el-col class="crop-demo">
                 <img :src="cropImg" class="pre-img">
-                <div class="crop-demo-btn">选择图片
+                <el-col class="crop-demo-btn">选择图片
                     <input class="crop-input" type="file" name="image" accept="image/*" @change="setImage"/>
-                </div>
-            </div>
+                </el-col>
+            </el-col>
         
             <el-dialog title="裁剪图片" :visible.sync="dialogVisible" width="30%">
                 <vue-cropper ref='cropper' :src="imgSrc" :ready="cropImage" :zoom="cropImage" :cropmove="cropImage" style="width:100%;height:300px;"></vue-cropper>
@@ -40,8 +40,8 @@
                     <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
                 </span>
             </el-dialog>
-        </div>
-    </div>
+        </el-col>
+    </el-col>
 </template>
 
 <script>

@@ -9,15 +9,28 @@ import './assets/css/icon.css';
 import './components/common/directives';
 import "babel-polyfill";
 
+import api from './api/api'
+
+import store from './store/store'
+
+import VCharts from 'v-charts'
+
+
 Vue.config.productionTip = false
 Vue.use(ElementUI, {
     size: 'small'
 });
+Vue.use(VCharts)
 Vue.prototype.$axios = axios;
+Vue.prototype.$api = api
 
+if (localStorage.getItem('username')) {
+    let routes = JSON.parse(localStorage.getItem('routes'))
+    store.dispatch("add_Routes", routes)
+}
 //使用钩子函数对路由进行权限跳转
 router.beforeEach((to, from, next) => {
-    const role = localStorage.getItem('ms_username');
+    const role = localStorage.getItem('username');
     if (!role && to.path !== '/login') {
         next('/login');
     } else if (to.meta.permission) {
@@ -38,5 +51,6 @@ router.beforeEach((to, from, next) => {
 
 new Vue({
     router,
+    store,
     render: h => h(App)
 }).$mount('#app')

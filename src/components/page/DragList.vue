@@ -1,19 +1,19 @@
 <template>
     <section class="main">
-        <div class="crumbs">
+        <el-col class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item><i class="el-icon-rank"></i> 拖拽组件</el-breadcrumb-item>
                 <el-breadcrumb-item>拖拽排序</el-breadcrumb-item>
             </el-breadcrumb>
-        </div>
-        <div class="container">
-            <div class="plugins-tips">
+        </el-col>
+        <el-col class="container">
+            <el-col class="plugins-tips">
                 Vue.Draggable：基于 Sortable.js 的 Vue 拖拽组件。
                 访问地址：<a href="https://github.com/SortableJS/Vue.Draggable" target="_blank">Vue.Draggable</a>
-            </div>
-            <div class="drag-box">
-                <div class="drag-box-item">
-                    <div class="item-title">todo</div>
+            </el-col>
+            <el-col class="drag-box">
+                <el-col class="drag-box-item">
+                    <el-col class="item-title">todo</el-col>
                     <draggable v-model="todo" @remove="removeHandle" :options="dragOptions">
                         <transition-group tag="div" id="todo" class="item-ul">
                             <div v-for="item in todo" class="drag-list" :key="item.id">
@@ -21,9 +21,9 @@
                             </div>
                         </transition-group>
                     </draggable>
-                </div>
-                <div class="drag-box-item">
-                    <div class="item-title">doing</div>
+                </el-col>
+                <el-col class="drag-box-item">
+                    <el-col class="item-title">doing</el-col>
                     <draggable v-model="doing" @remove="removeHandle" :options="dragOptions">
                         <transition-group tag="div" id="doing" class="item-ul">
                             <div v-for="item in doing" class="drag-list" :key="item.id">
@@ -31,19 +31,19 @@
                             </div>
                         </transition-group>
                     </draggable>
-                </div>
-                <div class="drag-box-item">
-                    <div class="item-title">done</div>
+                </el-col>
+                <el-col class="drag-box-item">
+                    <el-col class="item-title">done</el-col>
                     <draggable v-model="done" @remove="removeHandle" :options="dragOptions">
                         <transition-group tag="div" id="done" class="item-ul">
-                            <div v-for="item in done" class="drag-list" :key="item.id">
+                            <el-col v-for="item in done" class="drag-list" :key="item.id">
                                 {{item.content}}
-                            </div>
+                            </el-col>
                         </transition-group>
                     </draggable>
-                </div>
-            </div>
-        </div>
+                </el-col>
+            </el-col>
+        </el-col>
     </section>
 </template>
 

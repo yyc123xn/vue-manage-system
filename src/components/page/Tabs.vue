@@ -1,11 +1,11 @@
 <template>
-    <div class="">
-        <div class="crumbs">
+    <el-col class="">
+        <el-col class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item><i class="el-icon-lx-copy"></i> tab选项卡</el-breadcrumb-item>
             </el-breadcrumb>
-        </div>
-        <div class="container">
+        </el-col>
+        <el-col class="container">
             <el-tabs v-model="message">
                 <el-tab-pane :label="`未读消息(${unread.length})`" name="first">
                     <el-table :data="unread" :show-header="false" style="width: 100%">
@@ -21,9 +21,9 @@
                             </template>
                         </el-table-column>
                     </el-table>
-                    <div class="handle-row">
+                    <el-col class="handle-row">
                         <el-button type="primary">全部标为已读</el-button>
-                    </div>
+                    </el-col>
                 </el-tab-pane>
                 <el-tab-pane :label="`已读消息(${read.length})`" name="second">
                     <template v-if="message === 'second'">
@@ -66,8 +66,8 @@
                     </template>
                 </el-tab-pane>
             </el-tabs>
-        </div>
-    </div>
+        </el-col>
+    </el-col>
 </template>
 
 <script>

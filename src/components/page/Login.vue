@@ -1,7 +1,7 @@
 <template>
-    <div class="login-wrap">
-        <div class="ms-login">
-            <div class="ms-title">后台管理系统</div>
+    <el-col class="login-wrap">
+        <el-col class="ms-login">
+            <el-col class="ms-title">后台管理系统</el-col>
             <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="0px" class="ms-content">
                 <el-form-item prop="username">
                     <el-input v-model="ruleForm.username" placeholder="username">
@@ -18,11 +18,13 @@
                 </div>
                 <p class="login-tips">Tips : 用户名和密码随便填。</p>
             </el-form>
-        </div>
-    </div>
+        </el-col>
+    </el-col>
 </template>
 
 <script>
+    import {mapActions} from 'vuex'
+    import items from '../common/items'
     export default {
         data: function(){
             return {
@@ -37,15 +39,28 @@
                     password: [
                         { required: true, message: '请输入密码', trigger: 'blur' }
                     ]
-                }
+                },
+
+                loading: false
             }
         },
         methods: {
+            ...mapActions({add_Routes: 'add_Routes'}),
             submitForm(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        localStorage.setItem('ms_username',this.ruleForm.username);
-                        this.$router.push('/');
+                        this.loading = true
+                        this.$api.login(this.ruleForm.username, this.ruleForm.password).then((res) => {
+                            if (res.status === 200) {
+                                // 将路由信息，菜单信息，用户信息存到sessionStorage里
+                                console.log(res.data)
+                                localStorage.setItem('username', this.ruleForm.username)
+                                if (!localStorage.getItem('routes')) {
+                                    localStorage.setItem('routes', JSON.stringify(items))
+                                }
+                                this.add_Routes(items) //触发vuex里的增加路由
+                            }
+                        })
                     } else {
                         console.log('error submit!!');
                         return false;

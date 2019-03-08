@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <el-col>
         <el-row :gutter="20">
             <el-col :span="8">
                 <el-card shadow="hover" class="mgb20" style="height:252px;">
@@ -101,7 +101,7 @@
                 </el-card>
             </el-col>
         </el-row>
-    </div>
+    </el-col>
 </template>
 
 <script>
@@ -111,7 +111,7 @@
         name: 'dashboard',
         data() {
             return {
-                name: localStorage.getItem('ms_username'),
+                name: localStorage.getItem('username'),
                 todoList: [{
                         title: '今天要修复100个bug',
                         status: false,

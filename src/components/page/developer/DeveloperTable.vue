@@ -2,16 +2,16 @@
     <div class="table">
         <el-col class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-lx-cascades"></i> 基础表格</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-lx-cascades"></i> 公司员工</el-breadcrumb-item>
             </el-breadcrumb>
         </el-col>
         <el-col class="container">
             <el-col class="handle-box">
                 <el-button type="primary" icon="delete" class="handle-del mr10" @click="delAll">批量删除</el-button>
-                <el-select v-model="defaultVoucherFilterFields" placeholder="筛选项" class="handle-select mr10">
-                    <el-option v-for="voucherFilterField in voucherFilterFields"
-                               :key="voucherFilterField.columnName" :label="voucherFilterField.columnComment"
-                               :value="voucherFilterField.columnComment">
+                <el-select v-model="defaultDeveloperFilterFields" placeholder="筛选项" class="handle-select mr10">
+                    <el-option v-for="developerFilterField in developerFilterFields"
+                               :key="developerFilterField.columnName" :label="developerFilterField.columnComment"
+                               :value="developerFilterField.columnComment">
                     </el-option>
                 </el-select>
                 <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
@@ -71,11 +71,11 @@
 
 <script>
     export default {
-        name: 'basetable',
+        name: 'DeveloperTable',
         data: function () {
             return {
-                defaultVoucherFilterFields: "",
-                voucherFilterFields: [
+                defaultDeveloperFilterFields: "",
+                developerFilterFields: [
                     {
                         columnName: "name1",
                         columnComment: "comment1"
@@ -131,9 +131,9 @@
         methods: {
             // 获取票据的过滤字段
             getFilterFields() {
-                this.$api.getVoucherFilterFields("/finance/voucher/voucher_filter_fields").then(res => {
+                this.$api.getDeveloperFilterFields().then(res => {
                     console.log(res.data)
-                    this.voucherFilterFields = res.data.data;
+                    this.developerFilterFields = res.data.data;
                 })
             },
 

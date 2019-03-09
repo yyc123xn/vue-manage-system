@@ -69,7 +69,7 @@
 
 <script>
     export default {
-        name: 'VoucherForm',
+        name: 'DeveloperForm',
         data: function(){
             return {
                 form: {

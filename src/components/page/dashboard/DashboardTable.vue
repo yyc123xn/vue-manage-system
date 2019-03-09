@@ -8,10 +8,10 @@
         <el-col class="container">
             <el-col class="handle-box">
                 <el-button type="primary" icon="delete" class="handle-del mr10" @click="delAll">批量删除</el-button>
-                <el-select v-model="defaultVoucherFilterFields" placeholder="筛选项" class="handle-select mr10">
-                    <el-option v-for="voucherFilterField in voucherFilterFields"
-                               :key="voucherFilterField.columnName" :label="voucherFilterField.columnComment"
-                               :value="voucherFilterField.columnComment">
+                <el-select v-model="defaultDashboardFilterFields" placeholder="筛选项" class="handle-select mr10">
+                    <el-option v-for="dashboardFilterField in dashboardFilterFields"
+                               :key="dashboardFilterField.columnName" :label="dashboardFilterField.columnComment"
+                               :value="dashboardFilterField.columnComment">
                     </el-option>
                 </el-select>
                 <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
@@ -71,11 +71,11 @@
 
 <script>
     export default {
-        name: 'basetable',
+        name: 'DashboardTable',
         data: function () {
             return {
-                defaultVoucherFilterFields: "",
-                voucherFilterFields: [
+                defaultDashboardFilterFields: "",
+                dashboardFilterFields: [
                     {
                         columnName: "name1",
                         columnComment: "comment1"
@@ -131,9 +131,9 @@
         methods: {
             // 获取票据的过滤字段
             getFilterFields() {
-                this.$api.getVoucherFilterFields("/finance/voucher/voucher_filter_fields").then(res => {
+                this.$api.getDashboardFilterFields().then(res => {
                     console.log(res.data)
-                    this.voucherFilterFields = res.data.data;
+                    this.dashboardFilterFields = res.data.data;
                 })
             },
 

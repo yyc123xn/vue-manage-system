@@ -2,7 +2,7 @@
     <div class="table">
         <el-col class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-lx-cascades"></i> 基础表格</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-lx-cascades"></i> 公司票据</el-breadcrumb-item>
             </el-breadcrumb>
         </el-col>
         <el-col class="container">
@@ -71,7 +71,7 @@
 
 <script>
     export default {
-        name: 'basetable',
+        name: 'VoucherTable',
         data: function () {
             return {
                 defaultVoucherFilterFields: "",
@@ -131,7 +131,7 @@
         methods: {
             // 获取票据的过滤字段
             getFilterFields() {
-                this.$api.getVoucherFilterFields("/finance/voucher/voucher_filter_fields").then(res => {
+                this.$api.getVoucherFilterFields().then(res => {
                     console.log(res.data)
                     this.voucherFilterFields = res.data.data;
                 })

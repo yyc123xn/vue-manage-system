@@ -2,16 +2,16 @@
     <div class="table">
         <el-col class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-lx-cascades"></i> 数据集</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-lx-cascades"></i> 数据源</el-breadcrumb-item>
             </el-breadcrumb>
         </el-col>
         <el-col class="container">
             <el-col class="handle-box">
                 <el-button type="primary" icon="delete" class="handle-del mr10" @click="delAll">批量删除</el-button>
-                <el-select v-model="defaultDataSetFilterFields" placeholder="筛选项" class="handle-select mr10">
-                    <el-option v-for="dataSetFilterField in dataSetFilterFields"
-                               :key="dataSetFilterField.columnName" :label="dataSetFilterField.columnComment"
-                               :value="dataSetFilterField.columnComment">
+                <el-select v-model="defaultDataSourceFilterFields" placeholder="筛选项" class="handle-select mr10">
+                    <el-option v-for="dataSourceFilterField in dataSourceFilterFields"
+                               :key="dataSourceFilterField.columnName" :label="dataSourceFilterField.columnComment"
+                               :value="dataSourceFilterField.columnComment">
                     </el-option>
                 </el-select>
                 <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
@@ -71,11 +71,11 @@
 
 <script>
     export default {
-        name: 'DataSetTable',
+        name: 'DataSourceTable',
         data: function () {
             return {
-                defaultDataSetFilterFields: "",
-                dataSetFilterFields: [
+                defaultDataSourceFilterFields: "",
+                dataSourceFilterFields: [
                     {
                         columnName: "name1",
                         columnComment: "comment1"
@@ -129,11 +129,11 @@
             }
         },
         methods: {
-            // 获取票据的过滤字段
+            // 获取数据源的过滤字段
             getFilterFields() {
-                this.$api.getDataSetFilterFields().then(res => {
+                this.$api.getDataSourceFilterFields().then(res => {
                     console.log(res.data)
-                    this.dataSetFilterFields = res.data.data;
+                    this.dataSourceFilterFields = res.data.data;
                 })
             },
 

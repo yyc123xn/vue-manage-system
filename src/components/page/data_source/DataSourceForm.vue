@@ -2,7 +2,7 @@
     <el-col>
         <el-col class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-lx-calendar"></i> 表单</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-lx-calendar"></i> 数据源</el-breadcrumb-item>
                 <el-breadcrumb-item>基本表单</el-breadcrumb-item>
             </el-breadcrumb>
         </el-col>
@@ -69,7 +69,7 @@
 
 <script>
     export default {
-        name: 'FixedAssetsForm',
+        name: 'DataSourceForm',
         data: function(){
             return {
                 form: {

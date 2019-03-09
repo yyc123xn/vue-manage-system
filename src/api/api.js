@@ -31,6 +31,41 @@ const api = {
         return axios.get(url)
     },
 
+    GET_FIXED_ASSETS_FILTER_FIELDS : '/finance/fixed_assets/fixed_assets_filter_fields',
+
+    getFixedAssetsFilterFields() {
+        let url = this.GET_FIXED_ASSETS_FILTER_FIELDS
+        return axios.get(url)
+    },
+
+    GET_DASHBOARD_FILTER_FIELDS : '/report/dashboard/dashboard_filter_fields',
+
+    getDashboardFilterFields() {
+        let url = this.GET_DASHBOARD_FILTER_FIELDS
+        return axios.get(url)
+    },
+
+    GET_DATA_SET_FILTER_FIELDS : '/report/data_set/data_set_filter_fields',
+
+    getDataSetFilterFields() {
+        let url = this.GET_DATA_SET_FILTER_FIELDS
+        return axios.get(url)
+    },
+
+    GET_DEVELOPER_FILTER_FIELDS : '/finance/developer/developer_filter_fields',
+
+    getDeveloperFilterFields() {
+        let url = this.GET_DEVELOPER_FILTER_FIELDS
+        return axios.get(url)
+    },
+
+    GET_DATA_SOURCE_FILTER_FIELDS : '/report/data_source/data_source_filter_fields',
+
+    getDataSourceFilterFields() {
+        let url = this.GET_DATA_SOURCE_FILTER_FIELDS
+        return axios.get(url)
+    },
+
     GET_CHART_TYPES: "/report/report/chart_types",
 
     getChartTypes() {

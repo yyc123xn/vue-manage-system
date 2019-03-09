@@ -22,8 +22,8 @@
                     </el-form-item>
                     <el-form-item label="报表类型">
                         <el-select v-model="form.region" placeholder="请选择">
-                            <template v-for="(voucherType, index) in form.voucherTypes">
-                                <el-option :key="voucherType.nameEn" :label="voucherType.nameCn" :value="voucherType.nameCn"></el-option>
+                            <template v-for="(chartType, index) in form.chartTypes">
+                                <el-option :key="chartType.nameEn" :label="chartType.nameCn" :value="chartType.nameCn"></el-option>
                             </template>
                         </el-select>
                     </el-form-item>
@@ -69,7 +69,7 @@
 
 <script>
     export default {
-        name: 'VoucherForm',
+        name: 'DashboardForm',
         data: function(){
             return {
                 form: {

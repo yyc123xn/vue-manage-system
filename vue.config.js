@@ -69,6 +69,62 @@ module.exports = {
                 }
             },
 
+            '/report/data_source/data_source_types': {
+                target: REPORT_URL_PREFIX + '/report/data_source/data_source_types',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/report/data_source/data_source_types': ''
+                }
+            },
+
+            '/report/data_source/databases/tables': {
+                target: REPORT_URL_PREFIX + '/report/data_source/databases/tables',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/report/data_source/databases/tables': ''
+                }
+            },
+
+            '/report/data_set/periods': {
+                target: REPORT_URL_PREFIX + '/report/data_set/periods',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/report/data_set/periods': ''
+                }
+            },
+
+            '/report/data_set/data_types': {
+                target: REPORT_URL_PREFIX + '/report/data_set/data_types',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/report/data_set/data_types': ''
+                }
+            },
+
+            '/report/data_set/calculate_types': {
+                target: REPORT_URL_PREFIX + '/report/data_set/calculate_types',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/report/data_set/calculate_types': ''
+                }
+            },
+
+            '/report/data_set/field_types': {
+                target: REPORT_URL_PREFIX + '/report/data_set/field_types',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/report/data_set/field_types': ''
+                }
+            },
+
+            '/report/data_set': {
+                target: REPORT_URL_PREFIX + '/report/data_set',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/report/data_set': ''
+                }
+            },
+
             '/report/report/chart_types': {
                 target: REPORT_URL_PREFIX + '/report/report/chart_types',
                 changeOrigin: true,

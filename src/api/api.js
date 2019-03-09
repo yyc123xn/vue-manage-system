@@ -66,6 +66,55 @@ const api = {
         return axios.get(url)
     },
 
+    GET_DATA_SOURCE_TYPES : '/report/data_source/data_source_types',
+
+    getDataSourceTypes() {
+        let url = this.GET_DATA_SOURCE_TYPES
+        return axios.get(url)
+    },
+
+    GET_DATABASES_TABLES : '/report/data_source/databases/tables',
+
+    getDatabasesTables() {
+        let url = this.GET_DATABASES_TABLES
+        return axios.get(url)
+    },
+
+    GET_PERIODS : '/report/data_set/periods',
+
+    getPeriods() {
+        let url = this.GET_PERIODS
+        return axios.get(url)
+    },
+
+    GET_DATA_TYPES : '/report/data_set/data_types',
+
+    getDataTypes() {
+        let url = this.GET_DATA_TYPES
+        return axios.get(url)
+    },
+
+    GET_FIELD_TYPES : '/report/data_set/field_types',
+
+    getFieldTypes() {
+        let url = this.GET_FIELD_TYPES
+        return axios.get(url)
+    },
+
+    GET_CALCULATE_TYPES : '/report/data_set/calculate_types',
+
+    getCalculateTypes() {
+        let url = this.GET_CALCULATE_TYPES
+        return axios.get(url)
+    },
+
+    ADD_DATA_SET : '/report/data_set',
+
+    addDataSet(dataSet) {
+        let url = this.ADD_DATA_SET
+        return axios.post(url, dataSet)
+    },
+
     GET_CHART_TYPES: "/report/report/chart_types",
 
     getChartTypes() {

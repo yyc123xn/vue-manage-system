@@ -18,13 +18,14 @@
                 <el-button type="primary" icon="search" @click="search">搜索</el-button>
             </el-col>
             <el-table :data="data" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">
-                <el-table-column type="selection" width="55" align="center"></el-table-column>
-                <el-table-column prop="date" label="日期" sortable width="150">
-                </el-table-column>
-                <el-table-column prop="name" label="姓名" width="120">
-                </el-table-column>
-                <el-table-column prop="address" label="地址" :formatter="formatter">
-                </el-table-column>
+                <el-table-column type="selection" width="55%" align="center"></el-table-column>
+                <el-table-column prop="id" label="id" sortable :formatter="formatter"></el-table-column>
+                <el-table-column prop="developer" label="创建人" sortable :formatter="formatter"></el-table-column>
+                <el-table-column prop="createTime" label="创建时间" sortable :formatter="formatter"></el-table-column>
+                <el-table-column prop="lastCalculateTime" label="上次运算时间" sortable :formatter="formatter"></el-table-column>
+                <el-table-column prop="period" label="周期" sortable :formatter="formatter"></el-table-column>
+                <!--<el-table-column prop="address" label="地址" :formatter="formatter">-->
+                <!--</el-table-column>-->
                 <el-table-column label="操作" width="180" align="center">
                     <template slot-scope="scope">
                         <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -85,6 +86,10 @@
                         columnComment: "comment2"
                     }
                 ],
+                pageIndex: 1,
+                pageSize: 10,
+                queryColumn: "",
+                queryCondition: [],
                 url: './vuetable.json',
                 tableData: [],
                 cur_page: 1,
@@ -96,6 +101,7 @@
                 editVisible: false,
                 delVisible: false,
                 form: {
+                    id: "",
                     name: '',
                     date: '',
                     address: ''
@@ -154,6 +160,14 @@
                     this.tableData = res.data.list;
                 })
             },
+
+            /**
+             * 获取数据集列表
+             */
+            getDataSet() {
+
+            },
+
             search() {
                 this.is_search = true;
             },

@@ -131,7 +131,7 @@
         methods: {
             // 获取数据源的过滤字段
             getFilterFields() {
-                this.$api.getDataSourceFilterFields().then(res => {
+                this.$api.REPORT_DATA_SOURCE_API.getDataSourceFilterFields().then(res => {
                     console.log(res.data)
                     this.dataSourceFilterFields = res.data.data;
                 })

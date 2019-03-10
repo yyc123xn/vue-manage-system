@@ -66,10 +66,10 @@
                             </el-select>
                         </el-col>
                         <el-col class="line" :span="2">操作</el-col>
-                        <el-col :span="2"><el-button @click.prevent="removeDomain(dataSetField)" type="danger">删除</el-button></el-col>
+                        <el-col :span="2"><el-button @click.prevent="removeDataSetField(dataSetField)" type="danger">删除</el-button></el-col>
                     </el-form-item>
                     <el-form-item>
-                        <el-button @click="addDomain" type="primary">新增数据集字段</el-button>
+                        <el-button @click="addDataSetField" type="primary">新增数据集字段</el-button>
                     </el-form-item>
                     <el-form-item label="过滤运算条件" :rules="rules.description">
                         <el-input type="textarea" rows="5" v-model="dataSet.extraExpression"></el-input>
@@ -220,7 +220,7 @@
             addDataSet() {
                 this.$message.success("提交成功")
                 console.log(this.dataSet)
-                this.$api.addDataSet(this.dataSet).then(res => {
+                this.$api.REPORT_DATA_SET_API.addDataSet(this.dataSet).then(res => {
                     console.log("添加数据集成功")
                 }).catch(error => {
                     console.log(error)
@@ -228,30 +228,26 @@
             },
 
             getDataSourceTypes() {
-                this.$api.getDataSourceTypes().then(res => {
-                    console.log(res.data)
+                this.$api.REPORT_DATA_SOURCE_API.getDataSourceTypes().then(res => {
                     this.dataSet.dataSourceTypes = res.data.data;
                     this.dataSet.dataSourceType = this.dataSet.dataSourceTypes[0].nameEn;
                 })
             },
 
             getDatabasesTables() {
-                this.$api.getDatabasesTables().then(res => {
-                    console.log(res.data)
+                this.$api.REPORT_DATA_SOURCE_API.getDatabasesTables().then(res => {
                     this.dataSet.databasesTables = res.data.data;
                 })
             },
 
             getPeriods() {
-                this.$api.getPeriods().then(res => {
-                    console.log(res.data)
+                this.$api.REPORT_DATA_SET_API.getPeriods().then(res => {
                     this.dataSet.periods = res.data.data;
                 })
             },
 
             getDataTypes() {
-                this.$api.getDataTypes().then(res => {
-                    console.log(res.data)
+                this.$api.REPORT_DATA_SET_API.getDataTypes().then(res => {
                     this.dataSet.dataTypes = res.data.data
                     this.dataSet.dataSetFields.forEach(dataSetField => {
                         dataSetField.dataTypes = res.data.data
@@ -261,8 +257,7 @@
             },
 
             getCalculateTypes() {
-                this.$api.getCalculateTypes().then(res => {
-                    console.log(res.data)
+                this.$api.REPORT_DATA_SET_API.getCalculateTypes().then(res => {
                     this.dataSet.calculateTypes = res.data.data
                     this.dataSet.dataSetFields.forEach(dataSetField => {
                         dataSetField.calculateTypes = res.data.data
@@ -272,8 +267,7 @@
             },
 
             getFieldTypes() {
-                this.$api.getFieldTypes().then(res => {
-                    console.log(res.data)
+                this.$api.REPORT_DATA_SET_API.getFieldTypes().then(res => {
                     this.dataSet.fieldTypes = res.data.data
                     this.dataSet.dataSetFields.forEach(dataSetField => {
                         dataSetField.fieldTypes = res.data.data
@@ -297,14 +291,14 @@
                 this.$refs[formName].resetFields();
             },
 
-            removeDomain(item) {
+            removeDataSetField(item) {
                 var index = this.dataSet.dataSetFields.indexOf(item)
                 if (index !== -1) {
                     this.dataSet.dataSetFields.splice(index, 1)
                 }
             },
 
-            addDomain() {
+            addDataSetField() {
                 this.dataSet.dataSetFields.push({
                     expression: '',
                     dataType: '',
@@ -318,12 +312,12 @@
             }
         },
         created() {
-            this.getDataSourceTypes(),
             this.getDatabasesTables(),
             this.getPeriods(),
             this.getDataTypes(),
             this.getCalculateTypes(),
-            this.getFieldTypes()
+            this.getFieldTypes(),
+            this.getDataSourceTypes()
         }
     }
 </script>

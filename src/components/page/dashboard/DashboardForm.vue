@@ -150,7 +150,7 @@
             }
         },
         created() {
-            this.$api.getChartTypes().then(res => {
+            this.$api.REPORT_REPORT_API.getChartTypes().then(res => {
                 console.log(res.data)
                 this.form.chartTypes = res.data.data;
             })

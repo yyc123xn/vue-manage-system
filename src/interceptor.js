@@ -12,7 +12,6 @@ service.interceptors.request.use(
         console.log("拦截器-请求-config")
         const userToken = window.$cookies.get('session'); //获取Cookie
         config.data = JSON.stringify(config.data);
-        config.headers = {'userToken': userToken};
         if (userToken) {
             // config.params = {'userToken': userToken} //后台接收的参数，后面我们将说明后台如何接收
         }
@@ -35,7 +34,6 @@ service.interceptors.response.use(
                 query: {redirect: router.currentRoute.fullPath} //从哪个页面跳转
             })
         }
-        console.log(response)
         return response;
     },
     error => {

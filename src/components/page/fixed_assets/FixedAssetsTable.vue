@@ -131,7 +131,7 @@
         methods: {
             // 获取票据的过滤字段
             getFilterFields() {
-                this.$api.getFixedAssetsFilterFields().then(res => {
+                this.$api.FINANCE_FIXED_ASSETS_API.getFixedAssetsFilterFields().then(res => {
                     console.log(res.data)
                     this.fixedAssetsFilterFields = res.data.data;
                 })

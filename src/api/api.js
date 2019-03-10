@@ -1,20 +1,14 @@
 import axios from '../interceptor'
+import financeDeveloperApi from './finance/developer'
+import financeFixedAssetsApi from './finance/fixed_assets'
+import financeVoucherApi from './finance/voucher'
+import financeWagesApi from './finance/wages'
+import reportDataSetApi from './report/data_set'
+import reportDashboardApi from './report/dashboard'
+import reportDataSourceApi from './report/data_source'
+import reportReportApi from './report/report'
 
 const api = {
-
-    CURRENT : '/finance/developer/current',
-
-    current() {
-        let url = this.CURRENT
-        return axios.get(url)
-    },
-
-    LOGIN : '/finance/developer/login',
-
-    login (username, password) {
-        let url = this.LOGIN + '?username=' + username + '&password=' + password
-        return axios.get(url)
-    },
 
     GET_MENU : '/finance/common/menu',
 
@@ -23,122 +17,21 @@ const api = {
         return axios.get(url)
     },
 
-    GET_VOUCHER_TYPES : '/finance/voucher/voucher_type',
+    FINANCE_DEVELOPER_API : financeDeveloperApi,
 
-    getVoucherTypes() {
-        let url = this.GET_VOUCHER_TYPES
-        return axios.get(url)
-    },
+    FINANCE_VOUCHER_API : financeVoucherApi,
 
-    GET_VOUCHER_FILTER_FIELDS : '/finance/voucher/voucher_filter_fields',
+    FINANCE_FIXED_ASSETS_API : financeFixedAssetsApi,
 
-    getVoucherFilterFields() {
-        let url = this.GET_VOUCHER_FILTER_FIELDS
-        return axios.get(url)
-    },
+    FINANCE_WAGES_API : financeWagesApi,
 
-    GET_FIXED_ASSETS_FILTER_FIELDS : '/finance/fixed_assets/fixed_assets_filter_fields',
+    REPORT_DATA_SET_API : reportDataSetApi,
 
-    getFixedAssetsFilterFields() {
-        let url = this.GET_FIXED_ASSETS_FILTER_FIELDS
-        return axios.get(url)
-    },
+    REPORT_DATA_SOURCE_API : reportDataSourceApi,
 
-    GET_DASHBOARD_FILTER_FIELDS : '/report/dashboard/dashboard_filter_fields',
+    REPORT_REPORT_API : reportReportApi,
 
-    getDashboardFilterFields() {
-        let url = this.GET_DASHBOARD_FILTER_FIELDS
-        return axios.get(url)
-    },
-
-    GET_DATA_SET_FILTER_FIELDS : '/report/data_set/data_set_filter_fields',
-
-    getDataSetFilterFields() {
-        let url = this.GET_DATA_SET_FILTER_FIELDS
-        return axios.get(url)
-    },
-
-    GET_DEVELOPER_FILTER_FIELDS : '/finance/developer/developer_filter_fields',
-
-    getDeveloperFilterFields() {
-        let url = this.GET_DEVELOPER_FILTER_FIELDS
-        return axios.get(url)
-    },
-
-    GET_DATA_SOURCE_FILTER_FIELDS : '/report/data_source/data_source_filter_fields',
-
-    getDataSourceFilterFields() {
-        let url = this.GET_DATA_SOURCE_FILTER_FIELDS
-        return axios.get(url)
-    },
-
-    GET_DATA_SOURCE_TYPES : '/report/data_source/data_source_types',
-
-    getDataSourceTypes() {
-        let url = this.GET_DATA_SOURCE_TYPES
-        return axios.get(url)
-    },
-
-    GET_DATABASES_TABLES : '/report/data_source/databases/tables',
-
-    getDatabasesTables() {
-        let url = this.GET_DATABASES_TABLES
-        return axios.get(url)
-    },
-
-    GET_PERIODS : '/report/data_set/periods',
-
-    getPeriods() {
-        let url = this.GET_PERIODS
-        return axios.get(url)
-    },
-
-    GET_DATA_TYPES : '/report/data_set/data_types',
-
-    getDataTypes() {
-        let url = this.GET_DATA_TYPES
-        return axios.get(url)
-    },
-
-    GET_FIELD_TYPES : '/report/data_set/field_types',
-
-    getFieldTypes() {
-        let url = this.GET_FIELD_TYPES
-        return axios.get(url)
-    },
-
-    GET_CALCULATE_TYPES : '/report/data_set/calculate_types',
-
-    getCalculateTypes() {
-        let url = this.GET_CALCULATE_TYPES
-        return axios.get(url)
-    },
-
-    DATA_SET : '/report/data_set',
-
-    addDataSet(dataSet) {
-        let url = this.DATA_SET
-        return axios.post(url, dataSet)
-    },
-
-    getDataSets(queryParams) {
-        let url = this.DATA_SET
-        return axios.get(url, {params : queryParams})
-    },
-
-    GET_DATA_SET_INFO : "/report/data_set/info",
-
-    getDataSetInfo(queryParams) {
-        let url = this.GET_DATA_SET_INFO
-        return axios.get(url, {params : queryParams})
-    },
-
-    GET_CHART_TYPES: "/report/report/chart_types",
-
-    getChartTypes() {
-        let url = this.GET_CHART_TYPES;
-        return axios.get(url)
-    }
+    REPORT_DASHBOARD_API : reportDashboardApi
 }
 
 export default api

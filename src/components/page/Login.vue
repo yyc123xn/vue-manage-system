@@ -50,19 +50,14 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         this.loading = true
-                        this.$api.login(this.ruleForm.username, this.ruleForm.password).then((res) => {
+                        this.$api.FINANCE_DEVELOPER_API.login(this.ruleForm.username, this.ruleForm.password).then((res) => {
                             if (res.status === 200) {
                                 // 将路由信息，菜单信息，用户信息存到sessionStorage里
-                                console.log(res.data)
-                                localStorage.setItem('username', this.ruleForm.username)
                                 if (!localStorage.getItem('routes')) {
                                     localStorage.setItem('routes', JSON.stringify(items))
                                 }
                                 this.add_Routes(items) //触发vuex里的增加路由
-                                console.log("cookie")
-                                console.log(res)
-                                console.log(res.getResponseHeader("cookies"))
-                                window.cookies.set(res.header.cookies)
+//                                window.cookies.set(res.header.cookies)
                             }
                         })
                     } else {

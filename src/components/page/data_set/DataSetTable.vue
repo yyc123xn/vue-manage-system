@@ -8,18 +8,19 @@
         <el-col class="container">
             <el-col class="handle-box">
                 <el-button type="primary" icon="delete" class="handle-del mr10" @click="delAll">批量删除</el-button>
-                <el-select v-model="defaultDataSetFilterFields" placeholder="筛选项" class="handle-select mr10">
+                <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10">
                     <el-option v-for="dataSetFilterField in dataSetFilterFields"
                                :key="dataSetFilterField.columnName" :label="dataSetFilterField.columnComment"
                                :value="dataSetFilterField.columnComment">
                     </el-option>
                 </el-select>
-                <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
-                <el-button type="primary" icon="search" @click="search">搜索</el-button>
+                <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
+                <el-button type="primary" icon="el-icon-search" @click="getDataSets">搜索</el-button>
             </el-col>
             <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="55%" align="center"></el-table-column>
                 <el-table-column prop="id" label="id" sortable></el-table-column>
+                <el-table-column prop="name" label="名称"></el-table-column>
                 <el-table-column prop="developer" label="创建人"></el-table-column>
                 <el-table-column prop="createTime" label="创建时间" sortable></el-table-column>
                 <el-table-column prop="lastCalculateTime" label="上次运算时间" sortable></el-table-column>
@@ -29,12 +30,13 @@
                 <el-table-column label="操作" width="180" align="center" :formatter="formatter">
                     <template slot-scope="scope">
                         <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                        <el-button type="text" icon="el-icon-circle-plus-outline" @click="handleBackfill(scope.$index, scope.row)">补数据</el-button>
                         <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
             <el-col class="pagination">
-                <el-pagination background @current-change="handleCurrentChange" layout="prev, pager, next" :total="1000">
+                <el-pagination background @current-change="handleCurrentChange" layout="prev, pager, next" :page-size="pageSize" :total="total">
                 </el-pagination>
             </el-col>
         </el-col>
@@ -59,6 +61,25 @@
             </span>
         </el-dialog>
 
+        <!-- 补数据弹出框 -->
+        <el-dialog title="补数据" :visible.sync="backfillVisible" width="30%">
+            <el-form ref="form" :model="backfillForm" label-width="50px">
+                <el-form-item label="名称">
+                    <el-col> {{backfillForm.name}} </el-col>
+                </el-form-item>
+                <el-form-item label="开始日期">
+                    <el-date-picker type="date" placeholder="请选择日期" v-model="backfillForm.beginDate" value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
+                </el-form-item>
+                <el-form-item label="结束日期">
+                    <el-date-picker type="date" placeholder="请选择日期" v-model="backfillForm.endDate" value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="editVisible = false">取 消</el-button>
+                <el-button type="primary" @click="saveBackfill">确 定</el-button>
+            </span>
+        </el-dialog>
+
         <!-- 删除提示框 -->
         <el-dialog title="提示" :visible.sync="delVisible" width="300px" center>
             <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
@@ -71,15 +92,19 @@
 </template>
 
 <script>
+    import ElCol from "element-ui/packages/col/src/col";
+
     export default {
+        components: {ElCol},
         name: 'DataSetTable',
         data: function () {
             return {
-                defaultDataSetFilterFields: "",
+                dataSetFilterField: "",
                 dataSetFilterFields: [],
                 tableData: [],
                 pageIndex: 1,
                 pageSize: 10,
+                total : 0,
                 queryColumn: "",
                 queryCondition: [],
                 url: './vuetable.json',
@@ -91,6 +116,13 @@
                 is_search: false,
                 editVisible: false,
                 delVisible: false,
+                backfillVisible: false,
+                backfillForm :{
+                    id : 0,
+                    name : "",
+                    beginDate : '',
+                    endDate: ''
+                },
                 form: {
                     id: "",
                     name: '',
@@ -102,7 +134,7 @@
         },
         created() {
             this.getFilterFields();
-            this.getData();
+//            this.getData();
             this.getDataSets();
         },
         computed: {
@@ -130,7 +162,7 @@
         methods: {
             // 获取数据集的过滤字段
             getFilterFields() {
-                this.$api.getDataSetFilterFields().then(res => {
+                this.$api.REPORT_DATA_SET_API.getDataSetFilterFields().then(res => {
                     console.log(res.data)
                     this.dataSetFilterFields = res.data.data;
                 })
@@ -138,15 +170,24 @@
 
             // 获取数据集列表
             getDataSets() {
+                let queryColumnName = this.queryColumn
+                if (this.queryColumn !== '') {
+                    this.dataSetFilterFields.forEach(dataSetFilterField => {
+                        if (dataSetFilterField.columnComment === this.queryColumn) {
+                            queryColumnName = dataSetFilterField.columnName
+                        }
+                    })
+                }
                 let queryParams = {
                     pageIndex: this.pageIndex,
                     pageSize: this.pageSize,
-                    queryColumn: this.queryColumn,
+                    queryColumn: queryColumnName,
                     queryCondition: this.queryCondition,
                 }
-                this.$api.getDataSets(queryParams).then(res => {
+                this.$api.REPORT_DATA_SET_API.getDataSets(queryParams).then(res => {
                     console.log(res.data)
                     this.tableData = res.data.data.list
+                    this.total = res.data.data.total
                 })
             },
 
@@ -160,7 +201,7 @@
                 let queryParams = {
                     id : id
                 }
-                this.$api.getDataSetInfo(queryParams).then(res => {
+                this.$api.REPORT_DATA_SET_API.getDataSetInfo(queryParams).then(res => {
                     console.log(res.data)
                 })
             },
@@ -183,13 +224,6 @@
                 })
             },
 
-            /**
-             * 获取数据集列表
-             */
-            getDataSet() {
-
-            },
-
             search() {
                 this.is_search = true;
             },
@@ -198,6 +232,19 @@
             },
             filterTag(value, row) {
                 return row.tag === value;
+            },
+
+            handleBackfill(index, row) {
+                const dataSet = this.tableData[index];
+                let id = dataSet.id
+                this.getDataSetInfo(id)
+                this.backfillForm = {
+                    id : dataSet.id,
+                    name : dataSet.name,
+                    beginDate : dataSet.date,
+                    endDate: dataSet.date
+                }
+                this.backfillVisible = true;
             },
             handleEdit(index, row) {
                 const dataSet = this.tableData[index];
@@ -227,12 +274,27 @@
             handleSelectionChange(val) {
                 this.multipleSelection = val;
             },
+
+
+            handleCurrentChange(pageIndex) {
+                this.pageIndex = pageIndex;
+                this.$message.success(`页面下标 ${pageIndex}`);
+                this.getDataSets()
+            },
+
             // 保存编辑
             saveEdit() {
                 this.$set(this.tableData, this.idx, this.form);
                 this.editVisible = false;
                 this.$message.success(`修改第 ${this.idx+1} 行成功`);
             },
+
+            // 保存补数据
+            saveBackfill() {
+                this.backfillVisible = false;
+                this.$message.success(`保存成功`);
+            },
+
             // 确定删除
             deleteRow(){
                 this.tableData.splice(this.idx, 1);

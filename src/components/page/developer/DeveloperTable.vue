@@ -8,7 +8,7 @@
         <el-col class="container">
             <el-col class="handle-box">
                 <el-button type="primary" icon="delete" class="handle-del mr10" @click="delAll">批量删除</el-button>
-                <el-select v-model="defaultDeveloperFilterFields" placeholder="筛选项" class="handle-select mr10">
+                <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10">
                     <el-option v-for="developerFilterField in developerFilterFields"
                                :key="developerFilterField.columnName" :label="developerFilterField.columnComment"
                                :value="developerFilterField.columnComment">
@@ -17,7 +17,7 @@
                 <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="search" @click="search">搜索</el-button>
             </el-col>
-            <el-table :data="data" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">
+            <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="55" align="center"></el-table-column>
                 <el-table-column prop="date" label="日期" sortable width="150">
                 </el-table-column>
@@ -33,7 +33,7 @@
                 </el-table-column>
             </el-table>
             <el-col class="pagination">
-                <el-pagination background @current-change="handleCurrentChange" layout="prev, pager, next" :total="1000">
+                <el-pagination background @current-change="handleCurrentChange" layout="prev, pager, next" :total="total">
                 </el-pagination>
             </el-col>
         </el-col>
@@ -74,19 +74,15 @@
         name: 'DeveloperTable',
         data: function () {
             return {
-                defaultDeveloperFilterFields: "",
-                developerFilterFields: [
-                    {
-                        columnName: "name1",
-                        columnComment: "comment1"
-                    },
-                    {
-                        columnName: "name2",
-                        columnComment: "comment2"
-                    }
-                ],
-                url: './vuetable.json',
+                developerFilterField: "",
+                developerFilterFields: [],
                 tableData: [],
+                pageIndex: 1,
+                pageSize: 10,
+                total : 0,
+                queryColumn: "",
+                queryCondition: [],
+                url: './vuetable.json',
                 cur_page: 1,
                 multipleSelection: [],
                 select_cate: '',
@@ -105,7 +101,8 @@
         },
         created() {
             this.getFilterFields();
-            this.getData();
+//            this.getData();
+            this.getDevelopers()
         },
         computed: {
             data() {
@@ -131,9 +128,32 @@
         methods: {
             // 获取票据的过滤字段
             getFilterFields() {
-                this.$api.getDeveloperFilterFields().then(res => {
+                this.$api.FINANCE_DEVELOPER_API.getDeveloperFilterFields().then(res => {
                     console.log(res.data)
                     this.developerFilterFields = res.data.data;
+                })
+            },
+
+            // 获取数据集列表
+            getDevelopers() {
+                let queryColumnName = this.queryColumn
+                if (this.queryColumn !== '') {
+                    this.developerFilterFields.forEach(developerFilterField => {
+                        if (developerFilterField.columnComment === this.queryColumn) {
+                            queryColumnName = developerFilterField.columnName
+                        }
+                    })
+                }
+                let queryParams = {
+                    pageIndex: this.pageIndex,
+                    pageSize: this.pageSize,
+                    queryColumn: queryColumnName,
+                    queryCondition: this.queryCondition,
+                }
+                this.$api.FINANCE_DEVELOPER_API.getDevelopers(queryParams).then(res => {
+                    console.log(res.data)
+                    this.tableData = res.data.data.list
+                    this.total = res.data.data.total
                 })
             },
 

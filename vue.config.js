@@ -6,6 +6,14 @@ module.exports = {
     devServer: {
         proxy: {
 
+            '/finance/developer' : {
+                target: FINANCE_URL_PREFIX + '/finance/developer',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/finance/developer': ''
+                }
+            },
+
             '/finance/developer/current' : {
                 target: FINANCE_URL_PREFIX + '/finance/developer/current',
                 changeOrigin: true,

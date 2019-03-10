@@ -5,6 +5,15 @@ module.exports = {
     productionSourceMap: false,
     devServer: {
         proxy: {
+
+            '/finance/developer/current' : {
+                target: FINANCE_URL_PREFIX + '/finance/developer/current',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/finance/developer/current': ''
+                }
+            },
+
             '/finance/developer/login': {
                 target: FINANCE_URL_PREFIX + '/finance/developer/login',
                 changeOrigin: true,
@@ -12,6 +21,15 @@ module.exports = {
                     '^/finance/developer/login': ''
                 }
             },
+
+            '/report/developer/login': {
+                target: REPORT_URL_PREFIX + '/report/developer/login',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/report/developer/login': ''
+                }
+            },
+
             '/finance/common/menu': {
                 target: FINANCE_URL_PREFIX + '/finance/common/menu',
                 changeOrigin: true,
@@ -122,6 +140,14 @@ module.exports = {
                 changeOrigin: true,
                 pathRewrite: {
                     '^/report/data_set': ''
+                }
+            },
+
+            '/report/data_set/info': {
+                target: REPORT_URL_PREFIX + '/report/data_set/info',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/report/data_set/info': ''
                 }
             },
 

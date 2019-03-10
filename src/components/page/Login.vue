@@ -29,8 +29,8 @@
         data: function(){
             return {
                 ruleForm: {
-                    username: 'admin',
-                    password: '123123'
+                    username: 'yangyichao',
+                    password: 'eWFuZ3lpY2hhbw=='
                 },
                 rules: {
                     username: [
@@ -59,6 +59,10 @@
                                     localStorage.setItem('routes', JSON.stringify(items))
                                 }
                                 this.add_Routes(items) //触发vuex里的增加路由
+                                console.log("cookie")
+                                console.log(res)
+                                console.log(res.getResponseHeader("cookies"))
+                                window.cookies.set(res.header.cookies)
                             }
                         })
                     } else {

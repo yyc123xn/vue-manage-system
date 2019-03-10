@@ -1,7 +1,13 @@
-import axios from 'axios'
+import axios from '../interceptor'
 
 const api = {
 
+    CURRENT : '/finance/developer/current',
+
+    current() {
+        let url = this.CURRENT
+        return axios.get(url)
+    },
 
     LOGIN : '/finance/developer/login',
 
@@ -108,11 +114,23 @@ const api = {
         return axios.get(url)
     },
 
-    ADD_DATA_SET : '/report/data_set',
+    DATA_SET : '/report/data_set',
 
     addDataSet(dataSet) {
-        let url = this.ADD_DATA_SET
+        let url = this.DATA_SET
         return axios.post(url, dataSet)
+    },
+
+    getDataSets(queryParams) {
+        let url = this.DATA_SET
+        return axios.get(url, {params : queryParams})
+    },
+
+    GET_DATA_SET_INFO : "/report/data_set/info",
+
+    getDataSetInfo(queryParams) {
+        let url = this.GET_DATA_SET_INFO
+        return axios.get(url, {params : queryParams})
     },
 
     GET_CHART_TYPES: "/report/report/chart_types",

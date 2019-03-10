@@ -17,16 +17,16 @@
                 <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="search" @click="search">搜索</el-button>
             </el-col>
-            <el-table :data="data" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">
+            <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="55%" align="center"></el-table-column>
-                <el-table-column prop="id" label="id" sortable :formatter="formatter"></el-table-column>
-                <el-table-column prop="developer" label="创建人" sortable :formatter="formatter"></el-table-column>
-                <el-table-column prop="createTime" label="创建时间" sortable :formatter="formatter"></el-table-column>
-                <el-table-column prop="lastCalculateTime" label="上次运算时间" sortable :formatter="formatter"></el-table-column>
-                <el-table-column prop="period" label="周期" sortable :formatter="formatter"></el-table-column>
+                <el-table-column prop="id" label="id" sortable></el-table-column>
+                <el-table-column prop="developer" label="创建人"></el-table-column>
+                <el-table-column prop="createTime" label="创建时间" sortable></el-table-column>
+                <el-table-column prop="lastCalculateTime" label="上次运算时间" sortable></el-table-column>
+                <el-table-column prop="period" label="周期"></el-table-column>
                 <!--<el-table-column prop="address" label="地址" :formatter="formatter">-->
                 <!--</el-table-column>-->
-                <el-table-column label="操作" width="180" align="center">
+                <el-table-column label="操作" width="180" align="center" :formatter="formatter">
                     <template slot-scope="scope">
                         <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
                         <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
@@ -76,22 +76,13 @@
         data: function () {
             return {
                 defaultDataSetFilterFields: "",
-                dataSetFilterFields: [
-                    {
-                        columnName: "name1",
-                        columnComment: "comment1"
-                    },
-                    {
-                        columnName: "name2",
-                        columnComment: "comment2"
-                    }
-                ],
+                dataSetFilterFields: [],
+                tableData: [],
                 pageIndex: 1,
                 pageSize: 10,
                 queryColumn: "",
                 queryCondition: [],
                 url: './vuetable.json',
-                tableData: [],
                 cur_page: 1,
                 multipleSelection: [],
                 select_cate: '',
@@ -112,8 +103,10 @@
         created() {
             this.getFilterFields();
             this.getData();
+            this.getDataSets();
         },
         computed: {
+
             data() {
                 return this.tableData.filter((d) => {
                     let is_del = false;
@@ -135,11 +128,40 @@
             }
         },
         methods: {
-            // 获取票据的过滤字段
+            // 获取数据集的过滤字段
             getFilterFields() {
                 this.$api.getDataSetFilterFields().then(res => {
                     console.log(res.data)
                     this.dataSetFilterFields = res.data.data;
+                })
+            },
+
+            // 获取数据集列表
+            getDataSets() {
+                let queryParams = {
+                    pageIndex: this.pageIndex,
+                    pageSize: this.pageSize,
+                    queryColumn: this.queryColumn,
+                    queryCondition: this.queryCondition,
+                }
+                this.$api.getDataSets(queryParams).then(res => {
+                    console.log(res.data)
+                    this.tableData = res.data.data.list
+                })
+            },
+
+            // 编辑数据集
+            editDataSet(id) {
+
+            },
+
+            // 获取数据集详情
+            getDataSetInfo(id) {
+                let queryParams = {
+                    id : id
+                }
+                this.$api.getDataSetInfo(queryParams).then(res => {
+                    console.log(res.data)
                 })
             },
 
@@ -178,12 +200,13 @@
                 return row.tag === value;
             },
             handleEdit(index, row) {
-                this.idx = index;
-                const item = this.tableData[index];
+                const dataSet = this.tableData[index];
+                let id = dataSet.id
+                this.getDataSetInfo(id)
                 this.form = {
-                    name: item.name,
-                    date: item.date,
-                    address: item.address
+                    name: dataSet.name,
+                    date: dataSet.date,
+                    address: dataSet.address
                 }
                 this.editVisible = true;
             },

@@ -3,9 +3,9 @@ import axios from '../../interceptor'
 const financeFixedAssetsApi = {
     GET_FIXED_ASSETS_FILTER_FIELDS : '/finance/fixed_assets/fixed_assets_filter_fields',
 
-    getFixedAssetsFilterFields() {
-        let url = this.GET_FIXED_ASSETS_FILTER_FIELDS
-        return axios.get(url)
+    get(urlName, getParams) {
+        let url = this[urlName]
+        return axios.get(url, {params : getParams})
     }
 }
 

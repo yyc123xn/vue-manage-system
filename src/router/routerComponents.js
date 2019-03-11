@@ -11,7 +11,6 @@ const BaseCharts = () => import("../components/page/BaseCharts")
 const DragList = () => import("../components/page/DragList")
 const DragDialog = () => import("../components/page/DragDialog")
 const Permission = () => import("../components/page/Permission")
-
 const FixedAssetsForm = () => import("../components/page/fixed_assets/FixedAssetsForm")
 const FixedAssetsTable = () => import("../components/page/fixed_assets/FixedAssetsTable")
 const VoucherForm = () => import("../components/page/voucher/VoucherForm")
@@ -24,6 +23,8 @@ const DataSetForm = () => import("../components/page/data_set/DataSetForm")
 const DataSetTable = () => import("../components/page/data_set/DataSetTable")
 const DashboardForm = () => import("../components/page/dashboard/DashboardForm")
 const DashboardTable = () => import("../components/page/dashboard/DashboardTable")
+const DataSourceForm = () => import("../components/page/data_source/DataSourceForm")
+const DataSourceTable = () => import("../components/page/data_source/DataSourceTable")
 
 export default {
     Home: Home,
@@ -39,7 +40,6 @@ export default {
     DragList: DragList,
     DragDialog: DragDialog,
     Permission: Permission,
-
     FixedAssetsForm: FixedAssetsForm,
     FixedAssetsTable: FixedAssetsTable,
     VoucherForm: VoucherForm,
@@ -51,5 +51,7 @@ export default {
     DataSetForm: DataSetForm,
     DataSetTable: DataSetTable,
     DashboardForm: DashboardForm,
-    DashboardTable: DashboardTable
+    DashboardTable: DashboardTable,
+    DataSourceForm: DataSourceForm,
+    DataSourceTable: DataSourceTable
 };

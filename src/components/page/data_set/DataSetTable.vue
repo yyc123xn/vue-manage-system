@@ -162,7 +162,7 @@
         methods: {
             // 获取数据集的过滤字段
             getFilterFields() {
-                this.$api.REPORT_DATA_SET_API.getDataSetFilterFields().then(res => {
+                this.$api.REPORT_DATA_SET_API.get('GET_DATA_SET_FILTER_FIELDS').then(res => {
                     console.log(res.data)
                     this.dataSetFilterFields = res.data.data;
                 })
@@ -184,7 +184,7 @@
                     queryColumn: queryColumnName,
                     queryCondition: this.queryCondition,
                 }
-                this.$api.REPORT_DATA_SET_API.getDataSets(queryParams).then(res => {
+                this.$api.REPORT_DATA_SET_API.get('DATA_SET', queryParams).then(res => {
                     console.log(res.data)
                     this.tableData = res.data.data.list
                     this.total = res.data.data.total
@@ -201,7 +201,7 @@
                 let queryParams = {
                     id : id
                 }
-                this.$api.REPORT_DATA_SET_API.getDataSetInfo(queryParams).then(res => {
+                this.$api.REPORT_DATA_SET_API.get('GET_DATA_SET_INFO', queryParams).then(res => {
                     console.log(res.data)
                 })
             },

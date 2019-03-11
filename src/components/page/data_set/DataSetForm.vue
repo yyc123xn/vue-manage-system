@@ -8,26 +8,26 @@
         </el-col>
         <el-col class="container">
             <el-col class="form-box">
-                <el-form :model="dataSet" ref="dataSet" label-width="80px">
-                    <el-form-item label="数据集名称" :rules="rules.username">
+                <el-form :model="dataSet" :rules="rules" ref="dataSet" label-width="80px">
+                    <el-form-item label="数据集名称" :rules="rules.username" prop="username">
                         <el-input v-model="dataSet.name"></el-input>
                     </el-form-item>
-                    <el-form-item label="数据集描述" :rules="rules.description">
+                    <el-form-item label="数据集描述"  prop="description">
                         <el-input type="textarea" rows="5" v-model="dataSet.description"></el-input>
                     </el-form-item>
-                    <el-form-item label="数据源" :rules="rules.dataSourceType">
+                    <el-form-item label="数据源"  prop="dataSourceType">
                         <el-select v-model="dataSet.dataSourceType" placeholder="数据源类型">
                             <template v-for="(dataSourceType, index) in dataSet.dataSourceTypes">
                                 <el-option :key="dataSourceType.nameEn" :label="dataSourceType.nameEn" :value="dataSourceType.nameEn"></el-option>
                             </template>
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="数据库&表" :rules="rules.databaseTable">
+                    <el-form-item label="数据库&表" prop="databaseTable">
                         <el-cascader
                                 :options="dataSet.databasesTables"
                                 change-on-select></el-cascader>
                     </el-form-item>
-                    <el-form-item label="计算周期" :rules="rules.period">
+                    <el-form-item label="计算周期" prop="period">
                         <el-select v-model="dataSet.period" placeholder="请选择">
                             <template v-for="(period, index) in dataSet.periods">
                                 <el-option :key="period.nameEn" :label="period.nameCn" :value="period.nameCn"></el-option>
@@ -71,39 +71,39 @@
                     <el-form-item>
                         <el-button @click="addDataSetField" type="primary">新增数据集字段</el-button>
                     </el-form-item>
-                    <el-form-item label="过滤运算条件" :rules="rules.description">
+                    <el-form-item label="过滤运算条件" prop="extraExpression">
                         <el-input type="textarea" rows="5" v-model="dataSet.extraExpression"></el-input>
                     </el-form-item>
-                    <el-form-item label="日期时间">
-                        <el-col :span="11">
-                            <el-date-picker type="date" placeholder="选择日期" v-model="dataSet.date1" style="width: 100%;"></el-date-picker>
-                        </el-col>
-                        <el-col class="line" :span="2">-</el-col>
-                        <el-col :span="11">
-                            <el-time-picker placeholder="选择时间" v-model="dataSet.date2" style="width: 100%;"></el-time-picker>
-                        </el-col>
-                    </el-form-item>
-                    <el-form-item label="选择开关">
-                        <el-switch v-model="dataSet.delivery"></el-switch>
-                    </el-form-item>
-                    <el-form-item label="多选框">
-                        <el-checkbox-group v-model="dataSet.type">
-                            <el-checkbox label="步步高" name="type"></el-checkbox>
-                            <el-checkbox label="小天才" name="type"></el-checkbox>
-                            <el-checkbox label="imoo" name="type"></el-checkbox>
-                        </el-checkbox-group>
-                    </el-form-item>
-                    <el-form-item label="单选框">
-                        <el-radio-group v-model="dataSet.resource">
-                            <el-radio label="步步高"></el-radio>
-                            <el-radio label="小天才"></el-radio>
-                            <el-radio label="imoo"></el-radio>
-                        </el-radio-group>
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button type="primary" @click="addDataSet">表单提交</el-button>
-                        <el-button>取消</el-button>
-                    </el-form-item>
+                    <!--<el-form-item label="日期时间">-->
+                        <!--<el-col :span="11">-->
+                            <!--<el-date-picker type="date" placeholder="选择日期" v-model="dataSet.date1" style="width: 100%;"></el-date-picker>-->
+                        <!--</el-col>-->
+                        <!--<el-col class="line" :span="2">-</el-col>-->
+                        <!--<el-col :span="11">-->
+                            <!--<el-time-picker placeholder="选择时间" v-model="dataSet.date2" style="width: 100%;"></el-time-picker>-->
+                        <!--</el-col>-->
+                    <!--</el-form-item>-->
+                    <!--<el-form-item label="选择开关">-->
+                        <!--<el-switch v-model="dataSet.delivery"></el-switch>-->
+                    <!--</el-form-item>-->
+                    <!--<el-form-item label="多选框">-->
+                        <!--<el-checkbox-group v-model="dataSet.type">-->
+                            <!--<el-checkbox label="步步高" name="type"></el-checkbox>-->
+                            <!--<el-checkbox label="小天才" name="type"></el-checkbox>-->
+                            <!--<el-checkbox label="imoo" name="type"></el-checkbox>-->
+                        <!--</el-checkbox-group>-->
+                    <!--</el-form-item>-->
+                    <!--<el-form-item label="单选框">-->
+                        <!--<el-radio-group v-model="dataSet.resource">-->
+                            <!--<el-radio label="步步高"></el-radio>-->
+                            <!--<el-radio label="小天才"></el-radio>-->
+                            <!--<el-radio label="imoo"></el-radio>-->
+                        <!--</el-radio-group>-->
+                    <!--</el-form-item>-->
+                    <!--<el-form-item>-->
+                        <!--<el-button type="primary" @click="addDataSet">表单提交</el-button>-->
+                        <!--<el-button>取消</el-button>-->
+                    <!--</el-form-item>-->
                 </el-form>
             </el-col>
         </el-col>
@@ -131,7 +131,11 @@
                     ],
                     period : [
                         { required: true, message: '请选择数据集计算周期', trigger: 'blur' }
-                    ]
+                    ],
+                    extraExpression : [
+                        { required: true, message: '请输入额外运算条件', trigger: 'blur' }
+                    ],
+
                 },
                 dataSet: {
                     name: '',
@@ -220,7 +224,7 @@
             addDataSet() {
                 this.$message.success("提交成功")
                 console.log(this.dataSet)
-                this.$api.REPORT_DATA_SET_API.addDataSet(this.dataSet).then(res => {
+                this.$api.REPORT_DATA_SET_API.post('DATA_SET', this.dataSet).then(res => {
                     console.log("添加数据集成功")
                 }).catch(error => {
                     console.log(error)
@@ -228,26 +232,26 @@
             },
 
             getDataSourceTypes() {
-                this.$api.REPORT_DATA_SOURCE_API.getDataSourceTypes().then(res => {
+                this.$api.REPORT_DATA_SOURCE_API.get('GET_DATA_SOURCE_TYPES').then(res => {
                     this.dataSet.dataSourceTypes = res.data.data;
                     this.dataSet.dataSourceType = this.dataSet.dataSourceTypes[0].nameEn;
                 })
             },
 
             getDatabasesTables() {
-                this.$api.REPORT_DATA_SOURCE_API.getDatabasesTables().then(res => {
+                this.$api.REPORT_DATA_SOURCE_API.get('GET_DATABASES_TABLES').then(res => {
                     this.dataSet.databasesTables = res.data.data;
                 })
             },
 
             getPeriods() {
-                this.$api.REPORT_DATA_SET_API.getPeriods().then(res => {
+                this.$api.REPORT_DATA_SET_API.get('GET_PERIODS').then(res => {
                     this.dataSet.periods = res.data.data;
                 })
             },
 
             getDataTypes() {
-                this.$api.REPORT_DATA_SET_API.getDataTypes().then(res => {
+                this.$api.REPORT_DATA_SET_API.get('GET_DATA_TYPES').then(res => {
                     this.dataSet.dataTypes = res.data.data
                     this.dataSet.dataSetFields.forEach(dataSetField => {
                         dataSetField.dataTypes = res.data.data
@@ -257,7 +261,7 @@
             },
 
             getCalculateTypes() {
-                this.$api.REPORT_DATA_SET_API.getCalculateTypes().then(res => {
+                this.$api.REPORT_DATA_SET_API.get('GET_CALCULATE_TYPES').then(res => {
                     this.dataSet.calculateTypes = res.data.data
                     this.dataSet.dataSetFields.forEach(dataSetField => {
                         dataSetField.calculateTypes = res.data.data
@@ -267,7 +271,7 @@
             },
 
             getFieldTypes() {
-                this.$api.REPORT_DATA_SET_API.getFieldTypes().then(res => {
+                this.$api.REPORT_DATA_SET_API.get('GET_FIELD_TYPES').then(res => {
                     this.dataSet.fieldTypes = res.data.data
                     this.dataSet.dataSetFields.forEach(dataSetField => {
                         dataSetField.fieldTypes = res.data.data

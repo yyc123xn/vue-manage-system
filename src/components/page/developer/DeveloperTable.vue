@@ -14,17 +14,15 @@
                                :value="developerFilterField.columnComment">
                     </el-option>
                 </el-select>
-                <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
-                <el-button type="primary" icon="search" @click="search">搜索</el-button>
+                <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
+                <el-button type="primary" icon="el-icon-search" @click="getDevelopers">搜索</el-button>
             </el-col>
             <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="55" align="center"></el-table-column>
-                <el-table-column prop="date" label="日期" sortable width="150">
-                </el-table-column>
-                <el-table-column prop="name" label="姓名" width="120">
-                </el-table-column>
-                <el-table-column prop="address" label="地址" :formatter="formatter">
-                </el-table-column>
+                <el-table-column prop="id" label="id" sortable></el-table-column>
+                <el-table-column prop="nameCn" label="中文名"></el-table-column>
+                <el-table-column prop="nameEn" label="英文名" sortable></el-table-column>
+                <el-table-column prop="email" label="邮箱"></el-table-column>
                 <el-table-column label="操作" width="180" align="center">
                     <template slot-scope="scope">
                         <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -33,7 +31,7 @@
                 </el-table-column>
             </el-table>
             <el-col class="pagination">
-                <el-pagination background @current-change="handleCurrentChange" layout="prev, pager, next" :total="total">
+                <el-pagination background @current-change="handleCurrentChange" layout="prev, pager, next" :page-size="pageSize" :total="total">
                 </el-pagination>
             </el-col>
         </el-col>
@@ -74,7 +72,6 @@
         name: 'DeveloperTable',
         data: function () {
             return {
-                developerFilterField: "",
                 developerFilterFields: [],
                 tableData: [],
                 pageIndex: 1,
@@ -128,7 +125,7 @@
         methods: {
             // 获取票据的过滤字段
             getFilterFields() {
-                this.$api.FINANCE_DEVELOPER_API.getDeveloperFilterFields().then(res => {
+                this.$api.FINANCE_DEVELOPER_API.get('GET_DEVELOPER_FILTER_FIELDS').then(res => {
                     console.log(res.data)
                     this.developerFilterFields = res.data.data;
                 })
@@ -150,7 +147,7 @@
                     queryColumn: queryColumnName,
                     queryCondition: this.queryCondition,
                 }
-                this.$api.FINANCE_DEVELOPER_API.getDevelopers(queryParams).then(res => {
+                this.$api.FINANCE_DEVELOPER_API.get('GET_DEVELOPERS' ,queryParams).then(res => {
                     console.log(res.data)
                     this.tableData = res.data.data.list
                     this.total = res.data.data.total
@@ -210,6 +207,13 @@
             handleSelectionChange(val) {
                 this.multipleSelection = val;
             },
+
+            handleCurrentChange(pageIndex) {
+                this.pageIndex = pageIndex;
+                this.$message.success(`页面下标 ${pageIndex}`);
+                this.getDevelopers()
+            },
+
             // 保存编辑
             saveEdit() {
                 this.$set(this.tableData, this.idx, this.form);

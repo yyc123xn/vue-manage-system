@@ -150,7 +150,7 @@
             }
         },
         created() {
-            this.$api.FINANCE_VOUCHER_API.getVoucherTypes().then(res => {
+            this.$api.FINANCE_VOUCHER_API.get('GET_VOUCHER_TYPES').then(res => {
                 console.log(res.data)
                 this.form.voucherTypes = res.data.data;
             })

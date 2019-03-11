@@ -38,6 +38,22 @@ module.exports = {
                 }
             },
 
+            '/finance/developer/privileges': {
+                target: FINANCE_URL_PREFIX + '/finance/developer/privileges',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/finance/developer/privileges': ''
+                }
+            },
+
+            '/finance/developer/academic_degrees': {
+                target: FINANCE_URL_PREFIX + '/finance/developer/academic_degrees',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/finance/developer/academic_degrees': ''
+                }
+            },
+
             '/finance/common/menu': {
                 target: FINANCE_URL_PREFIX + '/finance/common/menu',
                 changeOrigin: true,
@@ -87,11 +103,20 @@ module.exports = {
                     '^/finance/developer/developer_filter_fields': ''
                 }
             },
+
             '/report/data_source/data_source_filter_fields': {
                 target: REPORT_URL_PREFIX + '/report/data_source/data_source_filter_fields',
                 changeOrigin: true,
                 pathRewrite: {
                     '^/report/data_source/data_source_filter_fields': ''
+                }
+            },
+
+            '/report/data_source': {
+                target: REPORT_URL_PREFIX + '/report/data_source',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/report/data_source': ''
                 }
             },
 

@@ -16,7 +16,9 @@ import VCharts from 'v-charts'
 
 import VueCookies from 'vue-cookies'
 
-import axios from '@/interceptor' // permission control
+import axios from './interceptor' // permission control
+
+import {validator} from './utils/validator'
 
 Vue.config.productionTip = false
 Vue.use(ElementUI, {
@@ -25,8 +27,10 @@ Vue.use(ElementUI, {
 
 Vue.use(VueCookies)
 Vue.use(VCharts)
+
 Vue.prototype.$axios = axios
 Vue.prototype.$api = api
+Vue.prototype.$validator = validator
 
 if (localStorage.getItem('username')) {
     let routes = JSON.parse(localStorage.getItem('routes'))
@@ -38,7 +42,7 @@ router.beforeEach((to, from, next) => {
     let userToken = window.$cookies.get("userToken")
     console.log(userToken)
     if (userToken) {
-        api.FINANCE_DEVELOPER_API.current().then(res => {
+        api.FINANCE_DEVELOPER_API.get('CURRENT').then(res => {
             if (res.data.data.loggedIn === false) {
                 next('/login')
             } else {

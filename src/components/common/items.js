@@ -232,9 +232,37 @@ export default [
     {
         path: "/",
         component: "Home",
+        name: 'data_source',
+        meta: {
+            title: '数据源',
+            icon: 'el-icon-lx-file',
+        },
+        children: [
+            {
+                path: 'data_source_table',
+                component: "DataSourceTable",
+                name: 'data_source_table',
+                meta: {
+                    icon: 'el-icon-lx-cascades',
+                    title: '数据源列表'
+                }
+            },
+            {
+                path: 'data_source_form',
+                component: "DataSourceForm",
+                name: 'data_source_form',
+                meta: {
+                    title: '数据源表单'
+                }
+            }
+        ]
+    },
+    {
+        path: "/",
+        component: "Home",
         name: 'dashboard',
         meta: {
-            title: '数据仪表盘',
+            title: '数据看板',
             icon: 'el-icon-lx-rank',
         },
         children: [
@@ -244,7 +272,7 @@ export default [
                 name: 'dashboard_table',
                 meta: {
                     icon: 'el-icon-lx-cascades',
-                    title: '仪表盘列表'
+                    title: '看板列表'
                 }
             },
             {
@@ -252,7 +280,7 @@ export default [
                 component: "DashboardForm",
                 name: 'dashboard_form',
                 meta: {
-                    title: '仪表盘表单'
+                    title: '看板表单'
                 }
             }
         ]

@@ -2,38 +2,38 @@
     <div class="table">
         <el-col class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-lx-cascades"></i> 数据源</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-lx-cascades"></i> 公司员工</el-breadcrumb-item>
             </el-breadcrumb>
         </el-col>
         <el-col class="container">
             <el-col class="handle-box">
                 <el-button type="primary" icon="delete" class="handle-del mr10" @click="delAll">批量删除</el-button>
-                <el-select v-model="defaultDataSourceFilterFields" placeholder="筛选项" class="handle-select mr10">
+                <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10">
                     <el-option v-for="dataSourceFilterField in dataSourceFilterFields"
                                :key="dataSourceFilterField.columnName" :label="dataSourceFilterField.columnComment"
                                :value="dataSourceFilterField.columnComment">
                     </el-option>
                 </el-select>
-                <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
-                <el-button type="primary" icon="search" @click="search">搜索</el-button>
+                <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
+                <el-button type="primary" icon="el-icon-search" @click="getDataSources">搜索</el-button>
             </el-col>
-            <el-table :data="data" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">
+            <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="55" align="center"></el-table-column>
-                <el-table-column prop="date" label="日期" sortable width="150">
-                </el-table-column>
-                <el-table-column prop="name" label="姓名" width="120">
-                </el-table-column>
-                <el-table-column prop="address" label="地址" :formatter="formatter">
-                </el-table-column>
+                <el-table-column prop="id" label="id" sortable></el-table-column>
+                <el-table-column prop="developer" label="负责人"></el-table-column>
+                <el-table-column prop="createTime" label="创建时间" sortable></el-table-column>
+                <el-table-column prop="dataSourceType" label="数据源类型"></el-table-column>
+                <el-table-column prop="database" label="数据库"></el-table-column>
                 <el-table-column label="操作" width="180" align="center">
                     <template slot-scope="scope">
                         <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
                         <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                        <el-button type="text" icon="el-icon-info" @click="handleInfo(scope.$index, scope.row)">详情</el-button>
                     </template>
                 </el-table-column>
             </el-table>
             <el-col class="pagination">
-                <el-pagination background @current-change="handleCurrentChange" layout="prev, pager, next" :total="1000">
+                <el-pagination background @current-change="handleCurrentChange" layout="prev, pager, next" :page-size="pageSize" :total="total">
                 </el-pagination>
             </el-col>
         </el-col>
@@ -49,6 +49,44 @@
                 </el-form-item>
                 <el-form-item label="地址">
                     <el-input v-model="form.address"></el-input>
+                </el-form-item>
+
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="editVisible = false">取 消</el-button>
+                <el-button type="primary" @click="saveEdit">确 定</el-button>
+            </span>
+        </el-dialog>
+
+        <!-- 编辑弹出框 -->
+        <el-dialog title="详情" :visible.sync="infoVisible" width="70%">
+            <el-form ref="form" :model="handleInfoForm" label-width="50px">
+                <el-form-item label="id">
+                    {{handleInfoForm.id}}
+                </el-form-item>
+                <el-form-item label="url">
+                    {{handleInfoForm.url}}
+                </el-form-item>
+                <el-form-item label="id">
+                    {{handleInfoForm.id}}
+                </el-form-item>
+                <el-form-item label="username">
+                    {{handleInfoForm.username}}
+                </el-form-item>
+                <el-form-item label="password">
+                    {{handleInfoForm.password}}
+                </el-form-item>
+                <el-form-item label="负责人">
+                    {{handleInfoForm.developer}}
+                </el-form-item>
+                <el-form-item label="数据源类型">
+                    {{handleInfoForm.data_source_type}}
+                </el-form-item>
+                <el-form-item label="数据库">
+                    {{handleInfoForm.database}}
+                </el-form-item>
+                <el-form-item label="权限">
+                    {{handleInfoForm.privilege}}
                 </el-form-item>
 
             </el-form>
@@ -74,25 +112,32 @@
         name: 'DataSourceTable',
         data: function () {
             return {
-                defaultDataSourceFilterFields: "",
-                dataSourceFilterFields: [
-                    {
-                        columnName: "name1",
-                        columnComment: "comment1"
-                    },
-                    {
-                        columnName: "name2",
-                        columnComment: "comment2"
-                    }
-                ],
-                url: './vuetable.json',
+                dataSourceFilterFields: [],
                 tableData: [],
+                pageIndex: 1,
+                pageSize: 10,
+                total : 0,
+                queryColumn: "",
+                queryCondition: [],
+                handleInfoForm : {
+                    id : 0,
+                    url : '',
+                    username : '',
+                    password : '',
+                    developer : '',
+                    data_source_type : '',
+                    database : '',
+                    weight : 0,
+                    privilege : ''
+                },
+                url: './vuetable.json',
                 cur_page: 1,
                 multipleSelection: [],
                 select_cate: '',
                 select_word: '',
                 del_list: [],
                 is_search: false,
+                infoVisible: false,
                 editVisible: false,
                 delVisible: false,
                 form: {
@@ -105,7 +150,8 @@
         },
         created() {
             this.getFilterFields();
-            this.getData();
+//            this.getData();
+            this.getDataSources()
         },
         computed: {
             data() {
@@ -129,11 +175,34 @@
             }
         },
         methods: {
-            // 获取数据源的过滤字段
+            // 获取票据的过滤字段
             getFilterFields() {
-                this.$api.REPORT_DATA_SOURCE_API.getDataSourceFilterFields().then(res => {
+                this.$api.REPORT_DATA_SOURCE_API.get('GET_DATA_SOURCE_FILTER_FIELDS').then(res => {
                     console.log(res.data)
                     this.dataSourceFilterFields = res.data.data;
+                })
+            },
+
+            // 获取数据集列表
+            getDataSources() {
+                let queryColumnName = this.queryColumn
+                if (this.queryColumn !== '') {
+                    this.dataSourceFilterFields.forEach(dataSourceFilterField => {
+                        if (dataSourceFilterField.columnComment === this.queryColumn) {
+                            queryColumnName = dataSourceFilterField.columnName
+                        }
+                    })
+                }
+                let queryParams = {
+                    pageIndex: this.pageIndex,
+                    pageSize: this.pageSize,
+                    queryColumn: queryColumnName,
+                    queryCondition: this.queryCondition,
+                }
+                this.$api.REPORT_DATA_SOURCE_API.get('GET_DATA_SOURCES' ,queryParams).then(res => {
+                    console.log(res.data)
+                    this.tableData = res.data.data.list
+                    this.total = res.data.data.total
                 })
             },
 
@@ -177,6 +246,19 @@
                 this.idx = index;
                 this.delVisible = true;
             },
+            handleInfo(index, row) {
+                this.idx = index;
+                const item = this.tableData[index];
+                let id = item.id
+                this.getDataSourceInfo()
+                this.form = {
+                    name: item.name,
+                    date: item.date,
+                    address: item.address
+                }
+                this.infoVisible = true;
+            },
+
             delAll() {
                 const length = this.multipleSelection.length;
                 let str = '';
@@ -187,9 +269,17 @@
                 this.$message.error('删除了' + str);
                 this.multipleSelection = [];
             },
+
             handleSelectionChange(val) {
                 this.multipleSelection = val;
             },
+
+            handleCurrentChange(pageIndex) {
+                this.pageIndex = pageIndex;
+                this.$message.success(`页面下标 ${pageIndex}`);
+                this.getDataSources()
+            },
+
             // 保存编辑
             saveEdit() {
                 this.$set(this.tableData, this.idx, this.form);

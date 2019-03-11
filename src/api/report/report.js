@@ -4,9 +4,9 @@ const reportReportApi = {
 
     GET_CHART_TYPES: "/report/report/chart_types",
 
-    getChartTypes() {
-        let url = this.GET_CHART_TYPES;
-        return axios.get(url)
+    get(urlName, getParams) {
+        let url = this[urlName]
+        return axios.get(url, {params : getParams})
     }
 }
 

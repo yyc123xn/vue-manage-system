@@ -2,33 +2,24 @@ import axios from '../../interceptor'
 
 const financeDeveloperApi = {
 
-    GET_DEVELOPERS : '/finance/developer',
-
-    getDevelopers(queryParams) {
-        let url = this.GET_DEVELOPERS
-        return axios.get(url, {params : queryParams})
-    },
-
-    CURRENT : '/finance/developer/current',
-
-    current() {
-        let url = this.CURRENT
-        return axios.get(url)
-    },
-
     LOGIN : '/finance/developer/login',
-
-    login (username, password) {
-        let url = this.LOGIN + '?username=' + username + '&password=' + password
-        return axios.get(url)
-    },
-
+    GET_DEVELOPERS : '/finance/developer',
+    CURRENT : '/finance/developer/current',
     GET_DEVELOPER_FILTER_FIELDS : '/finance/developer/developer_filter_fields',
+    GET_PRIVILEGES : '/finance/developer/privileges',
+    GET_ACADEMIC_DEGREES : '/finance/developer/academic_degrees',
 
-    getDeveloperFilterFields() {
-        let url = this.GET_DEVELOPER_FILTER_FIELDS
-        return axios.get(url)
+    get(urlName, getParams) {
+        let url = this[urlName]
+        return axios.get(url, {params : getParams})
     },
+
+    ADD_DEVELOPER : '/finance/developer',
+
+    post(urlName, postParams) {
+        let url = this[urlName]
+        return axios.post(url, postParams)
+    }
 }
 
 

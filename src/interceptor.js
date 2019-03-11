@@ -5,6 +5,9 @@ const service = axios.create({ // 创建服务
 })
 
 service.defaults.withCredentials = true
+service.defaults.headers = {
+    'Content-type': 'application/json'
+}
 
 // http request 拦截器，通过这个，我们就可以把Cookie传到后台
 service.interceptors.request.use(

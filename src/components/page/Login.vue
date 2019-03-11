@@ -50,7 +50,7 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         this.loading = true
-                        this.$api.FINANCE_DEVELOPER_API.login(this.ruleForm.username, this.ruleForm.password).then((res) => {
+                        this.$api.FINANCE_DEVELOPER_API.get('LOGIN', this.ruleForm).then((res) => {
                             if (res.status === 200) {
                                 // 将路由信息，菜单信息，用户信息存到sessionStorage里
                                 if (!localStorage.getItem('routes')) {

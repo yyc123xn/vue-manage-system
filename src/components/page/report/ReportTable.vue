@@ -131,7 +131,7 @@
         methods: {
             // 获取票据的过滤字段
             getFilterFields() {
-                this.$api.getVoucherFilterFields("/finance/voucher/voucher_filter_fields").then(res => {
+                this.$api.get("GET_VOUCHER_FILTER_FIELDS").then(res => {
                     console.log(res.data)
                     this.voucherFilterFields = res.data.data;
                 })

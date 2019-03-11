@@ -60,7 +60,7 @@
 
         <!-- 编辑弹出框 -->
         <el-dialog title="详情" :visible.sync="infoVisible" width="70%">
-            <el-form ref="form" :model="handleInfoForm" label-width="50px">
+            <el-form ref="form" :model="handleInfoForm" label-width="10%">
                 <el-form-item label="id">
                     {{handleInfoForm.id}}
                 </el-form-item>
@@ -80,13 +80,26 @@
                     {{handleInfoForm.developer}}
                 </el-form-item>
                 <el-form-item label="数据源类型">
-                    {{handleInfoForm.data_source_type}}
+                    {{handleInfoForm.dataSourceType}}
                 </el-form-item>
                 <el-form-item label="数据库">
                     {{handleInfoForm.database}}
                 </el-form-item>
                 <el-form-item label="权限">
                     {{handleInfoForm.privilege}}
+                </el-form-item>
+                <el-form-item label="表">
+                    <el-table
+                            :data="tables"
+                            height="250"
+                            border
+                            style="width: 80%">
+                        <el-table-column
+                                label="数据库表"
+                                prop="tableName"
+                                align="center">
+                        </el-table-column>
+                    </el-table>
                 </el-form-item>
 
             </el-form>
@@ -108,7 +121,10 @@
 </template>
 
 <script>
+    import ElFormItem from "../../../../node_modules/element-ui/packages/form/src/form-item.vue";
+
     export default {
+        components: {ElFormItem},
         name: 'DataSourceTable',
         data: function () {
             return {
@@ -125,11 +141,12 @@
                     username : '',
                     password : '',
                     developer : '',
-                    data_source_type : '',
+                    dataSourceType : '',
                     database : '',
                     weight : 0,
-                    privilege : ''
+                    privilege : '',
                 },
+                tables: [],
                 url: './vuetable.json',
                 cur_page: 1,
                 multipleSelection: [],
@@ -145,7 +162,7 @@
                     date: '',
                     address: ''
                 },
-                idx: -1
+                idx: -1,
             }
         },
         created() {
@@ -206,6 +223,28 @@
                 })
             },
 
+            // 获取数据源info
+            async getDataSourceInfo(id) {
+                let queryParams = {
+                    id : id
+                }
+                await this.$api.REPORT_DATA_SOURCE_API.get('GET_DATA_SOURCE_INFO', queryParams).then(res => {
+                    console.log(res.data)
+                    this.handleInfoForm =  res.data.data
+                })
+            },
+
+            // 获取数据库下的所有表
+            async getDatabaseTables(database) {
+                let queryParams = {
+                    database : database
+                }
+                await this.$api.REPORT_DATA_SOURCE_API.get('GET_DATABASE_TABLES', queryParams).then(res => {
+                    console.log(res.data)
+                    this.tables = res.data.data
+                })
+            },
+
             // 分页导航
             handleCurrentChange(val) {
                 this.cur_page = val;
@@ -246,16 +285,13 @@
                 this.idx = index;
                 this.delVisible = true;
             },
+
             handleInfo(index, row) {
-                this.idx = index;
                 const item = this.tableData[index];
                 let id = item.id
-                this.getDataSourceInfo()
-                this.form = {
-                    name: item.name,
-                    date: item.date,
-                    address: item.address
-                }
+                this.getDataSourceInfo(id)
+                let database = item.database
+                this.getDatabaseTables(database)
                 this.infoVisible = true;
             },
 

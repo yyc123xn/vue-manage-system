@@ -10,9 +10,13 @@ const reportDataSourceApi = {
 
     GET_DATA_SOURCES : '/report/data_source',
 
-    get(urlName, getParams) {
+    GET_DATA_SOURCE_INFO : '/report/data_source/info',
+
+    GET_DATABASE_TABLES : '/report/data_source/database/tables',
+
+    async get(urlName, getParams) {
         let url = this[urlName]
-        return axios.get(url, {params : getParams})
+        return await axios.get(url, {params : getParams})
     }
 
 }

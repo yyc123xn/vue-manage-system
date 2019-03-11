@@ -8,7 +8,7 @@
         </el-col>
         <el-col class="container">
             <el-col class="form-box">
-                <el-form ref="developer" :rules="rules" :model="developer" label-width="80px">
+                <el-form ref="developer" :rules="rules" :model="developer" label-width="6%">
                     <el-form-item label="中文名" prop="nameCn">
                         <el-input v-model="developer.nameCn"></el-input>
                     </el-form-item>

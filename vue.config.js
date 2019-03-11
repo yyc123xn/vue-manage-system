@@ -112,11 +112,27 @@ module.exports = {
                 }
             },
 
+            '/report/data_source/database/tables': {
+                target: REPORT_URL_PREFIX + '/report/data_source/database/tables',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/report/data_source/database/tables': ''
+                }
+            },
+
             '/report/data_source': {
                 target: REPORT_URL_PREFIX + '/report/data_source',
                 changeOrigin: true,
                 pathRewrite: {
                     '^/report/data_source': ''
+                }
+            },
+
+            '/report/data_source/info': {
+                target: REPORT_URL_PREFIX + '/report/data_source/info',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/report/data_source/info': ''
                 }
             },
 

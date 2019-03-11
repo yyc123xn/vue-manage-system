@@ -8,7 +8,7 @@
         </el-col>
         <el-col class="container">
             <el-col class="form-box">
-                <el-form ref="dataSource" :rules="rules" :model="dataSource" label-width="80px">
+                <el-form ref="dataSource" :rules="rules" :model="dataSource" label-width="7%">
                     <el-form-item label="url" prop="url">
                         <el-input v-model="dataSource.url"></el-input>
                     </el-form-item>

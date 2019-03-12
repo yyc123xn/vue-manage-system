@@ -168,6 +168,14 @@ module.exports = {
                 }
             },
 
+            '/report/data_set/metrics': {
+                target: REPORT_URL_PREFIX + '/report/data_set/metrics',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/report/data_set/metrics': ''
+                }
+            },
+
             '/report/data_set/calculate_types': {
                 target: REPORT_URL_PREFIX + '/report/data_set/calculate_types',
                 changeOrigin: true,

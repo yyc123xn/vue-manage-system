@@ -12,9 +12,11 @@ const reportDataSetApi = {
 
     GET_CALCULATE_TYPES : '/report/data_set/calculate_types',
 
-    GET_DATA_SET_INFO : "/report/data_set/info",
+    GET_DATA_SET_INFO : '/report/data_set/info',
 
     DATA_SET : '/report/data_set',
+
+    GET_DATA_SET_METRICS : '/report/data_set/metrics',
 
     get(urlName, getParams) {
         let url = this[urlName]

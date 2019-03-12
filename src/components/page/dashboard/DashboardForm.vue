@@ -65,7 +65,7 @@
 
             <!-- 编辑报表弹出框 -->
             <el-dialog title="编辑报表" :visible.sync="editVisible" width="70%">
-                <el-form ref="form" :model="handleEditForm" label-width="8%">
+                <el-form ref="form" :model="handleEditForm" label-width="10%">
                     <el-form-item label="报表名称">
                         <el-input v-model="handleEditForm.content"></el-input>
                     </el-form-item>
@@ -73,18 +73,167 @@
                         <el-input type="textarea" rows="5" v-model="handleEditForm.content"></el-input>
                     </el-form-item>
                     <el-form-item label="数据集列表">
-                        <el-select v-model="handleEditForm.dataSet" placeholder="请选择">
+                        <el-select v-model="handleEditForm.dataSet" placeholder="请选择" filterable @change="getDataSetMetrics" @click="getDataSetMetrics">
                             <template v-for="(dataSet, index) in handleEditForm.dataSets">
-                                <el-option :key="dataSet.name" :label="dataSet.name" :value="dataSet.name"></el-option>
+                                <el-option :key="dataSet.name" :label="dataSet.name" :value="dataSet.id"></el-option>
                             </template>
                         </el-select>
                     </el-form-item>
                     <el-form-item label="报表类型">
                         <el-select v-model="handleEditForm.chartType" placeholder="请选择">
                             <template v-for="(chartType, index) in handleEditForm.chartTypes">
-                                <el-option :key="chartType.nameEn" :label="chartType.nameCn" :value="chartType.nameCn"></el-option>
+                                <el-option :key="chartType.nameEn" :label="chartType.nameCn" :value="chartType.nameEn"></el-option>
                             </template>
                         </el-select>
+                    </el-form-item>
+                    <el-form-item label="数据集指标">
+                        <el-select v-model="handleEditForm.selectedMetrics" placeholder="请选择" filterable multiple>
+                            <template v-for="(metric, index) in handleEditForm.metrics">
+                                <el-option :key="metric.showName" :label="metric.showName" :value="metric.id"></el-option>
+                            </template>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="报表属性配置">
+                        <el-collapse>
+                            <el-collapse-item :title="handleEditForm.chartType">
+                                <el-col v-if="'UNRECOGNIZED' === handleEditForm.chartType">
+                                    <div class="red">请选择其他报表类型</div>
+                                </el-col>
+                                <el-col v-if="'LINE' === handleEditForm.chartType">
+                                    <el-form ref="handleEditForm.chartSettings" :rules="rules" :model="handleEditForm.chartSettings" label-width="20%">
+                                        <el-form-item label="axisSite(设置右轴key)">
+                                            <el-input></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="yAxisType(双y轴坐标类型)">
+                                            <el-col :span="1">
+                                                左轴
+                                            </el-col>
+                                            <el-col :span="10">
+                                                <el-select placeholder="请选择">
+                                                    <el-option :key="'KMP'" :label="'KMP'" :value="'KMP'"></el-option>
+                                                    <el-option :key="'MP'" :label="'MP'" :value="'MP'"></el-option>
+                                                    <el-option :key="'percent'" :label="'percent'" :value="'percent'"></el-option>
+                                                </el-select>
+                                            </el-col>
+                                            <el-col :span="1">
+                                                右轴
+                                            </el-col>
+                                            <el-col :span="10">
+                                                <el-select placeholder="请选择">
+                                                    <el-option :key="'KMP'" :label="'KMP'" :value="'KMP'"></el-option>
+                                                    <el-option :key="'MP'" :label="'MP'" :value="'MP'"></el-option>
+                                                    <el-option :key="'percent'" :label="'percent'" :value="'percent'"></el-option>
+                                                </el-select>
+                                            </el-col>
+                                        </el-form-item>
+                                        <el-form-item label="yAxisName(双y轴名)">
+                                            <el-col :span="1">
+                                                左轴
+                                            </el-col>
+                                            <el-col :span="10">
+                                                <el-input></el-input>
+                                            </el-col>
+                                            <el-col :span="1">
+                                                右轴
+                                            </el-col>
+                                            <el-col :span="10">
+                                                <el-input></el-input>
+                                            </el-col>
+                                        </el-form-item>
+                                        <el-form-item label="指标数值">
+                                            <el-checkbox>展示</el-checkbox>
+                                        </el-form-item>
+                                        <el-form-item label="多指标堆叠">
+                                            <el-select placeholder="请选择">
+                                                <el-option :key="'KMP'" :label="'KMP'" :value="'KMP'"></el-option>
+                                                <el-option :key="'MP'" :label="'MP'" :value="'MP'"></el-option>
+                                                <el-option :key="'percent'" :label="'percent'" :value="'percent'"></el-option>
+                                            </el-select>
+                                        </el-form-item>
+                                    </el-form>
+
+                                    <div>备注1. axisSite(设置右轴key)：例如输入‘占比’， 即将占比的数据置于右轴上。</div>
+                                    <div>备注2. yAxisType(双y轴坐标类型)：y轴坐标类型，KMP单位为k(数据值为5000时，显示5k)，percent单位为%(数据为0.6时，显示60%)。</div>
+                                    <div>备注3. yAxisName(双y轴名)：y轴坐标展示的单位。</div>
+                                    <div>备注4. 指标数值展示：对于每一个指标的数值是否需要展示出来。</div>
+                                    <div>备注5. 多指标堆叠：展示数据时，对于选中的指标进行堆叠展示。</div>
+                                </el-col>
+                                <el-col v-if="'STACK_HISTOGRAM' === handleEditForm.chartType">
+                                    <el-form ref="handleEditForm.chartSettings" :rules="rules" :model="handleEditForm.chartSettings" label-width="20%">
+                                        <el-form-item label="axisSite(设置右轴key)">
+                                            <el-input></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="yAxisType(双y轴坐标类型)">
+                                            <el-col :span="1">
+                                                左轴
+                                            </el-col>
+                                            <el-col :span="10">
+                                                <el-select placeholder="请选择">
+                                                    <el-option :key="'KMP'" :label="'KMP'" :value="'KMP'"></el-option>
+                                                    <el-option :key="'MP'" :label="'MP'" :value="'MP'"></el-option>
+                                                    <el-option :key="'percent'" :label="'percent'" :value="'percent'"></el-option>
+                                                </el-select>
+                                            </el-col>
+                                            <el-col :span="1">
+                                                右轴
+                                            </el-col>
+                                            <el-col :span="10">
+                                                <el-select placeholder="请选择">
+                                                    <el-option :key="'KMP'" :label="'KMP'" :value="'KMP'"></el-option>
+                                                    <el-option :key="'MP'" :label="'MP'" :value="'MP'"></el-option>
+                                                    <el-option :key="'percent'" :label="'percent'" :value="'percent'"></el-option>
+                                                </el-select>
+                                            </el-col>
+                                        </el-form-item>
+                                        <el-form-item label="yAxisName(双y轴名)">
+                                            <el-col :span="1">
+                                                左轴
+                                            </el-col>
+                                            <el-col :span="10">
+                                                <el-input></el-input>
+                                            </el-col>
+                                            <el-col :span="1">
+                                                右轴
+                                            </el-col>
+                                            <el-col :span="10">
+                                                <el-input></el-input>
+                                            </el-col>
+                                        </el-form-item>
+                                        <el-form-item label="指标数值">
+                                            <el-checkbox>展示</el-checkbox>
+                                        </el-form-item>
+                                        <el-form-item label="堆叠柱状图">
+                                            <el-checkbox>展示</el-checkbox>
+                                        </el-form-item>
+                                    </el-form>
+                                    <div>备注1. axisSite(设置右轴key)：例如输入‘占比’， 即将占比的数据置于右轴上。</div>
+                                    <div>备注2. yAxisType(双y轴坐标类型)：y轴坐标类型，KMP单位为k(数据值为5000时，显示5k)，percent单位为%(数据为0.6时，显示60%)。</div>
+                                    <div>备注3. yAxisName(双y轴名)：y轴坐标展示的单位。</div>
+                                    <div>备注4. 指标数值展示：对于每一个指标的数值是否需要展示出来。</div>
+                                    <div>备注5. 堆叠柱状图展示：展示为堆叠柱状图。</div>
+                                </el-col>
+                                <el-col v-if="'TABLE' === handleEditForm.chartType">
+                                    <div>与现实生活一致：与现实生活的流程、逻辑保持一致，遵循用户习惯的语言和概念；</div>
+                                    <div>在界面中一致：所有的元素和结构需保持一致，比如：设计样式、图标和文本、元素的位置等。</div>
+                                </el-col>
+                                <el-col v-if="'PIE' === handleEditForm.chartType">
+                                    <el-form ref="handleEditForm.chartSettings" :rules="rules" :model="handleEditForm.chartSettings" label-width="20%">
+                                        <el-form-item label="数据类型">
+                                            <el-select placeholder="请选择">
+                                                <el-option :key="'KMP'" :label="'KMP'" :value="'KMP'"></el-option>
+                                                <el-option :key="'MP'" :label="'MP'" :value="'MP'"></el-option>
+                                                <el-option :key="'percent'" :label="'percent'" :value="'percent'"></el-option>
+                                            </el-select>
+                                        </el-form-item>
+                                        <el-form-item label="玫瑰图">
+                                            <el-checkbox>展示</el-checkbox>
+                                        </el-form-item>
+                                    </el-form>
+                                    <div>备注1. yAxisType(双y轴坐标类型)：y轴坐标类型，KMP单位为k(数据值为5000时，显示5k)，percent单位为%(数据为0.6时，显示60%)。</div>
+                                    <div>备注2. 玫瑰图展示：展示为玫瑰图。</div>
+                                </el-col>
+                            </el-collapse-item>
+                        </el-collapse>
                     </el-form-item>
                 </el-form>
                 <span slot="footer" class="dialog-footer">
@@ -122,9 +271,13 @@
 <script>
     import draggable from 'vuedraggable'
     import ElCol from "element-ui/packages/col/src/col";
+    import ElFormItem from "../../../../node_modules/element-ui/packages/form/src/form-item.vue";
+    import ElInput from "../../../../node_modules/element-ui/packages/input/src/input.vue";
     export default {
         name: 'DashboardForm',
         components : {
+            ElInput,
+            ElFormItem,
             ElCol,
             draggable
         },
@@ -243,13 +396,17 @@
 
                 dataSets: [],
                 chartTypes: [],
+                metrics: [],
 
                 handleEditForm : {
                     content: "content",
                     dataSet: '',
                     dataSets: [],
                     chartType: '',
-                    chartTypes: []
+                    chartTypes: [],
+                    chartSettings: {},
+                    selectedMetrics :[],
+                    metrics: []
                 },
 
                 reportss: [
@@ -260,13 +417,15 @@
                             name : "",
                             description: "",
                             dataSetId: 0,
+                            metrics: []
                         },
                         {
                             id: 2,
                             content: '开发图表组件5',
                             name : "",
                             description: "",
-                            dataSetId: 0
+                            dataSetId: 0,
+                            metrics: []
                         }
                     ],
 //                    [
@@ -298,7 +457,8 @@
                                     nameEn: "nameEn1"
                                 }
                             ],
-                            chartTypes : []
+                            chartTypes : [],
+                            metrics: []
                         },
                         {
                             dataSets : [
@@ -307,7 +467,9 @@
                                     nameEn: "nameEn5"
                                 }
                             ],
-                            chartTypes : []
+                            chartTypes : [],
+                            metrics: []
+
                         }
                     ],
                     [
@@ -318,7 +480,8 @@
                                     nameEn: "nameEn2"
                                 }
                             ],
-                            chartTypes : []
+                            chartTypes : [],
+                            metrics: []
                         }
                     ],
                     [
@@ -329,7 +492,8 @@
                                     nameEn: "nameEn3"
                                 }
                             ],
-                            chartTypes : []
+                            chartTypes : [],
+                            metrics: []
                         }
                     ]
                 ]
@@ -349,6 +513,24 @@
                     this.reportssInit.forEach(reportsInit => {
                         reportsInit.forEach(reportInit => {
                             reportInit.dataSets = this.dataSets
+                        })
+                    })
+                })
+            },
+
+            // 获取数据集下的指标列表
+            getDataSetMetrics(id) {
+                console.log(id)
+                let queryParams = {
+                    id : id
+                }
+                this.$api.REPORT_DATA_SET_API.get('GET_DATA_SET_METRICS', queryParams).then(res => {
+                    console.log(res.data.data)
+                    this.metrics = res.data.data
+                    this.handleEditForm.metrics = this.metrics
+                    this.reportssInit.forEach(reportsInit => {
+                        reportsInit.forEach(reportInit => {
+                            reportInit.metrics = this.metrics
                         })
                     })
                 })

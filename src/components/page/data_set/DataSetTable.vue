@@ -106,13 +106,6 @@
                 total : 0,
                 queryColumn: "",
                 queryCondition: [],
-                url: './vuetable.json',
-                cur_page: 1,
-                multipleSelection: [],
-                select_cate: '',
-                select_word: '',
-                del_list: [],
-                is_search: false,
                 editVisible: false,
                 delVisible: false,
                 backfillVisible: false,
@@ -162,8 +155,8 @@
             // 获取数据集的过滤字段
             getFilterFields() {
                 this.$api.REPORT_DATA_SET_API.get('GET_DATA_SET_FILTER_FIELDS').then(res => {
-                    console.log(res.data)
-                    this.dataSetFilterFields = res.data.data;
+                    console.log(res)
+                    this.dataSetFilterFields = res.data;
                 })
             },
 
@@ -184,15 +177,14 @@
                     queryCondition: this.queryCondition,
                 }
                 this.$api.REPORT_DATA_SET_API.get('DATA_SET', queryParams).then(res => {
-                    console.log(res.data)
-                    this.tableData = res.data.data.list
-                    this.total = res.data.data.total
+                    console.log(res)
+                    this.tableData = res.data.list
+                    this.total = res.data.total
                 })
             },
 
             // 编辑数据集
             editDataSet(id) {
-
             },
 
             // 获取数据集详情

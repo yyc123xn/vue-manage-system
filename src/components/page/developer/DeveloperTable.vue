@@ -126,8 +126,8 @@
             // 获取票据的过滤字段
             getFilterFields() {
                 this.$api.FINANCE_DEVELOPER_API.get('GET_DEVELOPER_FILTER_FIELDS').then(res => {
-                    console.log(res.data)
-                    this.developerFilterFields = res.data.data;
+                    console.log(res)
+                    this.developerFilterFields = res.data;
                 })
             },
 
@@ -149,8 +149,8 @@
                 }
                 this.$api.FINANCE_DEVELOPER_API.get('GET_DEVELOPERS' ,queryParams).then(res => {
                     console.log(res.data)
-                    this.tableData = res.data.data.list
-                    this.total = res.data.data.total
+                    this.tableData = res.data.list
+                    this.total = res.data.total
                 })
             },
 

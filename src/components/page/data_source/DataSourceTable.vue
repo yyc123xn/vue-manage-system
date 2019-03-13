@@ -196,7 +196,7 @@
             getFilterFields() {
                 this.$api.REPORT_DATA_SOURCE_API.get('GET_DATA_SOURCE_FILTER_FIELDS').then(res => {
                     console.log(res.data)
-                    this.dataSourceFilterFields = res.data.data;
+                    this.dataSourceFilterFields = res.data;
                 })
             },
 
@@ -217,9 +217,9 @@
                     queryCondition: this.queryCondition,
                 }
                 this.$api.REPORT_DATA_SOURCE_API.get('GET_DATA_SOURCES' ,queryParams).then(res => {
-                    console.log(res.data)
-                    this.tableData = res.data.data.list
-                    this.total = res.data.data.total
+                    console.log(res)
+                    this.tableData = res.data.list
+                    this.total = res.data.total
                 })
             },
 
@@ -229,8 +229,8 @@
                     id : id
                 }
                 await this.$api.REPORT_DATA_SOURCE_API.get('GET_DATA_SOURCE_INFO', queryParams).then(res => {
-                    console.log(res.data)
-                    this.handleInfoForm =  res.data.data
+                    console.log(res)
+                    this.handleInfoForm =  res.data
                 })
             },
 
@@ -240,8 +240,8 @@
                     database : database
                 }
                 await this.$api.REPORT_DATA_SOURCE_API.get('GET_DATABASE_TABLES', queryParams).then(res => {
-                    console.log(res.data)
-                    this.tables = res.data.data
+                    console.log(res)
+                    this.tables = res.data
                 })
             },
 

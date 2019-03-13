@@ -211,19 +211,19 @@
 
             getPrivileges() {
                 this.$api.FINANCE_DEVELOPER_API.get('GET_PRIVILEGES').then(res => {
-                    this.dataSourceInit.privileges = res.data.data
+                    this.dataSourceInit.privileges = res.data
                 })
             },
 
             getAcademicDegrees() {
                 this.$api.FINANCE_DEVELOPER_API.get('GET_ACADEMIC_DEGREES').then(res => {
-                    this.dataSourceInit.academicDegrees = res.data.data
+                    this.dataSourceInit.academicDegrees = res.data
                 })
             },
 
             getDataSourceTypes() {
                 this.$api.REPORT_DATA_SOURCE_API.get('GET_DATA_SOURCE_TYPES').then(res => {
-                    this.dataSourceInit.dataSourceTypes = res.data.data;
+                    this.dataSourceInit.dataSourceTypes = res.data;
                     this.dataSourceInit.dataSourceType = this.dataSourceInit.dataSourceTypes[0].nameEn;
                 })
             },

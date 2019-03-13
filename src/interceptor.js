@@ -37,7 +37,7 @@ service.interceptors.response.use(
                 query: {redirect: router.currentRoute.fullPath} //从哪个页面跳转
             })
         }
-        return response;
+        return response.data;
     },
     error => {
         console.log("拦截器-响应-error")

@@ -7,6 +7,13 @@ const reportDashboardApi = {
     get(urlName, getParams) {
         let url = this[urlName]
         return axios.get(url, {params : getParams})
+    },
+
+    ADD_DASHBOARD: '/report/dashboard',
+
+    post(urlName, postParams) {
+        let url = this[urlName]
+        return axios.post(url, postParams)
     }
 }
 

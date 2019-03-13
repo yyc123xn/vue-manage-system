@@ -132,8 +132,7 @@
             // 获取票据的过滤字段
             getFilterFields() {
                 this.$api.REPORT_DASHBOARD_API.get('GET_DASHBOARD_FILTER_FIELDS').then(res => {
-                    console.log(res.data)
-                    this.dashboardFilterFields = res.data.data;
+                    this.dashboardFilterFields = res.data;
                 })
             },
 

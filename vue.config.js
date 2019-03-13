@@ -82,6 +82,7 @@ module.exports = {
                     '^/finance/fixed_assets/fixed_assets_filter_fields': ''
                 }
             },
+
             '/report/dashboard/dashboard_filter_fields': {
                 target: REPORT_URL_PREFIX + '/report/dashboard/dashboard_filter_fields',
                 changeOrigin: true,
@@ -89,6 +90,15 @@ module.exports = {
                     '^/report/dashboard/dashboard_filter_fields': ''
                 }
             },
+
+            '/report/dashboard': {
+                target: REPORT_URL_PREFIX + '/report/dashboard',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/report/dashboard': ''
+                }
+            },
+
             '/report/data_set/data_set_filter_fields': {
                 target: REPORT_URL_PREFIX + '/report/data_set/data_set_filter_fields',
                 changeOrigin: true,
@@ -213,6 +223,14 @@ module.exports = {
                 changeOrigin: true,
                 pathRewrite: {
                     '^/report/report/chart_types': ''
+                }
+            },
+
+            '/report/report/filter_types': {
+                target: REPORT_URL_PREFIX + '/report/report/filter_types',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/report/report/filter_types': ''
                 }
             }
         }

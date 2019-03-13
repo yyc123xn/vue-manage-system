@@ -15,10 +15,10 @@
                 <el-step title="步骤 3" ></el-step>
             </el-steps>
 
-            <!--步骤一-->
+            <!--步骤1-->
             <el-col class="form-box" v-if="1 === index">
                 <el-col  style="margin-top: 25px; text-align: center; margin-bottom: 25px; font-weight : 700" >数据看板基本信息</el-col>
-                <el-form ref="dashboard" :rules="rules" :model="dashboard" label-width="6%">
+                <el-form ref="dashboard" :rules="rules" :model="dashboard" label-width="9%">
                     <el-form-item label="数据看板名" prop="name">
                         <el-input v-model="dashboard.name"></el-input>
                     </el-form-item>
@@ -26,9 +26,9 @@
                         <el-input type="textarea" rows="5" v-model="dashboard.description"></el-input>
                     </el-form-item>
                     <el-form-item label="权限" prop="privilege">
-                        <el-select v-model="dashboardInit.privilege" placeholder="请选择">
-                            <template v-for="(privilege, index) in dashboardInit.privileges">
-                                <el-option :key="privilege.nameEn" :label="privilege.nameCn" :value="privilege.nameCn"></el-option>
+                        <el-select v-model="dashboard.privilege" placeholder="请选择">
+                            <template v-for="(privilege, index) in dashboardConstant.privileges">
+                                <el-option :key="privilege.nameEn" :label="privilege.nameCn" :value="privilege.nameEn"></el-option>
                             </template>
                         </el-select>
                     </el-form-item>
@@ -39,57 +39,57 @@
             <el-col v-if="2 === index">
                 <el-col  style="margin-top: 25px; text-align: center; margin-bottom: 25px; font-weight : 700;" >数据看板报表制作</el-col>
                 <el-row  :gutter="30">
-                    <el-col :span="24 / reportss.length" v-for="(reports, index1) in reportss" :key="index1">
+                    <el-col :span="24 / dashboard.reportss.length" v-for="(reports, index1) in dashboard.reportss" :key="index1">
                         <el-col class="drag-box-item">
                             <el-col class="item-title">第{{index1 + 1}}列</el-col>
-                            <draggable v-model="reportss[index1]" @remove="removeHandle" :options="dragOptions">
+                            <draggable v-model="dashboard.reportss[index1]" @remove="removeHandle" :options="dragOptions">
                                 <transition-group tag="div" :id="'第' + (index1 + 1) + '列'" class="item-ul">
-                                    <div v-for="(report, index2) in reportss[index1]" class="drag-list" :key="index1 + index2 + ''">
-                                        {{report.content}}
-                                        <el-button type="text" icon="el-icon-edit" @click="handleEdit(report, reportssInit[index1][index2])">编辑</el-button>
-                                        <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(index1, index2)">删除</el-button>
+                                    <div v-for="(report, index2) in dashboard.reportss[index1]" class="drag-list" :key="index1 + index2 + ''">
+                                        {{report.name}}
+                                        <el-button type="text" icon="el-icon-edit" @click="handleEdit(index1, index2)">编辑</el-button>
+                                        <el-button type="text" icon="el-icon-delete" class="red" @click="deleteReportRow(index1, index2)">删除</el-button>
                                     </div>
                                 </transition-group>
                             </draggable>
                             <el-col align="center">
-                                <el-button type="primary" icon="el-icon-lx-add" @click="addRow(index1)" style="margin-bottom: 3%; margin-top: 3%">添加一行</el-button>
+                                <el-button type="primary" icon="el-icon-lx-add" @click="addReportRow(index1)" style="margin-bottom: 3%; margin-top: 3%">添加一行</el-button>
                             </el-col>
                         </el-col>
                     </el-col>
                 </el-row>
                 <el-col align="center">
-                    <el-button type="primary" icon="el-icon-lx-add" @click="addColumn" style="margin-top: 2%">添加一列</el-button>
-                    <el-button type="danger" icon="el-icon-lx-move" @click="deleteColumn" style="margin-top: 2%">删除一列</el-button>
+                    <el-button type="primary" icon="el-icon-lx-add" @click="addReportColumn" style="margin-top: 2%">添加一列</el-button>
+                    <el-button type="danger" icon="el-icon-lx-move" @click="deleteReportColumn" style="margin-top: 2%">删除一列</el-button>
                 </el-col>
             </el-col>
 
             <!-- 编辑报表弹出框 -->
             <el-dialog title="编辑报表" :visible.sync="editVisible" width="70%">
-                <el-form ref="form" :model="handleEditForm" label-width="10%">
-                    <el-form-item label="报表名称">
-                        <el-input v-model="handleEditForm.content"></el-input>
+                <el-form ref="form" :rules="rules.reportRules" :model="handleEditForm" label-width="10%">
+                    <el-form-item label="报表名称" prop="name">
+                        <el-input v-model="handleEditForm.name"></el-input>
                     </el-form-item>
-                    <el-form-item label="报表描述">
-                        <el-input type="textarea" rows="5" v-model="handleEditForm.content"></el-input>
+                    <el-form-item label="报表描述" prop="description">
+                        <el-input type="textarea" rows="5" v-model="handleEditForm.description"></el-input>
                     </el-form-item>
-                    <el-form-item label="数据集列表">
-                        <el-select v-model="handleEditForm.dataSet" placeholder="请选择" filterable @change="getDataSetMetrics" @click="getDataSetMetrics">
-                            <template v-for="(dataSet, index) in handleEditForm.dataSets">
-                                <el-option :key="dataSet.name" :label="dataSet.name" :value="dataSet.id"></el-option>
+                    <el-form-item label="数据集列表" prop="dataSet">
+                        <el-select v-model="handleEditForm.dataSetId" placeholder="请选择" filterable @change="getDataSetMetrics" @click="getDataSetMetrics">
+                            <template v-for="(dataSet, index) in dashboardConstant.reportConstant.dataSets">
+                                <el-option :key="dataSet.id" :label="dataSet.name" :value="dataSet.id"></el-option>
                             </template>
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="报表类型">
+                    <el-form-item label="数据集指标" prop="dataSetFieldIds">
+                        <el-select v-model="handleEditForm.dataSetFieldIds" placeholder="请选择" filterable multiple>
+                            <template v-for="(metric, index) in dashboardHelper.reportssHelper[handleEditForm.index1][handleEditForm.index2].metrics">
+                                <el-option :key="metric.id" :label="metric.showName" :value="metric.id"></el-option>
+                            </template>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="报表类型" prop="chartType">
                         <el-select v-model="handleEditForm.chartType" placeholder="请选择">
-                            <template v-for="(chartType, index) in handleEditForm.chartTypes">
+                            <template v-for="(chartType, index) in dashboardConstant.reportConstant.chartTypes">
                                 <el-option :key="chartType.nameEn" :label="chartType.nameCn" :value="chartType.nameEn"></el-option>
-                            </template>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="数据集指标">
-                        <el-select v-model="handleEditForm.selectedMetrics" placeholder="请选择" filterable multiple>
-                            <template v-for="(metric, index) in handleEditForm.metrics">
-                                <el-option :key="metric.showName" :label="metric.showName" :value="metric.id"></el-option>
                             </template>
                         </el-select>
                     </el-form-item>
@@ -102,14 +102,18 @@
                                 <el-col v-if="'LINE' === handleEditForm.chartType">
                                     <el-form ref="handleEditForm.chartSettings" :rules="rules" :model="handleEditForm.chartSettings" label-width="20%">
                                         <el-form-item label="axisSite(设置右轴key)">
-                                            <el-input></el-input>
+                                            <el-select v-model="handleEditForm.config.chartSettings.axisSite.right" placeholder="请选择" multiple filterable>
+                                                <template v-for="(metric, index) in dashboardHelper.reportssHelper[handleEditForm.index1][handleEditForm.index2].metrics">
+                                                    <el-option :key="metric.showName" :label="metric.showName" :value="metric.id"></el-option>
+                                                </template>
+                                            </el-select>
                                         </el-form-item>
                                         <el-form-item label="yAxisType(双y轴坐标类型)">
                                             <el-col :span="1">
                                                 左轴
                                             </el-col>
                                             <el-col :span="10">
-                                                <el-select placeholder="请选择">
+                                                <el-select v-model="handleEditForm.config.chartSettings.yAxisType[0]" placeholder="请选择">
                                                     <el-option :key="'KMP'" :label="'KMP'" :value="'KMP'"></el-option>
                                                     <el-option :key="'MP'" :label="'MP'" :value="'MP'"></el-option>
                                                     <el-option :key="'percent'" :label="'percent'" :value="'percent'"></el-option>
@@ -119,7 +123,7 @@
                                                 右轴
                                             </el-col>
                                             <el-col :span="10">
-                                                <el-select placeholder="请选择">
+                                                <el-select v-model="handleEditForm.config.chartSettings.yAxisType[1]" placeholder="请选择">
                                                     <el-option :key="'KMP'" :label="'KMP'" :value="'KMP'"></el-option>
                                                     <el-option :key="'MP'" :label="'MP'" :value="'MP'"></el-option>
                                                     <el-option :key="'percent'" :label="'percent'" :value="'percent'"></el-option>
@@ -131,24 +135,24 @@
                                                 左轴
                                             </el-col>
                                             <el-col :span="10">
-                                                <el-input></el-input>
+                                                <el-input v-model="handleEditForm.config.chartSettings.yAxisName[0]"></el-input>
                                             </el-col>
                                             <el-col :span="1">
                                                 右轴
                                             </el-col>
                                             <el-col :span="10">
-                                                <el-input></el-input>
+                                                <el-input v-model="handleEditForm.config.chartSettings.yAxisName[1]"></el-input>
                                             </el-col>
                                         </el-form-item>
-                                        <el-form-item label="指标数值">
-                                            <el-checkbox>展示</el-checkbox>
-                                        </el-form-item>
                                         <el-form-item label="多指标堆叠">
-                                            <el-select placeholder="请选择">
-                                                <el-option :key="'KMP'" :label="'KMP'" :value="'KMP'"></el-option>
-                                                <el-option :key="'MP'" :label="'MP'" :value="'MP'"></el-option>
-                                                <el-option :key="'percent'" :label="'percent'" :value="'percent'"></el-option>
+                                            <el-select v-model="handleEditForm.config.chartSettings.stack.key" placeholder="请选择" multiple>
+                                                <template v-for="(metric, index) in dashboardHelper.reportssHelper[handleEditForm.index1][handleEditForm.index2].metrics">
+                                                    <el-option :key="metric.showName" :label="metric.showName" :value="metric.id"></el-option>
+                                                </template>
                                             </el-select>
+                                        </el-form-item>
+                                        <el-form-item label="指标数值">
+                                            <el-checkbox v-model="handleEditForm.config.extend.lineSeries.label.normal.show">展示</el-checkbox>
                                         </el-form-item>
                                     </el-form>
 
@@ -158,17 +162,21 @@
                                     <div>备注4. 指标数值展示：对于每一个指标的数值是否需要展示出来。</div>
                                     <div>备注5. 多指标堆叠：展示数据时，对于选中的指标进行堆叠展示。</div>
                                 </el-col>
-                                <el-col v-if="'STACK_HISTOGRAM' === handleEditForm.chartType">
+                                <el-col v-if="'HISTOGRAM' === handleEditForm.chartType">
                                     <el-form ref="handleEditForm.chartSettings" :rules="rules" :model="handleEditForm.chartSettings" label-width="20%">
                                         <el-form-item label="axisSite(设置右轴key)">
-                                            <el-input></el-input>
+                                            <el-select v-model="handleEditForm.config.chartSettings.axisSite.right" placeholder="请选择" multiple filterable>
+                                                <template v-for="(metric, index) in dashboardHelper.reportssHelper[handleEditForm.index1][handleEditForm.index2].metrics">
+                                                    <el-option :key="metric.showName" :label="metric.showName" :value="metric.id"></el-option>
+                                                </template>
+                                            </el-select>
                                         </el-form-item>
                                         <el-form-item label="yAxisType(双y轴坐标类型)">
                                             <el-col :span="1">
                                                 左轴
                                             </el-col>
                                             <el-col :span="10">
-                                                <el-select placeholder="请选择">
+                                                <el-select v-model="handleEditForm.config.chartSettings.yAxisType[0]" placeholder="请选择">
                                                     <el-option :key="'KMP'" :label="'KMP'" :value="'KMP'"></el-option>
                                                     <el-option :key="'MP'" :label="'MP'" :value="'MP'"></el-option>
                                                     <el-option :key="'percent'" :label="'percent'" :value="'percent'"></el-option>
@@ -178,7 +186,7 @@
                                                 右轴
                                             </el-col>
                                             <el-col :span="10">
-                                                <el-select placeholder="请选择">
+                                                <el-select v-model="handleEditForm.config.chartSettings.yAxisType[1]" placeholder="请选择">
                                                     <el-option :key="'KMP'" :label="'KMP'" :value="'KMP'"></el-option>
                                                     <el-option :key="'MP'" :label="'MP'" :value="'MP'"></el-option>
                                                     <el-option :key="'percent'" :label="'percent'" :value="'percent'"></el-option>
@@ -190,20 +198,24 @@
                                                 左轴
                                             </el-col>
                                             <el-col :span="10">
-                                                <el-input></el-input>
+                                                <el-input v-model="handleEditForm.config.chartSettings.yAxisName[0]"></el-input>
                                             </el-col>
                                             <el-col :span="1">
                                                 右轴
                                             </el-col>
                                             <el-col :span="10">
-                                                <el-input></el-input>
+                                                <el-input v-model="handleEditForm.config.chartSettings.yAxisName[1]"></el-input>
                                             </el-col>
                                         </el-form-item>
-                                        <el-form-item label="指标数值">
-                                            <el-checkbox>展示</el-checkbox>
-                                        </el-form-item>
                                         <el-form-item label="堆叠柱状图">
-                                            <el-checkbox>展示</el-checkbox>
+                                            <el-select v-model="handleEditForm.config.chartSettings.stack.key" placeholder="请选择" multiple>
+                                                <template v-for="(metric, index) in dashboardHelper.reportssHelper[handleEditForm.index1][handleEditForm.index2].metrics">
+                                                    <el-option :key="metric.showName" :label="metric.showName" :value="metric.id"></el-option>
+                                                </template>
+                                            </el-select>
+                                        </el-form-item>
+                                        <el-form-item label="指标数值">
+                                            <el-checkbox v-model="handleEditForm.config.extend.histogramSeries.label.show">展示</el-checkbox>
                                         </el-form-item>
                                     </el-form>
                                     <div>备注1. axisSite(设置右轴key)：例如输入‘占比’， 即将占比的数据置于右轴上。</div>
@@ -219,14 +231,14 @@
                                 <el-col v-if="'PIE' === handleEditForm.chartType">
                                     <el-form ref="handleEditForm.chartSettings" :rules="rules" :model="handleEditForm.chartSettings" label-width="20%">
                                         <el-form-item label="数据类型">
-                                            <el-select placeholder="请选择">
+                                            <el-select v-model="handleEditForm.config.chartSettings.dataType" placeholder="请选择">
                                                 <el-option :key="'KMP'" :label="'KMP'" :value="'KMP'"></el-option>
                                                 <el-option :key="'MP'" :label="'MP'" :value="'MP'"></el-option>
                                                 <el-option :key="'percent'" :label="'percent'" :value="'percent'"></el-option>
                                             </el-select>
                                         </el-form-item>
                                         <el-form-item label="玫瑰图">
-                                            <el-checkbox>展示</el-checkbox>
+                                            <el-checkbox v-model="handleEditForm.config.chartSettings.roseType">展示</el-checkbox>
                                         </el-form-item>
                                     </el-form>
                                     <div>备注1. yAxisType(双y轴坐标类型)：y轴坐标类型，KMP单位为k(数据值为5000时，显示5k)，percent单位为%(数据为0.6时，显示60%)。</div>
@@ -253,7 +265,39 @@
 
             <!--步骤3-->
             <el-col v-if="3 === index">
-                <el-col style="margin-top: 25px; text-align: center; margin-bottom: 25px; font-weight : 700;" >数据看板过滤选项设置</el-col>
+                <el-col style="margin-top: 25px; text-align: center; margin-bottom: 25px; font-weight : 700;" >数据看板过滤器设置</el-col>
+                <el-form>
+                    <el-form-item
+                            v-for="(reportFilter, index) in dashboard.reportFilters"
+                            :label="'过滤器' + (index + 1)"
+                            :key="reportFilter.id"
+                            :prop="'reportFilters.' + index + '.value'">
+                        <el-col class="line" :span="2">名称</el-col>
+                        <el-col :span="3"><el-input v-model="reportFilter.name"></el-input></el-col>
+                        <el-col class="line" :span="2">过滤器类型</el-col>
+                        <el-col :span="3">
+                            <el-select v-model="reportFilter.filterType" placeholder="请选择">
+                                <template v-for="(filterType, index) in dashboardConstant.reportFilterConstant.filterTypes">
+                                    <el-option :key="filterType.nameEn" :label="filterType.nameCn" :value="filterType.nameEn"></el-option>
+                                </template>
+                            </el-select>
+                        </el-col>
+                        <el-col class="line" :span="2">作用报表</el-col>
+                        <el-col :span="3">
+                            <el-select v-model="reportFilter.reportIds" placeholder="请选择" multiple>
+                                <template v-for="(report, index) in dashboardHelper.reportFilterHelper" :value="filterType.nameEn">
+                                    <el-option :key="'' + report.name + report.chartType" :label="report.name" :value="report.id"></el-option>
+                                </template>
+                            </el-select>
+                        </el-col>
+                        <el-col class="line" :span="2">操作</el-col>
+                        <el-col :span="2"><el-button @click.prevent="removeDataSetField(dataSetField)" type="danger">删除</el-button></el-col>
+                    </el-form-item>
+                </el-form>
+                <el-col align="center">
+                    <el-button type="primary" icon="el-icon-lx-add" @click="addReportFilter" style="margin-top: 2%">添加过滤器</el-button>
+                    <el-button type="primary" icon="el-icon-lx-add" @click="addDashboard" style="margin-top: 2%">提交</el-button>
+                </el-col>
             </el-col>
 
             <el-col align="center" style="margin-top: 30px">
@@ -270,74 +314,94 @@
 
 <script>
     import draggable from 'vuedraggable'
-    import ElCol from "element-ui/packages/col/src/col";
-    import ElFormItem from "../../../../node_modules/element-ui/packages/form/src/form-item.vue";
-    import ElInput from "../../../../node_modules/element-ui/packages/input/src/input.vue";
     export default {
         name: 'DashboardForm',
         components : {
-            ElInput,
-            ElFormItem,
-            ElCol,
             draggable
         },
         data: function(){
             return {
+                dashboardConstant: {
+                    privileges: [],
+                    reportFilterConstant: {
+                        filterTypes: []
+                    },
+                    // 报表中需要的枚举值
+                    reportConstant: {
+                        dataSets: [],
+                        chartTypes: [],
+                    },
+                },
+
+                dashboardHelper: {
+
+                    reportFilterHelper: [],
+                    // 用户选择的不同数据集的指标list
+                    reportssHelper: [
+                        [
+                            {
+                                metrics: []
+                            }
+                        ]
+                    ]
+                },
                 dashboard: {
                     id: 0,
                     name: '',
                     description: '',
-                    sex: 0,
-                    email: '',
                     privilege: '',
-                    status: 1,
-                    password: '',
-                    group: '',
-                    academicDegree: '',
-                    baseWages: 0,
-                    dutyWages: 0,
-                    housingWages: 0,
-                    pension: 0,
-                    phoneNumber: '',
-                    createDeveloper: '',
-                    updateDeveloper: ''
-                },
-                dashboardInit: {
-                    sex: "男",
-                    privilege: '',
-                    privileges: [
+                    reportFilters: [
                         {
-                            nameEn: "privilege1",
-                            nameCn: "权限1"
-                        },
-                        {
-                            nameEn: "privilege2",
-                            nameCn: "权限2"
+                            id: 0,
+                            name: "",
+                            filterType: '',
+                            reportIds: []
                         }
                     ],
-                    group: [],
-                    groups: [
-                        {
-                            value: "group1",
-                            label: "部门1"
-                        },
-                        {
-                            value: "group2",
-                            label: "部门2"
-                        }
-                    ],
-                    academicDegree: '',
-                    academicDegrees: [
-                        {
-                            nameEn: "academicDegree1",
-                            nameCn: "学历1"
-                        },
-                        {
-                            nameEn: "academicDegree2",
-                            nameCn: "学历2"
-                        }
+                    reportss: [
+                        [
+                            {
+                                id: 1,
+                                name : "新报表",
+                                description: "",
+                                dataSetId: "",
+                                dataSetFieldIds: [],
+                                chartType: '',
+                                config: {
+                                    chartSettings: {
+                                        axisSite: { right: [] },
+                                        yAxisType: [],
+                                        yAxisName: [],
+                                        stack: { 'key': [] },
+                                        area: false,
+                                        // 饼图
+                                        roseType: 'radius',
+                                        dataType: 'percent'
+                                    },
+                                    extend: {
+                                        // 折线图显示指标数据
+                                        lineSeries: {
+                                            label: {
+                                                normal: {
+                                                    show: false
+                                                }
+                                            }
+                                        },
+
+                                        // 柱状图显示指标数据
+                                        histogramSeries: {
+                                            label: {
+                                                show: false,
+                                                position: "top"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        ]
                     ]
                 },
+
                 rules: {
                     name: [
                         {required: true, message: '请输入数据看板名', trigger: 'blur'}
@@ -345,44 +409,37 @@
                     description: [
                         {required: true, message: '请输入数据看板描述', trigger: 'blur'}
                     ],
-                    sex: [
-                        {required: true, message: '请输入中文名', trigger: 'blur'}
-                    ],
-                    email: [
-                        {required: true, message: '请输入邮箱地址', trigger: 'blur'},
-                        {type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change']}
-                    ],
-                    phoneNumber: [
-                        {required: true, message: '请输入电话号码', trigger: 'blur'},
-                        {validator: this.$validator.phoneNumber, trigger: 'blur'}
-                    ],
                     privilege: [
                         {required: true, message: '请选择员工权限', trigger: 'blur'},
                     ],
-                    group: [
-                        {required: true, message: '请选择员工部门', trigger: 'blur'},
-                    ],
-                    academicDegree: [
-                        {required: true, message: '请输入员工学历', trigger: 'blur'},
-                    ],
-                    region: [
-                        {required: true, message: '请选择活动区域', trigger: 'change'}
-                    ],
-                    date1: [
-                        {type: 'date', required: true, message: '请选择日期', trigger: 'change'}
-                    ],
-                    date2: [
-                        {type: 'date', required: true, message: '请选择时间', trigger: 'change'}
-                    ],
-                    type: [
-                        {type: 'array', required: true, message: '请至少选择一个活动性质', trigger: 'change'}
-                    ],
-                    resource: [
-                        {required: true, message: '请选择活动资源', trigger: 'change'}
-                    ],
-                    desc: [
-                        {required: true, message: '请填写活动形式', trigger: 'blur'}
-                    ]
+                    reportRules: {
+                        name: [
+                            {required: true, message: '请输入报表名', trigger: 'blur'}
+                        ],
+                        description: [
+                            {required: true, message: '请输入报表描述', trigger: 'blur'}
+                        ],
+                        dataSet: [
+                            {required: true, message: '请输入报表名', trigger: 'blur'}
+                        ],
+                        chartType: [
+                            {required: true, message: '请输入报表描述', trigger: 'blur'}
+                        ],
+                        dataSetFieldIds: [
+                            {required: true, message: '请输入报表描述', trigger: 'blur'}
+                        ]
+                    },
+                    reportFilterRules: {
+                        name: [
+                            {required: true, message: '请输入过滤器名', trigger: 'blur'}
+                        ],
+                        filterType: [
+                            {required: true, message: '请选择过滤器类型', trigger: 'blur'}
+                        ],
+                        reportIds: [
+                            {required: true, message: '请选择过滤器需要作用的报表', trigger: 'blur'}
+                        ]
+                    }
                 },
                 dragOptions: {
                     animation: 120,
@@ -394,113 +451,183 @@
                 editVisible: false,
                 deleteVisible: false,
 
-                dataSets: [],
-                chartTypes: [],
-                metrics: [],
-
                 handleEditForm : {
-                    content: "content",
-                    dataSet: '',
+                    index1: 0,
+                    index2: 0,
+                    name: "",
+                    dataSetId: "",
                     dataSets: [],
                     chartType: '',
                     chartTypes: [],
-                    chartSettings: {},
-                    selectedMetrics :[],
+                    config: {
+                        chartSettings: {
+                            axisSite: { right: [] },
+                            yAxisType: [],
+                            yAxisName: [],
+                            stack: { 'key': [] },
+                            area: false,
+                            // 饼图
+                            roseType: 'radius',
+                            dataType: 'percent'
+                        },
+                        extend: {
+                            // 折线图显示指标数据
+                            lineSeries: {
+                                label: {
+                                    normal: {
+                                        show: false
+                                    }
+                                }
+                            },
+
+                            // 柱状图显示指标数据
+                            histogramSeries: {
+                                label: {
+                                    show: false,
+                                    position: "top"
+                                }
+                            }
+                        }
+                    },
                     metrics: []
                 },
-
-                reportss: [
-                    [
-                        {
-                            id: 1,
-                            content: '开发图表组件1',
-                            name : "",
-                            description: "",
-                            dataSetId: 0,
-                            metrics: []
-                        },
-                        {
-                            id: 2,
-                            content: '开发图表组件5',
-                            name : "",
-                            description: "",
-                            dataSetId: 0,
-                            metrics: []
-                        }
-                    ],
-//                    [
-//                        {
-//                            id: 1,
-//                            content: '开发图表组件2',
-//                            name : "",
-//                            description: "",
-//                            dataSetId: 0
-//                        }
-//                    ],
-//                    [
-//                        {
-//                            id: 3,
-//                            content: '开发图表组件3',
-//                            name : "",
-//                            description: "",
-//                            dataSetId: 0
-//                        }
-//                    ]
-                ],
-
-                reportssInit : [
-                    [
-                        {
-                            dataSets : [
-                                {
-                                    nameCn: "nameCn1",
-                                    nameEn: "nameEn1"
-                                }
-                            ],
-                            chartTypes : [],
-                            metrics: []
-                        },
-                        {
-                            dataSets : [
-                                {
-                                    nameCn: "nameCn5",
-                                    nameEn: "nameEn5"
-                                }
-                            ],
-                            chartTypes : [],
-                            metrics: []
-
-                        }
-                    ],
-                    [
-                        {
-                            dataSets : [
-                                {
-                                    nameCn: "nameCn2",
-                                    nameEn: "nameEn2"
-                                }
-                            ],
-                            chartTypes : [],
-                            metrics: []
-                        }
-                    ],
-                    [
-                        {
-                            dataSets : [
-                                {
-                                    nameCn: "nameCn3",
-                                    nameEn: "nameEn3"
-                                }
-                            ],
-                            chartTypes : [],
-                            metrics: []
-                        }
-                    ]
-                ]
-
             }
         },
         methods: {
+
+            // 获取数据集下的指标列表
+            getDataSetMetrics(id) {
+                this.handleEditForm.dataSetFieldIds = []
+                let queryParams = {
+                    id : id
+                }
+                this.$api.REPORT_DATA_SET_API.get('GET_DATA_SET_METRICS', queryParams).then(res => {
+                    this.handleEditForm.metrics = res.data
+                    this.dashboardHelper.reportssHelper[this.handleEditForm.index1][this.handleEditForm.index2].metrics = this.handleEditForm.metrics
+                })
+            },
+
+            // step2-报表编辑
+            handleEdit(index1, index2) {
+                this.handleEditForm = this.dashboard.reportss[index1][index2]
+                this.editVisible = true
+                this.handleEditForm.dataSets = this.dashboardConstant.reportConstant.dataSets
+                this.handleEditForm.chartTypes = this.dashboardConstant.reportConstant.chartTypes
+                this.handleEditForm.metrics = this.dashboardHelper.reportssHelper[index1][index2].metrics
+                this.handleEditForm.index1 = index1
+                this.handleEditForm.index2 = index2
+            },
+
+            // 添加一行
+            addReportRow(index1) {
+                let report = {
+                    id: 0,
+                    name : "新报表",
+                    description: "",
+                    dataSetId: "",
+                    config: {
+                        chartSettings: {
+                            // 折线图和柱状图
+                            axisSite: { right: [] },
+                            yAxisType: [],
+                            yAxisName: [],
+                            stack: { 'key': [] },
+                            area: false,
+                            // 饼图
+                            roseType: 'radius',
+                            dataType: 'percent'
+                        },
+                        extend: {
+                            // 折线图显示指标数据
+                            lineSeries: {
+                                label: {
+                                    normal: {
+                                        show: false
+                                    }
+                                }
+                            },
+
+                            // 柱状图显示指标数据
+                            histogramSeries: {
+                                label: {
+                                    show: false,
+                                    position: "top"
+                                }
+                            }
+                        }
+                    }
+                }
+                let reportInit = {
+                    metrics : []
+                }
+                this.dashboard.reportss[index1].push(report)
+                this.dashboardHelper.reportssHelper[index1].push(reportInit)
+            },
+
+            // 添加一列
+            addReportColumn() {
+                let reports = []
+                let reportsInit = []
+                this.dashboard.reportss.push(reports)
+                this.dashboardHelper.reportssHelper.push(reportsInit)
+            },
+
+            // 删除一列
+            deleteReportColumn() {
+                this.dashboard.reportss.pop()
+                this.dashboardHelper.reportssHelper.pop()
+            },
+
+            // step2-报表删除
+            deleteReportRow(index1, index2) {
+                this.deleteVisible = true
+                this.dashboard.reportss[index1].splice(index2, 1)
+                this.dashboardHelper.reportssHelper[index1].splice(index2, 1)
+            },
+
+            // step3-添加报表过滤选项
+            addReportFilter() {
+                this.dashboard.reportFilters.push({
+                    id: 0,
+                    name: "",
+                    filterType: '',
+                    reportIds: []
+                })
+            },
+
+            removeHandle(event){
+                this.$message.success(`从 ${event.from.id} 移动到 ${event.to.id} `);
+            },
+
+            // 前一页
+            previousPage() {
+                if (2 === this.index || 3 === this.index) {
+                    this.index--;
+                }
+            },
+
+            // 后一页
+            nextPage() {
+                if (1 === this.index || 2 === this.index) {
+                    this.index++;
+                }
+                if (3 === this.index) {
+                    this.dashboardHelper.reportFilterHelper = []
+                    this.dashboard.reportss.forEach(reports => {
+                        reports.forEach(report => {
+                            this.dashboardHelper.reportFilterHelper.push(report)
+                        })
+                    })
+                }
+            },
+
+            addDashboard() {
+                console.log(this.dashboard)
+                this.$api.REPORT_DASHBOARD_API.post('ADD_DASHBOARD', this.dashboard).then(res => {
+                    this.$message.success("成功添加数据看板")
+                    this.$router.replace('/dashboard_table')
+                })
+            },
 
             // 获取数据集列表
             getDataSets() {
@@ -509,163 +636,39 @@
                     pageSize: 10
                 }
                 this.$api.REPORT_DATA_SET_API.get('DATA_SET', queryParams).then(res => {
-                    this.dataSets = res.data.data.list
-                    this.reportssInit.forEach(reportsInit => {
-                        reportsInit.forEach(reportInit => {
-                            reportInit.dataSets = this.dataSets
-                        })
-                    })
-                })
-            },
-
-            // 获取数据集下的指标列表
-            getDataSetMetrics(id) {
-                console.log(id)
-                let queryParams = {
-                    id : id
-                }
-                this.$api.REPORT_DATA_SET_API.get('GET_DATA_SET_METRICS', queryParams).then(res => {
-                    console.log(res.data.data)
-                    this.metrics = res.data.data
-                    this.handleEditForm.metrics = this.metrics
-                    this.reportssInit.forEach(reportsInit => {
-                        reportsInit.forEach(reportInit => {
-                            reportInit.metrics = this.metrics
-                        })
-                    })
+                    this.dashboardConstant.reportConstant.dataSets = res.data.list
                 })
             },
 
             // 获取报表类型chartTypes
             getChartTypes() {
                 this.$api.REPORT_REPORT_API.get('GET_CHART_TYPES').then(res => {
-                    this.chartTypes = res.data.data
-                    this.reportssInit.forEach(reportsInit => {
-                        reportsInit.forEach(reportInit => {
-                            reportInit.chartTypes = this.chartTypes
-                        })
-                    })
-                })
-            },
-
-            // step2-报表编辑
-            handleEdit(report, reportInit) {
-                console.log(report)
-                this.handleEditForm = report
-                this.editVisible = true
-                this.handleEditForm.dataSets = reportInit.dataSets
-                this.handleEditForm.chartTypes = reportInit.chartTypes
-            },
-
-            // 添加一行
-            addRow(index1) {
-                let report = {
-                    id: 2,
-                    content: '开发图表组件5',
-                    name : "",
-                    description: "",
-                    dataSetId: 0
-                }
-                let reportInit = {
-                    dataSets : this.dataSets,
-                    chartTypes : this.chartTypes
-                }
-                this.reportss[index1].push(report)
-                this.reportssInit[index1].push(reportInit)
-            },
-
-            // 添加一列
-            addColumn() {
-                let reports = []
-                let reportsInit = []
-                this.reportss.push(reports)
-                this.reportssInit.push(reportsInit)
-            },
-
-            // 删除一列
-            deleteColumn() {
-                this.reportss.pop()
-                this.reportssInit.pop()
-            },
-
-            // step2-报表删除
-            handleDelete(index1, index2) {
-                this.deleteVisible = true
-                this.reportss[index1].splice(index2, 1)
-                this.reportssInit[index1].splice(index2, 1)
-            },
-
-            removeHandle(event){
-                console.log(event)
-                this.$message.success(`从 ${event.from.id} 移动到 ${event.to.id} `);
-            },
-
-            // 前一页
-            previousPage() {
-                console.log(this.index)
-                if (2 === this.index || 3 === this.index) {
-                    this.index--;
-                }
-            },
-
-            // 后一页
-            nextPage() {
-                console.log(this.index)
-                if (1 === this.index || 2 === this.index) {
-                    this.index++;
-                }
-            },
-
-            addDeveloper() {
-                this.dashboardInit.privileges.forEach(privilege => {
-                    if (privilege.nameCn === this.dashboardInit.privilege) {
-                        this.dashboard.privilege = privilege.nameEn
-                    }
-                })
-                this.dashboardInit.academicDegrees.forEach(academicDegree => {
-                    if (academicDegree.nameCn === this.dashboardInit.academicDegree) {
-                        this.dashboard.academicDegree = academicDegree.nameEn
-                    }
-                })
-                this.dashboard.sex = this.dashboardInit.sex === '男' ? 1 : 0;
-                this.dashboard.group = this.dashboardInit.group[0]
-                console.log(this.dashboard)
-                this.$api.FINANCE_DEVELOPER_API.post('ADD_DEVELOPER', this.dashboard).then(res => {
-                    this.$message.success("成功添加员工")
-                    this.$router.replace('/developer_table')
+                    this.dashboardConstant.reportConstant.chartTypes = res.data
                 })
             },
 
             getPrivileges() {
                 this.$api.FINANCE_DEVELOPER_API.get('GET_PRIVILEGES').then(res => {
-                    this.dashboardInit.privileges = res.data.data
+                    this.dashboardConstant.privileges = res.data
                 })
             },
 
-            getAcademicDegrees() {
-                this.$api.FINANCE_DEVELOPER_API.get('GET_ACADEMIC_DEGREES').then(res => {
-                    this.dashboardInit.academicDegrees = res.data.data
+            getFilterTypes() {
+                this.$api.REPORT_REPORT_API.get('GET_FILTER_TYPES').then(res => {
+                    this.dashboardConstant.reportFilterConstant.filterTypes = res.data
                 })
-            },
-
-            onSubmit() {
-                this.$message.success('提交成功！');
             }
         },
         created() {
             this.getPrivileges()
-            this.getAcademicDegrees()
             this.getDataSets()
             this.getChartTypes()
+            this.getFilterTypes()
         }
     }
 </script>
 
 <style>
-    .drag-box{
-        display: flex;
-        user-select: none;
-    }
     .drag-box-item {
         flex: 1;
         max-width: 100%;
@@ -702,17 +705,14 @@
     .drag-list:hover {
         border: 1px solid #20a0ff;
     }
-    .drag-title {
-        font-weight: 400;
-        line-height: 25px;
-        margin: 10px 0;
-        font-size: 22px;
-        color: #1f2f3d;
+
+    .table{
+        width: 100%;
+        font-size: 14px;
     }
-    .ghost-style{
-        display: block;
-        color: transparent;
-        border-style: dashed
+
+    .line{
+        text-align: center;
     }
 
     .red{

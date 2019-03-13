@@ -45,13 +45,13 @@ router.beforeEach((to, from, next) => {
         console.log(to)
 
         api.FINANCE_DEVELOPER_API.get('CURRENT').then(res => {
-            if (res.data.data.loggedIn === false) {
+            if (res.data.loggedIn === false) {
                 next('/login')
             } else {
                 if (to.path === '/login') {
                     next('/')
                 } else {
-                    localStorage.setItem('username', res.data.data.nameCn)
+                    localStorage.setItem('username', res.data.nameCn)
                     next()
                 }
             }

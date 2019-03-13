@@ -149,26 +149,26 @@
 
             getDataSourceTypes() {
                 this.$api.REPORT_DATA_SOURCE_API.get('GET_DATA_SOURCE_TYPES').then(res => {
-                    this.dataSetInit.dataSourceTypes = res.data.data;
+                    this.dataSetInit.dataSourceTypes = res.data;
                     this.dataSet.dataSourceType = this.dataSetInit.dataSourceTypes[0].nameEn;
                 })
             },
 
             getDatabasesTables() {
                 this.$api.REPORT_DATA_SOURCE_API.get('GET_DATABASES_TABLES').then(res => {
-                    this.dataSet.databasesTables = res.data.data;
+                    this.dataSet.databasesTables = res.data;
                 })
             },
 
             getPeriods() {
                 this.$api.REPORT_DATA_SET_API.get('GET_PERIODS').then(res => {
-                    this.dataSet.periods = res.data.data;
+                    this.dataSet.periods = res.data;
                 })
             },
 
             getDataTypes() {
                 this.$api.REPORT_DATA_SET_API.get('GET_DATA_TYPES').then(res => {
-                    this.dataSetInit.dataTypes = res.data.data
+                    this.dataSetInit.dataTypes = res.data
                     this.dataSetInit.dataSetFields.forEach(dataSetField => {
                         dataSetField.dataTypes = this.dataSetInit.dataTypes
                         dataSetField.dataType = dataSetField.dataTypes[0].nameEn
@@ -178,7 +178,7 @@
 
             getCalculateTypes() {
                 this.$api.REPORT_DATA_SET_API.get('GET_CALCULATE_TYPES').then(res => {
-                    this.dataSetInit.calculateTypes = res.data.data
+                    this.dataSetInit.calculateTypes = res.data
                     this.dataSetInit.dataSetFields.forEach(dataSetField => {
                         dataSetField.calculateTypes = this.dataSetInit.calculateTypes
                         dataSetField.calculateType = dataSetField.calculateTypes[0].nameEn
@@ -188,7 +188,7 @@
 
             getFieldTypes() {
                 this.$api.REPORT_DATA_SET_API.get('GET_FIELD_TYPES').then(res => {
-                    this.dataSetInit.fieldTypes = res.data.data
+                    this.dataSetInit.fieldTypes = res.data
                     this.dataSetInit.dataSetFields.forEach(dataSetField => {
                         dataSetField.fieldTypes = this.dataSetInit.fieldTypes
                         dataSetField.fieldType = dataSetField.fieldTypes[0].nameEn

@@ -282,6 +282,14 @@ export default [
                 meta: {
                     title: '看板表单'
                 }
+            },
+            {
+                path: 'dashboard_info',
+                component: "DashboardInfo",
+                name: 'dashboard_info',
+                meta: {
+                    title: '看板详情'
+                }
             }
         ]
     },

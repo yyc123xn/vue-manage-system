@@ -14,11 +14,17 @@ const reportDataSourceApi = {
 
     GET_DATABASE_TABLES : '/report/data_source/database/tables',
 
-    async get(urlName, getParams) {
+    get(urlName, getParams) {
         let url = this[urlName]
-        return await axios.get(url, {params : getParams})
-    }
+        return axios.get(url, {params : getParams})
+    },
 
+    ADD_DATA_SOURCE: '/report/data_source',
+
+    post(urlName, postParams) {
+        let url = this[urlName]
+        return axios.post(url, postParams)
+    }
 }
 
 export default reportDataSourceApi

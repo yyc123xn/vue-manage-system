@@ -57,7 +57,7 @@
                         <el-input v-model="developer.pension"></el-input>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="addDeveloper">表单提交</el-button>
+                        <el-button type="primary" @click="addDeveloper('developer')">表单提交</el-button>
                         <el-button>取消</el-button>
                     </el-form-item>
                 </el-form>
@@ -177,14 +177,21 @@
         },
         methods: {
             // todo validata，每函数的validate都加上
-            addDeveloper() {
-                this.developer.sex = '男' === this.developerHelper.sex ? 1 : 0;
-                this.developer.group = this.developerHelper.group[0]
-                console.log(this.developer)
+            addDeveloper(developer) {
+                this.$refs[developer].validate((valid) => {
+                    if (valid) {
+                        this.developer.sex = '男' === this.developerHelper.sex ? 1 : 0;
+                        this.developer.group = this.developerHelper.group[0]
+                        console.log(this.developer)
 //                this.$api.FINANCE_DEVELOPER_API.post('ADD_DEVELOPER', this.developer).then(res => {
 //                    this.$message.success("成功添加员工")
 //                    this.$router.replace('/developer_table')
 //                })
+                    } else {
+                        this.$message.error("请将员工信息填写完整")
+                        return false;
+                    }
+                })
             },
 
             getPrivileges() {

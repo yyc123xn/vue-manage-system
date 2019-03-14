@@ -13,11 +13,7 @@ service.defaults.headers = {
 service.interceptors.request.use(
     config => {
         console.log("拦截器-请求-config")
-        const userToken = window.$cookies.get('session'); //获取Cookie
         config.data = JSON.stringify(config.data);
-        if (userToken) {
-            // config.params = {'userToken': userToken} //后台接收的参数，后面我们将说明后台如何接收
-        }
         return config;
     },
     error => {

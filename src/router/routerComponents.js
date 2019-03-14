@@ -23,6 +23,7 @@ const DataSetForm = () => import("../components/page/data_set/DataSetForm")
 const DataSetTable = () => import("../components/page/data_set/DataSetTable")
 const DashboardForm = () => import("../components/page/dashboard/DashboardForm")
 const DashboardTable = () => import("../components/page/dashboard/DashboardTable")
+const DashboardInfo = () => import("../components/page/dashboard/DashboardInfo")
 const DataSourceForm = () => import("../components/page/data_source/DataSourceForm")
 const DataSourceTable = () => import("../components/page/data_source/DataSourceTable")
 
@@ -52,6 +53,7 @@ export default {
     DataSetTable: DataSetTable,
     DashboardForm: DashboardForm,
     DashboardTable: DashboardTable,
+    DashboardInfo: DashboardInfo,
     DataSourceForm: DataSourceForm,
     DataSourceTable: DataSourceTable
 };

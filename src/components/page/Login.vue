@@ -51,13 +51,13 @@
                     if (valid) {
                         this.loading = true
                         this.$api.FINANCE_DEVELOPER_API.get('LOGIN', this.ruleForm).then((res) => {
-                            if (res.status === 200) {
+                            if (res.code === 0) {
                                 // 将路由信息，菜单信息，用户信息存到sessionStorage里
                                 if (!localStorage.getItem('routes')) {
                                     localStorage.setItem('routes', JSON.stringify(items))
                                 }
                                 this.add_Routes(items) //触发vuex里的增加路由
-//                                window.cookies.set(res.header.cookies)
+                                this.$router.push('/dashboard')
                             }
                         })
                     } else {

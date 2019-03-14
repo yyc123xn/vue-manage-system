@@ -39,11 +39,10 @@ if (localStorage.getItem('username')) {
 //使用钩子函数对路由进行权限跳转
 router.beforeEach((to, from, next) => {
     let userToken = window.$cookies.get("userToken")
-    console.log(userToken)
     if (userToken) {
+        console.log(userToken)
         console.log(from)
         console.log(to)
-
         api.FINANCE_DEVELOPER_API.get('CURRENT').then(res => {
             if (res.data.loggedIn === false) {
                 next('/login')
@@ -57,6 +56,7 @@ router.beforeEach((to, from, next) => {
             }
         })
     } else {
+        console.log("else")
         if (to.path !== '/login') {
             next('/login')
         } else {

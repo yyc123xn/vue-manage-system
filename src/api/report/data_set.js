@@ -14,18 +14,27 @@ const reportDataSetApi = {
 
     GET_DATA_SET_INFO : '/report/data_set/info',
 
-    DATA_SET : '/report/data_set',
+    GET_DATA_SET: '/report/data_set',
 
     GET_DATA_SET_METRICS : '/report/data_set/metrics',
 
     get(urlName, getParams) {
         let url = this[urlName]
-        return axios.get(url, {params : getParams})
+        return axios.get(url, {params: getParams})
     },
+
+    ADD_DATA_SET : '/report/data_set',
 
     post(urlName, postParams) {
         let url = this[urlName]
         return axios.post(url, postParams)
+    },
+
+    DELETE_DATA_SET: '/report/data_set',
+
+    delete(urlName, deleteParams) {
+        let url = this[urlName]
+        return axios.delete(url, {params: deleteParams})
     }
 }
 

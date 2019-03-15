@@ -241,8 +241,20 @@
                                             <el-checkbox v-model="handleEditForm.config.chartSettings.roseType">展示</el-checkbox>
                                         </el-form-item>
                                     </el-form>
-                                    <div>备注1. yAxisType(双y轴坐标类型)：y轴坐标类型，KMP单位为k(数据值为5000时，显示5k)，percent单位为%(数据为0.6时，显示60%)。</div>
+                                    <div>备注1. 数据类型：展示指标的数据类型，KMP单位为k(数据值为5000时，显示5k)，percent单位为%(数据为0.6时，显示60%)。</div>
                                     <div>备注2. 玫瑰图展示：展示为玫瑰图。</div>
+                                </el-col>
+                                <el-col v-if="'GUAGE' === handleEditForm.chartType">
+                                    <el-form ref="handleEditForm.chartSettings" :rules="rules" :model="handleEditForm.chartSettings" label-width="20%">
+                                        <el-form-item label="数据类型">
+                                            <el-select v-model="handleEditForm.config.chartSettings.dataType" placeholder="请选择">
+                                                <el-option :key="'KMP'" :label="'KMP'" :value="'KMP'"></el-option>
+                                                <el-option :key="'MP'" :label="'MP'" :value="'MP'"></el-option>
+                                                <el-option :key="'percent'" :label="'percent'" :value="'percent'"></el-option>
+                                            </el-select>
+                                        </el-form-item>
+                                    </el-form>
+                                    <div>备注1. 数据类型：展示指标的数据，KMP单位为k(数据值为5000时，显示5k)，percent单位为%(数据为0.6时，显示60%)。</div>
                                 </el-col>
                             </el-collapse-item>
                         </el-collapse>
@@ -635,7 +647,7 @@
                     pageIndex: 1,
                     pageSize: 10
                 }
-                this.$api.REPORT_DATA_SET_API.get('DATA_SET', queryParams).then(res => {
+                this.$api.REPORT_DATA_SET_API.get('GET_DATA_SET', queryParams).then(res => {
                     this.dashboardConstant.reportConstant.dataSets = res.data.list
                 })
             },

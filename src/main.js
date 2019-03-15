@@ -18,7 +18,14 @@ import VueCookies from 'vue-cookies'
 
 import axios from './interceptor' // permission control
 
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css' //这个样式必须引入
+
 import {validator} from './utils/validator'
+
+// 简单配置
+NProgress.inc(0.2)
+NProgress.configure({ easing: 'ease', speed: 500, showSpinner: false })
 
 Vue.config.productionTip = false
 Vue.use(ElementUI, {
@@ -38,6 +45,7 @@ if (localStorage.getItem('username')) {
 }
 //使用钩子函数对路由进行权限跳转
 router.beforeEach((to, from, next) => {
+    NProgress.start()
     let userToken = window.$cookies.get("userToken")
     if (userToken) {
         console.log(userToken)
@@ -76,6 +84,10 @@ router.beforeEach((to, from, next) => {
     //         next();
     //     }
     // }
+})
+
+router.afterEach(() => {
+    NProgress.done()
 })
 
 

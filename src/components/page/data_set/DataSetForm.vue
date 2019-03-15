@@ -9,7 +9,7 @@
         <el-col class="container">
             <el-col class="form-box">
                 <el-form :model="dataSet" :rules="rules" ref="dataSet" label-width="8%">
-                    <el-form-item label="数据集名称" :rules="rules.username" prop="username">
+                    <el-form-item label="数据集名称" prop="name">
                         <el-input v-model="dataSet.name"></el-input>
                     </el-form-item>
                     <el-form-item label="数据集描述"  prop="description">
@@ -17,20 +17,19 @@
                     </el-form-item>
                     <el-form-item label="数据源"  prop="dataSourceType">
                         <el-select v-model="dataSet.dataSourceType" placeholder="数据源类型">
-                            <template v-for="(dataSourceType, index) in dataSetInit.dataSourceTypes">
+                            <template v-for="(dataSourceType, index) in dataSetConstant.dataSourceTypes">
                                 <el-option :key="dataSourceType.nameEn" :label="dataSourceType.nameEn" :value="dataSourceType.nameEn"></el-option>
                             </template>
                         </el-select>
                     </el-form-item>
                     <el-form-item label="数据库&表" prop="databaseTable">
-                        <el-cascader
-                                :options="dataSet.databasesTables"
+                        <el-cascader filterable v-model="dataSet.databaseTable" :options="dataSetConstant.databasesTables"
                                 change-on-select></el-cascader>
                     </el-form-item>
                     <el-form-item label="计算周期" prop="period">
                         <el-select v-model="dataSet.period" placeholder="请选择">
-                            <template v-for="(period, index) in dataSet.periods">
-                                <el-option :key="period.nameEn" :label="period.nameCn" :value="period.nameCn"></el-option>
+                            <template v-for="(period, index) in dataSetConstant.periods">
+                                <el-option :key="period.nameEn" :label="period.nameCn" :value="period.nameEn"></el-option>
                             </template>
                         </el-select>
                     </el-form-item>
@@ -42,9 +41,9 @@
                         <el-col class="line" :span="2">表达式</el-col>
                         <el-col :span="3"><el-input v-model="dataSetField.expression"></el-input></el-col>
                         <el-col class="line" :span="2">数据类型</el-col>
-                        <el-col :span="3">
+                        <el-col :span="2">
                             <el-select v-model="dataSetField.dataType" placeholder="请选择">
-                                <template v-for="(dataType, index) in dataSetInit.dataSetFields[index].dataTypes">
+                                <template v-for="(dataType, index) in dataSetConstant.dataSetFieldsConstant.dataTypes">
                                     <el-option :key="dataType.nameEn" :label="dataType.nameEn" :value="dataType.nameEn"></el-option>
                                 </template>
                             </el-select>
@@ -52,7 +51,7 @@
                         <el-col class="line" :span="2">字段类型</el-col>
                         <el-col :span="3">
                             <el-select v-model="dataSetField.fieldType" placeholder="请选择">
-                                <template v-for="(fieldType, index) in dataSetInit.dataSetFields[index].fieldTypes">
+                                <template v-for="(fieldType, index) in dataSetConstant.dataSetFieldsConstant.fieldTypes">
                                     <el-option :key="fieldType.nameEn" :label="fieldType.nameEn" :value="fieldType.nameEn"></el-option>
                                 </template>
                             </el-select>
@@ -60,19 +59,27 @@
                         <el-col class="line" :span="2">计算方式</el-col>
                         <el-col :span="3">
                             <el-select v-model="dataSetField.calculateType" placeholder="请选择">
-                                <template v-for="(calculateType, index) in dataSetInit.dataSetFields[index].calculateTypes">
+                                <template v-for="(calculateType, index) in dataSetConstant.dataSetFieldsConstant.calculateTypes">
                                     <el-option :key="calculateType.nameEn" :label="calculateType.nameEn" :value="calculateType.nameEn"></el-option>
                                 </template>
                             </el-select>
                         </el-col>
-                        <el-col class="line" :span="2">操作</el-col>
-                        <el-col :span="2"><el-button @click.prevent="removeDataSetField(dataSetField)" type="danger">删除</el-button></el-col>
+                        <el-col class="line" :span="2">周期日期</el-col>
+                        <el-col :span="1">
+                            <el-checkbox v-model="dataSetHelper.dataSetFieldsHelper[index].isDate" @change="changeDataSetFieldIsDate(index)"></el-checkbox>
+                        </el-col>
+                        <el-col class="line" :span="1">操作</el-col>
+                        <el-col :span="1"><el-button @click.prevent="removeDataSetField(dataSetField)" type="danger">删除</el-button></el-col>
                     </el-form-item>
                     <el-form-item>
                         <el-button @click="addDataSetField" type="primary">新增数据集字段</el-button>
                     </el-form-item>
-                    <el-form-item label="过滤运算条件" prop="extraExpression">
+                    <el-form-item label="过滤运算条件">
                         <el-input type="textarea" rows="5" v-model="dataSet.extraExpression"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="addDataSet('dataSet')">表单提交</el-button>
+                        <el-button>取消</el-button>
                     </el-form-item>
                 </el-form>
             </el-col>
@@ -87,7 +94,7 @@
         data: function(){
             return {
                 rules: {
-                    username: [
+                    name: [
                         {required: true, message: '请输入数据集名称', trigger: 'blur'}
                     ],
                     description: [
@@ -101,110 +108,102 @@
                     ],
                     period: [
                         {required: true, message: '请选择数据集计算周期', trigger: 'blur'}
-                    ],
-                    extraExpression: [
-                        {required: true, message: '请输入额外运算条件', trigger: 'blur'}
-                    ],
-
+                    ]
                 },
                 dataSet: {
                     name: '',
                     description: '',
-                    // 数据从后端获取
+                    database: '',
+                    sourceTable: '',
+                    databaseTable: [],
                     dataSourceType: "",
-                    databasesTables: [],
                     dataSetFields: [{
                         expression: '',
                         dataType: '',
                         calculateType: '',
                         fieldType: '',
+                        isDate: 0
                     }],
                     period: "",
                     extraExpression: ''
                 },
-                dataSetInit: {
+                dataSetHelper: {
+                    dataSetFieldsHelper: [{
+                        isDate: false
+                    }]
+                },
+                dataSetConstant: {
+                    databasesTables: [],
                     dataSourceTypes: [],
-                    dataTypes: [],
-                    calculateTypes: [],
-                    fieldTypes: [],
                     periods: [],
-                    dataSetFields: [{
+                    dataSetFieldsConstant: {
                         dataTypes: [],
                         calculateTypes: [],
                         fieldTypes: []
-                    }]
-                },
+                    }
+                }
             }
         },
         methods: {
-            addDataSet() {
-                this.$message.success("提交成功")
-                console.log(this.dataSet)
-                this.$api.REPORT_DATA_SET_API.post('DATA_SET', this.dataSet).then(res => {
-                    console.log("添加数据集成功")
-                }).catch(error => {
-                    console.log(error)
-                })
+            addDataSet(dataSet) {
+                this.$root.reload()
+//                this.$refs[dataSet].validate((valid) => {
+//                    if (valid) {
+//                        this.dataSet.database = this.dataSet.databaseTable[0]
+//                        this.dataSet.sourceTable = this.dataSet.databaseTable[1]
+//                        console.log(this.dataSet)
+//                        this.$api.REPORT_DATA_SET_API.post('ADD_DATA_SET', this.dataSet).then(res => {
+//                            this.$router.push('/data_set_table')
+//                        }).catch(error => {
+//                            console.log(error)
+//                            this.$message.error ("提交失败", error)
+//                        })
+//                    } else {
+//                        this.$message.error("请将数据集信息填写完整")
+//                        return false;
+//                    }
+//                })
+            },
+
+            changeDataSetFieldIsDate(index) {
+                this.dataSet.dataSetFields[index].isDate = this.dataSetHelper.dataSetFieldsHelper[index].isDate ? 1 : 0;
             },
 
             getDataSourceTypes() {
                 this.$api.REPORT_DATA_SOURCE_API.get('GET_DATA_SOURCE_TYPES').then(res => {
-                    this.dataSetInit.dataSourceTypes = res.data;
-                    this.dataSet.dataSourceType = this.dataSetInit.dataSourceTypes[0].nameEn;
+                    this.dataSetConstant.dataSourceTypes = res.data;
+                    this.dataSet.dataSourceType = this.dataSetConstant.dataSourceTypes[0].nameEn;
                 })
             },
 
             getDatabasesTables() {
                 this.$api.REPORT_DATA_SOURCE_API.get('GET_DATABASES_TABLES').then(res => {
-                    this.dataSet.databasesTables = res.data;
+                    this.dataSetConstant.databasesTables = res.data;
                 })
             },
 
             getPeriods() {
                 this.$api.REPORT_DATA_SET_API.get('GET_PERIODS').then(res => {
-                    this.dataSet.periods = res.data;
+                    this.dataSetConstant.periods = res.data;
                 })
             },
 
             getDataTypes() {
                 this.$api.REPORT_DATA_SET_API.get('GET_DATA_TYPES').then(res => {
-                    this.dataSetInit.dataTypes = res.data
-                    this.dataSetInit.dataSetFields.forEach(dataSetField => {
-                        dataSetField.dataTypes = this.dataSetInit.dataTypes
-                        dataSetField.dataType = dataSetField.dataTypes[0].nameEn
-                    })
+                    this.dataSetConstant.dataSetFieldsConstant.dataTypes = res.data
                 })
             },
 
             getCalculateTypes() {
                 this.$api.REPORT_DATA_SET_API.get('GET_CALCULATE_TYPES').then(res => {
-                    this.dataSetInit.calculateTypes = res.data
-                    this.dataSetInit.dataSetFields.forEach(dataSetField => {
-                        dataSetField.calculateTypes = this.dataSetInit.calculateTypes
-                        dataSetField.calculateType = dataSetField.calculateTypes[0].nameEn
-                    })
+                    this.dataSetConstant.dataSetFieldsConstant.calculateTypes = res.data
                 })
             },
 
             getFieldTypes() {
                 this.$api.REPORT_DATA_SET_API.get('GET_FIELD_TYPES').then(res => {
-                    this.dataSetInit.fieldTypes = res.data
-                    this.dataSetInit.dataSetFields.forEach(dataSetField => {
-                        dataSetField.fieldTypes = this.dataSetInit.fieldTypes
-                        dataSetField.fieldType = dataSetField.fieldTypes[0].nameEn
-                    })
+                    this.dataSetConstant.dataSetFieldsConstant.fieldTypes = res.data
                 })
-            },
-
-            submitForm(formName) {
-                this.$refs[formName].validate((valid) => {
-                    if (valid) {
-                        alert('submit!');
-                    } else {
-                        console.log('error submit!!');
-                        return false;
-                    }
-                });
             },
 
             resetForm(formName) {
@@ -220,18 +219,16 @@
             },
 
             addDataSetField() {
-                this.dataSetInit.dataSetFields.push({
-                    dataTypes: this.dataSetInit.dataTypes,
-                    calculateTypes: this.dataSetInit.calculateTypes,
-                    fieldTypes: this.dataSetInit.fieldTypes,
-                    key: Date.now()
-                })
                 this.dataSet.dataSetFields.push({
                     expression: '',
                     dataType: '',
                     calculateType: '',
                     fieldType: '',
+                    isDate: false,
                     key: Date.now()
+                })
+                this.dataSetHelper.dataSetFieldsHelper.push({
+                    isDate: false
                 })
             }
         },

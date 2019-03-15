@@ -7,7 +7,7 @@
         </el-col>
         <el-col class="container">
             <el-col class="handle-box">
-                <el-button type="primary" icon="delete" class="handle-del mr10" @click="delAll">批量删除</el-button>
+                <el-button type="primary" icon="delete" class="handle-del mr10">批量删除</el-button>
                 <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10">
                     <el-option v-for="dataSetFilterField in dataSetFilterFields"
                                :key="dataSetFilterField.columnName" :label="dataSetFilterField.columnComment"
@@ -62,7 +62,7 @@
 
         <!-- 补数据弹出框 -->
         <el-dialog title="补数据" :visible.sync="backfillVisible" width="30%">
-            <el-form ref="form" :model="backfillForm" label-width="50px">
+            <el-form ref="form" :model="backfillForm" label-width="20%">
                 <el-form-item label="名称">
                     <el-col> {{backfillForm.name}} </el-col>
                 </el-form-item>
@@ -84,17 +84,14 @@
             <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="delVisible = false">取 消</el-button>
-                <el-button type="primary" @click="deleteRow">确 定</el-button>
+                <el-button type="primary" @click="deleteDataSet">确 定</el-button>
             </span>
         </el-dialog>
     </div>
 </template>
 
 <script>
-    import ElCol from "element-ui/packages/col/src/col";
-
     export default {
-        components: {ElCol},
         name: 'DataSetTable',
         data: function () {
             return {
@@ -115,6 +112,7 @@
                     beginDate : '',
                     endDate: ''
                 },
+                handleDeleteIndex: -1,
                 form: {
                     id: "",
                     name: '',
@@ -126,7 +124,6 @@
         },
         created() {
             this.getFilterFields();
-//            this.getData();
             this.getDataSets();
         },
         computed: {
@@ -176,7 +173,7 @@
                     queryColumn: queryColumnName,
                     queryCondition: this.queryCondition,
                 }
-                this.$api.REPORT_DATA_SET_API.get('DATA_SET', queryParams).then(res => {
+                this.$api.REPORT_DATA_SET_API.get('GET_DATA_SET', queryParams).then(res => {
                     console.log(res)
                     this.tableData = res.data.list
                     this.total = res.data.total
@@ -237,6 +234,7 @@
                 }
                 this.backfillVisible = true;
             },
+
             handleEdit(index, row) {
                 const dataSet = this.tableData[index];
                 let id = dataSet.id
@@ -248,24 +246,27 @@
                 }
                 this.editVisible = true;
             },
+
             handleDelete(index, row) {
-                this.idx = index;
+                this.handleDeleteIndex = index;
                 this.delVisible = true;
             },
-            delAll() {
-                const length = this.multipleSelection.length;
-                let str = '';
-                this.del_list = this.del_list.concat(this.multipleSelection);
-                for (let i = 0; i < length; i++) {
-                    str += this.multipleSelection[i].name + ' ';
+
+            // 确定删除
+            deleteDataSet(){
+                let deleteParams = {
+                    id : this.tableData[this.handleDeleteIndex].id
                 }
-                this.$message.error('删除了' + str);
-                this.multipleSelection = [];
+                this.tableData.splice(this.handleDeleteIndex, 1);
+                this.$api.REPORT_DATA_SET_API.delete('DELETE_DATA_SET', deleteParams).then(res => {
+                    this.$message.success("删除成功")
+                    this.delVisible = false;
+                })
             },
+
             handleSelectionChange(val) {
                 this.multipleSelection = val;
             },
-
 
             handleCurrentChange(pageIndex) {
                 this.pageIndex = pageIndex;
@@ -284,13 +285,6 @@
             saveBackfill() {
                 this.backfillVisible = false;
                 this.$message.success(`保存成功`);
-            },
-
-            // 确定删除
-            deleteRow(){
-                this.tableData.splice(this.idx, 1);
-                this.$message.success('删除成功');
-                this.delVisible = false;
             }
         }
     }

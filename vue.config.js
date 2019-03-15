@@ -178,6 +178,14 @@ module.exports = {
                 }
             },
 
+            '/report/data_set/backfill': {
+                target: REPORT_URL_PREFIX + '/report/data_set/backfill',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/report/data_set/backfill': ''
+                }
+            },
+
             '/report/data_set/metrics': {
                 target: REPORT_URL_PREFIX + '/report/data_set/metrics',
                 changeOrigin: true,

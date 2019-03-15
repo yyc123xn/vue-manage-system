@@ -11,7 +11,7 @@
                 <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10">
                     <el-option v-for="dataSourceFilterField in dataSourceFilterFields"
                                :key="dataSourceFilterField.columnName" :label="dataSourceFilterField.columnComment"
-                               :value="dataSourceFilterField.columnComment">
+                               :value="dataSourceFilterField.columnName">
                     </el-option>
                 </el-select>
                 <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
@@ -202,18 +202,10 @@
 
             // 获取数据集列表
             getDataSources() {
-                let queryColumnName = this.queryColumn
-                if (this.queryColumn !== '') {
-                    this.dataSourceFilterFields.forEach(dataSourceFilterField => {
-                        if (dataSourceFilterField.columnComment === this.queryColumn) {
-                            queryColumnName = dataSourceFilterField.columnName
-                        }
-                    })
-                }
                 let queryParams = {
                     pageIndex: this.pageIndex,
                     pageSize: this.pageSize,
-                    queryColumn: queryColumnName,
+                    queryColumn: this.queryColumn,
                     queryCondition: this.queryCondition,
                 }
                 this.$api.REPORT_DATA_SOURCE_API.get('GET_DATA_SOURCES' ,queryParams).then(res => {

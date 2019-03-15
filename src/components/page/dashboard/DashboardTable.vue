@@ -8,22 +8,24 @@
         <el-col class="container">
             <el-col class="handle-box">
                 <el-button type="primary" icon="delete" class="handle-del mr10" @click="delAll">批量删除</el-button>
-                <el-select v-model="defaultDashboardFilterFields" placeholder="筛选项" class="handle-select mr10">
+                <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10">
                     <el-option v-for="dashboardFilterField in dashboardFilterFields"
                                :key="dashboardFilterField.columnName" :label="dashboardFilterField.columnComment"
-                               :value="dashboardFilterField.columnComment">
+                               :value="dashboardFilterField.columnName">
                     </el-option>
                 </el-select>
-                <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
+                <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="search" @click="search">搜索</el-button>
             </el-col>
-            <el-table :data="data" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">
+            <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="55" align="center"></el-table-column>
-                <el-table-column prop="date" label="日期" sortable width="150">
+                <el-table-column prop="id" label="id" sortable>
                 </el-table-column>
-                <el-table-column prop="name" label="姓名" width="120">
+                <el-table-column prop="name" label="名称">
                 </el-table-column>
-                <el-table-column prop="address" label="地址" :formatter="formatter">
+                <el-table-column prop="developer" label="负责人">
+                </el-table-column>
+                <el-table-column prop="createTime" label="创建时间" sortable>
                 </el-table-column>
                 <el-table-column label="操作" width="180" align="center">
                     <template slot-scope="scope">
@@ -74,7 +76,6 @@
         name: 'DashboardTable',
         data: function () {
             return {
-                defaultDashboardFilterFields: "",
                 dashboardFilterFields: [
                     {
                         columnName: "name1",
@@ -85,54 +86,65 @@
                         columnComment: "comment2"
                     }
                 ],
-                url: './vuetable.json',
                 tableData: [],
-                cur_page: 1,
-                multipleSelection: [],
-                select_cate: '',
-                select_word: '',
-                del_list: [],
-                is_search: false,
+                pageIndex: 1,
+                pageSize: 10,
+                total : 0,
+                queryColumn: "",
+                queryCondition: [],
                 editVisible: false,
                 delVisible: false,
                 form: {
                     name: '',
                     date: '',
                     address: ''
-                },
-                idx: -1
+                }
             }
         },
         created() {
             this.getFilterFields();
-            this.getData();
+            this.getDashboards();
         },
         computed: {
-            data() {
-                return this.tableData.filter((d) => {
-                    let is_del = false;
-                    for (let i = 0; i < this.del_list.length; i++) {
-                        if (d.name === this.del_list[i].name) {
-                            is_del = true;
-                            break;
-                        }
-                    }
-                    if (!is_del) {
-                        if (d.address.indexOf(this.select_cate) > -1 &&
-                            (d.name.indexOf(this.select_word) > -1 ||
-                                d.address.indexOf(this.select_word) > -1)
-                        ) {
-                            return d;
-                        }
-                    }
-                })
-            }
+//            data() {
+//                return this.tableData.filter((d) => {
+//                    let is_del = false;
+//                    for (let i = 0; i < this.del_list.length; i++) {
+//                        if (d.name === this.del_list[i].name) {
+//                            is_del = true;
+//                            break;
+//                        }
+//                    }
+//                    if (!is_del) {
+//                        if (d.address.indexOf(this.select_cate) > -1 &&
+//                            (d.name.indexOf(this.select_word) > -1 ||
+//                                d.address.indexOf(this.select_word) > -1)
+//                        ) {
+//                            return d;
+//                        }
+//                    }
+//                })
+//            }
         },
         methods: {
-            // 获取票据的过滤字段
+            // 获取看板的过滤字段
             getFilterFields() {
                 this.$api.REPORT_DASHBOARD_API.get('GET_DASHBOARD_FILTER_FIELDS').then(res => {
                     this.dashboardFilterFields = res.data;
+                })
+            },
+
+            // 获取看板列表
+            getDashboards() {
+                let getParams = {
+                    pageIndex: this.pageIndex,
+                    pageSize: this.pageSize,
+                    queryColumn: this.queryColumn,
+                    queryCondition: this.queryCondition,
+                }
+                this.$api.REPORT_DASHBOARD_API.get('GET_DASHBOARD', getParams).then(res => {
+                    this.tableData = res.data.list
+                    this.total = res.data.total
                 })
             },
 
@@ -140,18 +152,6 @@
             handleCurrentChange(val) {
                 this.cur_page = val;
                 this.getData();
-            },
-            // 获取 easy-mock 的模拟数据
-            getData() {
-                // 开发环境使用 easy-mock 数据，正式环境使用 json 文件
-                if (process.env.NODE_ENV === 'development') {
-                    this.url = '/ms/table/list';
-                };
-                this.$axios.post(this.url, {
-                    page: this.cur_page
-                }).then((res) => {
-                    this.tableData = res.data.list;
-                })
             },
             search() {
                 this.is_search = true;

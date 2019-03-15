@@ -11,7 +11,7 @@
                 <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10">
                     <el-option v-for="dataSetFilterField in dataSetFilterFields"
                                :key="dataSetFilterField.columnName" :label="dataSetFilterField.columnComment"
-                               :value="dataSetFilterField.columnComment">
+                               :value="dataSetFilterField.columnName">
                     </el-option>
                 </el-select>
                 <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
@@ -43,15 +43,15 @@
 
         <!-- 编辑弹出框 -->
         <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
-            <el-form ref="form" :model="form" label-width="50px">
+            <el-form ref="form" label-width="20%">
                 <el-form-item label="日期">
-                    <el-date-picker type="date" placeholder="选择日期" v-model="form.date" value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
+                    <el-date-picker type="date" placeholder="选择日期" value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
                 </el-form-item>
                 <el-form-item label="姓名">
-                    <el-input v-model="form.name"></el-input>
+                    <el-input></el-input>
                 </el-form-item>
                 <el-form-item label="地址">
-                    <el-input v-model="form.address"></el-input>
+                    <el-input></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -61,16 +61,22 @@
         </el-dialog>
 
         <!-- 补数据弹出框 -->
-        <el-dialog title="补数据" :visible.sync="backfillVisible" width="30%">
-            <el-form ref="form" :model="backfillForm" label-width="20%">
+        <el-dialog title="补数据" :visible.sync="backfillVisible" width="35%">
+            <el-form ref="form" :model="backfillForm" label-width="10%">
                 <el-form-item label="名称">
                     <el-col> {{backfillForm.name}} </el-col>
                 </el-form-item>
-                <el-form-item label="开始日期">
-                    <el-date-picker type="date" placeholder="请选择日期" v-model="backfillForm.beginDate" value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
-                </el-form-item>
-                <el-form-item label="结束日期">
-                    <el-date-picker type="date" placeholder="请选择日期" v-model="backfillForm.endDate" value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
+                <el-form-item label="日期">
+                    <el-date-picker
+                            v-model="backfillForm.beginAndEndTime"
+                            type="datetimerange"
+                            :picker-options="pickerOptions"
+                            range-separator="至"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期"
+                            align="right"
+                            value-format="yyyyMMddHH">
+                    </el-date-picker>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -91,7 +97,10 @@
 </template>
 
 <script>
+    import ElFormItem from "../../../../node_modules/element-ui/packages/form/src/form-item.vue";
+
     export default {
+        components: {ElFormItem},
         name: 'DataSetTable',
         data: function () {
             return {
@@ -109,17 +118,39 @@
                 backfillForm :{
                     id : 0,
                     name : "",
-                    beginDate : '',
-                    endDate: ''
+                    beginTime : '',
+                    endTime: '',
+                    beginAndEndTime: []
                 },
                 handleDeleteIndex: -1,
-                form: {
-                    id: "",
-                    name: '',
-                    date: '',
-                    address: ''
+                idx: -1,
+                pickerOptions: {
+                    shortcuts: [{
+                        text: '最近一周',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '最近一个月',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '最近三个月',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }]
                 },
-                idx: -1
             }
         },
         created() {
@@ -152,29 +183,19 @@
             // 获取数据集的过滤字段
             getFilterFields() {
                 this.$api.REPORT_DATA_SET_API.get('GET_DATA_SET_FILTER_FIELDS').then(res => {
-                    console.log(res)
                     this.dataSetFilterFields = res.data;
                 })
             },
 
             // 获取数据集列表
             getDataSets() {
-                let queryColumnName = this.queryColumn
-                if (this.queryColumn !== '') {
-                    this.dataSetFilterFields.forEach(dataSetFilterField => {
-                        if (dataSetFilterField.columnComment === this.queryColumn) {
-                            queryColumnName = dataSetFilterField.columnName
-                        }
-                    })
-                }
                 let queryParams = {
                     pageIndex: this.pageIndex,
                     pageSize: this.pageSize,
-                    queryColumn: queryColumnName,
+                    queryColumn: this.queryColumn,
                     queryCondition: this.queryCondition,
                 }
                 this.$api.REPORT_DATA_SET_API.get('GET_DATA_SET', queryParams).then(res => {
-                    console.log(res)
                     this.tableData = res.data.list
                     this.total = res.data.total
                 })
@@ -190,7 +211,7 @@
                     id : id
                 }
                 this.$api.REPORT_DATA_SET_API.get('GET_DATA_SET_INFO', queryParams).then(res => {
-                    console.log(res.data)
+//                    console.log(res.data)
                 })
             },
 
@@ -223,14 +244,15 @@
             },
 
             handleBackfill(index, row) {
-                const dataSet = this.tableData[index];
+                let dataSet = this.tableData[index];
                 let id = dataSet.id
                 this.getDataSetInfo(id)
                 this.backfillForm = {
                     id : dataSet.id,
                     name : dataSet.name,
-                    beginDate : dataSet.date,
-                    endDate: dataSet.date
+                    beginTime : '',
+                    endTime: '',
+                    beginAndEndTime: []
                 }
                 this.backfillVisible = true;
             },
@@ -283,8 +305,13 @@
 
             // 保存补数据
             saveBackfill() {
-                this.backfillVisible = false;
-                this.$message.success(`保存成功`);
+                console.log(this.backfillForm)
+                this.backfillForm.beginTime = this.backfillForm.beginAndEndTime[0]
+                this.backfillForm.endTime = this.backfillForm.beginAndEndTime[1]
+                this.$api.REPORT_DATA_SET_API.get('BACKFILL', this.backfillForm).then(res => {
+                    this.$message.success(`成功开始补数据`);
+                    this.backfillVisible = false;
+                })
             }
         }
     }

@@ -66,7 +66,7 @@
                         </el-col>
                         <el-col class="line" :span="2">周期日期</el-col>
                         <el-col :span="1">
-                            <el-checkbox v-model="dataSetHelper.dataSetFieldsHelper[index].isDate" @change="changeDataSetFieldIsDate(index)"></el-checkbox>
+                            <el-checkbox v-model="dataSetHelper.dataSetFieldsHelper[index].isDate"></el-checkbox>
                         </el-col>
                         <el-col class="line" :span="1">操作</el-col>
                         <el-col :span="1"><el-button @click.prevent="removeDataSetField(dataSetField)" type="danger">删除</el-button></el-col>
@@ -146,27 +146,25 @@
         },
         methods: {
             addDataSet(dataSet) {
-                this.$root.reload()
-//                this.$refs[dataSet].validate((valid) => {
-//                    if (valid) {
-//                        this.dataSet.database = this.dataSet.databaseTable[0]
-//                        this.dataSet.sourceTable = this.dataSet.databaseTable[1]
-//                        console.log(this.dataSet)
-//                        this.$api.REPORT_DATA_SET_API.post('ADD_DATA_SET', this.dataSet).then(res => {
-//                            this.$router.push('/data_set_table')
-//                        }).catch(error => {
-//                            console.log(error)
-//                            this.$message.error ("提交失败", error)
-//                        })
-//                    } else {
-//                        this.$message.error("请将数据集信息填写完整")
-//                        return false;
-//                    }
-//                })
-            },
-
-            changeDataSetFieldIsDate(index) {
-                this.dataSet.dataSetFields[index].isDate = this.dataSetHelper.dataSetFieldsHelper[index].isDate ? 1 : 0;
+                this.$refs[dataSet].validate((valid) => {
+                    if (valid) {
+                        this.dataSet.database = this.dataSet.databaseTable[0]
+                        this.dataSet.sourceTable = this.dataSet.databaseTable[1]
+                        for (let index = 0; index < this.dataSet.dataSetFields.length; index++) {
+                            this.dataSet.dataSetFields[index].isDate = this.dataSetHelper.dataSetFieldsHelper[index].isDate ? 1 : 0;
+                        }
+                        console.log(this.dataSet)
+                        this.$api.REPORT_DATA_SET_API.post('ADD_DATA_SET', this.dataSet).then(res => {
+                            this.$router.push('/data_set_table')
+                        }).catch(error => {
+                            console.log(error)
+                            this.$message.error ("提交失败", error)
+                        })
+                    } else {
+                        this.$message.error("请将数据集信息填写完整")
+                        return false;
+                    }
+                })
             },
 
             getDataSourceTypes() {

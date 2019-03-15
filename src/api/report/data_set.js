@@ -18,6 +18,8 @@ const reportDataSetApi = {
 
     GET_DATA_SET_METRICS : '/report/data_set/metrics',
 
+    BACKFILL: '/report/data_set/backfill',
+
     get(urlName, getParams) {
         let url = this[urlName]
         return axios.get(url, {params: getParams})

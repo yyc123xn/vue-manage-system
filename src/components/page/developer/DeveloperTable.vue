@@ -11,7 +11,7 @@
                 <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10">
                     <el-option v-for="developerFilterField in developerFilterFields"
                                :key="developerFilterField.columnName" :label="developerFilterField.columnComment"
-                               :value="developerFilterField.columnComment">
+                               :value="developerFilterField.columnName">
                     </el-option>
                 </el-select>
                 <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
@@ -133,18 +133,10 @@
 
             // 获取数据集列表
             getDevelopers() {
-                let queryColumnName = this.queryColumn
-                if (this.queryColumn !== '') {
-                    this.developerFilterFields.forEach(developerFilterField => {
-                        if (developerFilterField.columnComment === this.queryColumn) {
-                            queryColumnName = developerFilterField.columnName
-                        }
-                    })
-                }
                 let queryParams = {
                     pageIndex: this.pageIndex,
                     pageSize: this.pageSize,
-                    queryColumn: queryColumnName,
+                    queryColumn: this.queryColumn,
                     queryCondition: this.queryCondition,
                 }
                 this.$api.FINANCE_DEVELOPER_API.get('GET_DEVELOPERS' ,queryParams).then(res => {

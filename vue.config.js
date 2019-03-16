@@ -242,6 +242,18 @@ module.exports = {
                 }
             },
 
+            /**
+             * report
+             */
+
+            '/report/report/data': {
+                target: REPORT_URL_PREFIX + '/report/report/data',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/report/report/data': ''
+                }
+            },
+
             '/report/report/chart_types': {
                 target: REPORT_URL_PREFIX + '/report/report/chart_types',
                 changeOrigin: true,

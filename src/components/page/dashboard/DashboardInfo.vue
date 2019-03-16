@@ -45,11 +45,11 @@
             <el-col>
                 <el-col v-for="(reports, index1) in dashboard.reportss" :key="index1">
                     <el-col :span="24 / dashboard.reportss[index1].length" v-for="(report, index2) in dashboard.reportss[index1]" :key="index2">
-                        <histogram v-if="'HISTOGRAM' === report.chartType"></histogram>
-                        <LineDup v-if="'LINE' === report.chartType"></LineDup>
-                        <Pie v-if="'PIE' === report.chartType"></Pie>
+                        <histogram :id="report.id" :chartData="report.chartData" :loading="true" v-if="'HISTOGRAM' === report.chartType"></histogram>
+                        <LineDup :id="report.id" :chartData="report.chartData" :loading="true" v-if="'LINE' === report.chartType"></LineDup>
+                        <Pie :id="report.id" :chartData="report.chartData" :loading="true" v-if="'PIE' === report.chartType"></Pie>
                         <!--<MonitorCard v-if="'MONITOR_CARD' === report.chartType"></MonitorCard>-->
-                        <Guage v-if="'GUAGE' === report.chartType"></Guage>
+                        <Guage :id="report.id" :chartData="report.chartData" :loading="true" v-if="'GUAGE' === report.chartType"></Guage>
                     </el-col>
                 </el-col>
             </el-col>
@@ -98,6 +98,8 @@
                             dataSetId: "",
                             dataSetFieldIds: [],
                             chartType: 'HISTOGRAM',
+                            chartData: [],
+                            loading : true,
                             config: {
                                 chartSettings: {
                                     axisSite: { right: [] },
@@ -135,17 +137,16 @@
         }),
 
         created() {
-            console.log(this.$route.query.id)
             let dashboardId = this.$route.query.id
             this.getDashboardInfo(dashboardId)
         },
 
         methods : {
-            getDashboardInfo(dashboardId) {
+            async getDashboardInfo(dashboardId) {
                 let getParams = {
                     id : dashboardId
                 }
-                this.$api.REPORT_DASHBOARD_API.get('GET_DASHBOARD_INFO', getParams).then(res => {
+                await this.$api.REPORT_DASHBOARD_API.get('GET_DASHBOARD_INFO', getParams).then(res => {
                     this.dashboard = res.data
                 })
             }

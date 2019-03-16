@@ -1,27 +1,49 @@
 <template>
-  <ve-histogram :data="chartData" :settings="chartSettings"></ve-histogram>
+  <ve-histogram :data="chartData" :settings="chartSettings" :toolbox="toolbox"></ve-histogram>
 </template>
 
 <script>
-  export default {
-    name: "Histogram",
-    data () {
-      this.chartSettings = {
-        stack: { '用户': ['访问用户', '下单用户'] }
-      }
-      return {
-        chartData: {
-          columns: ['日期', '访问用户', '下单用户', '下单率'],
-          rows: [
-            { '日期': '1/1', '访问用户': 1393, '下单用户': 1093, '下单率': 0.32 },
-            { '日期': '1/2', '访问用户': 3530, '下单用户': 3230, '下单率': 0.26 },
-            { '日期': '1/3', '访问用户': 2923, '下单用户': 2623, '下单率': 0.76 },
-            { '日期': '1/4', '访问用户': 1723, '下单用户': 1423, '下单率': 0.49 },
-            { '日期': '1/5', '访问用户': 3792, '下单用户': 3492, '下单率': 0.323 },
-            { '日期': '1/6', '访问用户': 4593, '下单用户': 4293, '下单率': 0.78 }
-          ]
+    // 使用前需先引入对应模块
+    import 'echarts/lib/component/toolbox'
+    export default {
+        name: "Histogram",
+        props: {id : Number, chartData: Object},
+        data () {
+            this.chartSettings = {
+            }
+            this.toolbox = {
+                feature: {
+                    saveAsImage: {}
+                }
+            }
+            return {
+            }
+        },
+
+        methods: {
+            async getReportData(reportId) {
+                let reportData
+                let getParams = {
+                    id : reportId
+                }
+                await this.$api.REPORT_REPORT_API.get('GET_REPORT_DATA', getParams).then(res => {
+                    reportData = res.data
+                })
+                return reportData
+            }
+        },
+
+        mounted() {
+            let _this = this;
+            let reportId =_this._props.id;
+            this.getReportData(reportId).then(res => {
+                _this.chartData = {
+                    rows: res,
+                    columns: ['create_time', 'base_wages', 'status'],
+                }
+                _this.chartSettings = {
+                }
+            })
         }
-      }
     }
-  }
 </script>

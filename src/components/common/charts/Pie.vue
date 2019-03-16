@@ -1,39 +1,57 @@
 <template>
-    <ve-pie :data="chartData" :settings="chartSettings"></ve-pie>
+    <div>
+        <ve-pie
+                :data="chartData"
+                :loading="loading"
+                :data-empty="dataEmpty"
+                :settings="chartSettings"
+                :toolbox="toolbox"
+        >
+        </ve-pie>
+    </div>
 </template>
-
 <script>
+    // 使用前需先引入对应模块
+    import 'echarts/lib/component/toolbox'
     export default {
-        name: "Pie",
+        name: 'Pie',
+        props: {id : Number, chartData: Object},
         data () {
-            this.chartSettings = {
-                dimension: '日期',
-                metrics: '访问用户',
-                width: '50%'
-            }
-            return {
-                chartData: {
-                    columns: ['日期', '访问用户'],
-                    rows: [
-                        { '日期': '1/1', '访问用户': 1393 },
-                        { '日期': '1/2', '访问用户': 3530 },
-                        { '日期': '1/3', '访问用户': 2923 },
-                        { '日期': '1/4', '访问用户': 1723 },
-                        { '日期': '1/5', '访问用户': 3792 },
-                        { '日期': '1/6', '访问用户': 4593 }
-                    ]
+            this.toolbox = {
+                feature: {
+                    saveAsImage: {}
                 }
             }
+            return {
+                loading: true,
+                dataEmpty: false
+            }
+        },
+        methods: {
+            async getReportData(reportId) {
+                let reportData
+                let getParams = {
+                    id : reportId
+                }
+                await this.$api.REPORT_REPORT_API.get('GET_REPORT_DATA', getParams).then(res => {
+                    reportData = res.data
+                })
+                return reportData
+            }
+        },
+
+        mounted() {
+            let _this = this;
+            let reportId =_this._props.id;
+            this.getReportData(reportId).then(res => {
+                _this.chartData = {
+                    rows: res,
+                    columns: ['base_wages', 'base_wages']
+                }
+                this.chartSettings = {
+                    roseType: 'radius'
+                }
+            })
         }
     }
 </script>
-
-<style scoped>
-    .schart-box{
-        display: inline-block;
-        margin: 20px;
-    }
-    .pie{
-        width: 50%;
-    }
-</style>

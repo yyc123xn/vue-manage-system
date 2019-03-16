@@ -38,8 +38,10 @@
                         :label="'字段' + (index + 1)"
                         :key="dataSetField.key"
                         :prop="'dataSetFields.' + index + '.value'">
-                        <el-col class="line" :span="2">表达式</el-col>
+                        <el-col class="line" :span="1">表达式</el-col>
                         <el-col :span="3"><el-input v-model="dataSetField.expression"></el-input></el-col>
+                        <el-col class="line" :span="1">名称</el-col>
+                        <el-col :span="2"><el-input v-model="dataSetField.showName"></el-input></el-col>
                         <el-col class="line" :span="2">数据类型</el-col>
                         <el-col :span="2">
                             <el-select v-model="dataSetField.dataType" placeholder="请选择">
@@ -49,7 +51,7 @@
                             </el-select>
                         </el-col>
                         <el-col class="line" :span="2">字段类型</el-col>
-                        <el-col :span="3">
+                        <el-col :span="2">
                             <el-select v-model="dataSetField.fieldType" placeholder="请选择">
                                 <template v-for="(fieldType, index) in dataSetConstant.dataSetFieldsConstant.fieldTypes">
                                     <el-option :key="fieldType.nameEn" :label="fieldType.nameEn" :value="fieldType.nameEn"></el-option>
@@ -57,7 +59,7 @@
                             </el-select>
                         </el-col>
                         <el-col class="line" :span="2">计算方式</el-col>
-                        <el-col :span="3">
+                        <el-col :span="2">
                             <el-select v-model="dataSetField.calculateType" placeholder="请选择">
                                 <template v-for="(calculateType, index) in dataSetConstant.dataSetFieldsConstant.calculateTypes">
                                     <el-option :key="calculateType.nameEn" :label="calculateType.nameEn" :value="calculateType.nameEn"></el-option>
@@ -120,6 +122,7 @@
                     dataSetFields: [{
                         expression: '',
                         dataType: '',
+                        showName: '',
                         calculateType: '',
                         fieldType: '',
                         isDate: 0
@@ -222,6 +225,7 @@
                     dataType: '',
                     calculateType: '',
                     fieldType: '',
+                    showName: '',
                     isDate: false,
                     key: Date.now()
                 })

@@ -6,6 +6,8 @@ const reportDashboardApi = {
 
     GET_DASHBOARD: '/report/dashboard',
 
+    GET_DASHBOARD_INFO: '/report/dashboard/info',
+
     get(urlName, getParams) {
         let url = this[urlName]
         return axios.get(url, {params : getParams})

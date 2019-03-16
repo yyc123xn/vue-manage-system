@@ -7,7 +7,7 @@
         </el-col>
         <el-col class="container">
             <el-col>
-                <el-collapse v-model="activeNames" @change="handleChange">
+                <el-collapse>
                     <el-collapse-item :title="dashboard.name" name="1">
                         <div>{{dashboard.name}}</div>
                     </el-collapse-item>
@@ -21,7 +21,7 @@
                 <el-form :inline="true">
                     <el-form-item  v-for="(reportFilter, index) in dashboard.reportFilters" :key="reportFilter.id" >
                             {{reportFilter.name}}
-                            <el-select v-if="'MULTI_SELECT_DROP_DOWN' === reportFilter.filterType" v-model="value5" multiple filterable placeholder="请选择" style="margin-right: 55px">
+                            <el-select v-if="'MULTI_SELECT_DROP_DOWN' === reportFilter.filterType"  multiple filterable placeholder="请选择" style="margin-right: 55px">
                                 <el-option
                                         v-for="item in options"
                                         :key="item.value"
@@ -30,7 +30,7 @@
                                 </el-option>
                             </el-select>
                             <el-date-picker v-if="'DATE' === reportFilter.filterType" type='date' placeholder="选择时间" value-format="yyyy-MM-dd" style="margin-right: 30px"></el-date-picker>
-                            <el-select v-if="'DROP_DOWN' === reportFilter.filterType" v-model="value5" filterable placeholder="请选择" style="margin-right: 30px">
+                            <el-select v-if="'DROP_DOWN' === reportFilter.filterType" filterable placeholder="请选择" style="margin-right: 30px">
                                 <el-option
                                         v-for="item in options"
                                         :key="item.value"
@@ -87,24 +87,6 @@
                         name: "过滤器1",
                         filterType: 'DATE',
                         reportIds: [1]
-                    },
-                    {
-                        id: 1,
-                        name: "过滤器2",
-                        filterType: 'DROP_DOWN',
-                        reportIds: [1]
-                    },
-                    {
-                        id: 2,
-                        name: "过滤器3",
-                        filterType: 'MULTI_SELECT_DROP_DOWN',
-                        reportIds: [1]
-                    },
-                    {
-                        id: 3,
-                        name: "过滤器4",
-                        filterType: 'DATE',
-                        reportIds: [1]
                     }
                 ],
                 reportss: [
@@ -146,202 +128,27 @@
                                     }
                                 }
                             }
-                        },
-                        {
-                            id: 1,
-                            name : "新报表",
-                            description: "",
-                            dataSetId: "",
-                            dataSetFieldIds: [],
-                            chartType: 'PIE',
-                            config: {
-                                chartSettings: {
-                                    axisSite: { right: [] },
-                                    yAxisType: [],
-                                    yAxisName: [],
-                                    stack: { 'key': [] },
-                                    area: false,
-                                    // 饼图
-                                    roseType: 'radius',
-                                    dataType: 'percent'
-                                },
-                                extend: {
-                                    // 折线图显示指标数据
-                                    lineSeries: {
-                                        label: {
-                                            normal: {
-                                                show: false
-                                            }
-                                        }
-                                    },
-
-                                    // 柱状图显示指标数据
-                                    histogramSeries: {
-                                        label: {
-                                            show: false,
-                                            position: "top"
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        {
-                            id: 1,
-                            name : "新报表",
-                            description: "",
-                            dataSetId: "",
-                            dataSetFieldIds: [],
-                            chartType: 'LINE',
-                            config: {
-                                chartSettings: {
-                                    axisSite: { right: [] },
-                                    yAxisType: [],
-                                    yAxisName: [],
-                                    stack: { 'key': [] },
-                                    area: false,
-                                    // 饼图
-                                    roseType: 'radius',
-                                    dataType: 'percent'
-                                },
-                                extend: {
-                                    // 折线图显示指标数据
-                                    lineSeries: {
-                                        label: {
-                                            normal: {
-                                                show: false
-                                            }
-                                        }
-                                    },
-
-                                    // 柱状图显示指标数据
-                                    histogramSeries: {
-                                        label: {
-                                            show: false,
-                                            position: "top"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    ],
-                    [
-                        {
-                            id: 1,
-                            name : "新报表",
-                            description: "",
-                            dataSetId: "",
-                            dataSetFieldIds: [],
-                            chartType: 'HISTOGRAM',
-                            config: {
-                                chartSettings: {
-                                    axisSite: { right: [] },
-                                    yAxisType: [],
-                                    yAxisName: [],
-                                    stack: { 'key': [] },
-                                    area: false,
-                                    // 饼图
-                                    roseType: 'radius',
-                                    dataType: 'percent'
-                                },
-                                extend: {
-                                    // 折线图显示指标数据
-                                    lineSeries: {
-                                        label: {
-                                            normal: {
-                                                show: false
-                                            }
-                                        }
-                                    },
-
-                                    // 柱状图显示指标数据
-                                    histogramSeries: {
-                                        label: {
-                                            show: false,
-                                            position: "top"
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        {
-                            id: 1,
-                            name : "新报表",
-                            description: "",
-                            dataSetId: "",
-                            dataSetFieldIds: [],
-                            chartType: 'MONITOR_CARD',
-                            config: {
-                                chartSettings: {
-                                    axisSite: { right: [] },
-                                    yAxisType: [],
-                                    yAxisName: [],
-                                    stack: { 'key': [] },
-                                    area: false,
-                                    // 饼图
-                                    roseType: 'radius',
-                                    dataType: 'percent'
-                                },
-                                extend: {
-                                    // 折线图显示指标数据
-                                    lineSeries: {
-                                        label: {
-                                            normal: {
-                                                show: false
-                                            }
-                                        }
-                                    },
-
-                                    // 柱状图显示指标数据
-                                    histogramSeries: {
-                                        label: {
-                                            show: false,
-                                            position: "top"
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        {
-                            id: 1,
-                            name : "新报表",
-                            description: "",
-                            dataSetId: "",
-                            dataSetFieldIds: [],
-                            chartType: 'GUAGE',
-                            config: {
-                                chartSettings: {
-                                    axisSite: { right: [] },
-                                    yAxisType: [],
-                                    yAxisName: [],
-                                    stack: { 'key': [] },
-                                    area: false,
-                                    // 饼图
-                                    roseType: 'radius',
-                                    dataType: 'percent'
-                                },
-                                extend: {
-                                    // 折线图显示指标数据
-                                    lineSeries: {
-                                        label: {
-                                            normal: {
-                                                show: false
-                                            }
-                                        }
-                                    },
-
-                                    // 柱状图显示指标数据
-                                    histogramSeries: {
-                                        label: {
-                                            show: false,
-                                            position: "top"
-                                        }
-                                    }
-                                }
-                            }
                         }
                     ]
                 ]
             }
-        })
+        }),
+
+        created() {
+            console.log(this.$route.query.id)
+            let dashboardId = this.$route.query.id
+            this.getDashboardInfo(dashboardId)
+        },
+
+        methods : {
+            getDashboardInfo(dashboardId) {
+                let getParams = {
+                    id : dashboardId
+                }
+                this.$api.REPORT_DASHBOARD_API.get('GET_DASHBOARD_INFO', getParams).then(res => {
+                    this.dashboard = res.data
+                })
+            }
+        }
     }
 </script>

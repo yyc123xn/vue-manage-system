@@ -29,13 +29,14 @@
                 </el-table-column>
                 <el-table-column label="操作" width="180" align="center">
                     <template slot-scope="scope">
+                        <el-button type="text" icon="el-icon-info" @click="handleInfo(scope.$index, scope.row)">详情</el-button>
                         <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
                         <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
             <el-col class="pagination">
-                <el-pagination background @current-change="handleCurrentChange" layout="prev, pager, next" :total="1000">
+                <el-pagination background @current-change="handleCurrentChange" layout="prev, pager, next" :page-size="pageSize" :total="total">
                 </el-pagination>
             </el-col>
         </el-col>
@@ -72,6 +73,8 @@
 </template>
 
 <script>
+    import index from "../../../router/index";
+
     export default {
         name: 'DashboardTable',
         data: function () {
@@ -153,15 +156,19 @@
                 this.cur_page = val;
                 this.getData();
             },
+
             search() {
                 this.is_search = true;
             },
+
             formatter(row, column) {
                 return row.address;
             },
+
             filterTag(value, row) {
                 return row.tag === value;
             },
+
             handleEdit(index, row) {
                 this.idx = index;
                 const item = this.tableData[index];
@@ -172,10 +179,22 @@
                 }
                 this.editVisible = true;
             },
+
             handleDelete(index, row) {
                 this.idx = index;
                 this.delVisible = true;
             },
+
+            handleInfo(index, row) {
+                let dashboardId = this.tableData[index].id
+                this.$router.push({
+                    path: '/dashboard_info',
+                    query: {
+                        id: dashboardId
+                    }
+                })
+            },
+
             delAll() {
                 const length = this.multipleSelection.length;
                 let str = '';

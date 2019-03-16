@@ -83,6 +83,10 @@ module.exports = {
                 }
             },
 
+            /**
+             * dashboard
+             */
+
             '/report/dashboard/dashboard_filter_fields': {
                 target: REPORT_URL_PREFIX + '/report/dashboard/dashboard_filter_fields',
                 changeOrigin: true,
@@ -98,6 +102,18 @@ module.exports = {
                     '^/report/dashboard': ''
                 }
             },
+
+            '/report/dashboard/info': {
+                target: REPORT_URL_PREFIX + '/report/dashboard/info',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/report/dashboard/info': ''
+                }
+            },
+
+            /**
+             * dataSet
+             */
 
             '/report/data_set/data_set_filter_fields': {
                 target: REPORT_URL_PREFIX + '/report/data_set/data_set_filter_fields',

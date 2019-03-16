@@ -9,14 +9,14 @@
 
         <el-col class="container">
 
-            <el-steps :active="index - 1" finish-status="success" simple>
+            <el-steps :active="pageIndex - 1" finish-status="success" simple>
                 <el-step title="步骤 1" ></el-step>
                 <el-step title="步骤 2" ></el-step>
                 <el-step title="步骤 3" ></el-step>
             </el-steps>
 
             <!--步骤1-->
-            <el-col class="form-box" v-if="1 === index">
+            <el-col class="form-box" v-if="1 === pageIndex">
                 <el-col  style="margin-top: 25px; text-align: center; margin-bottom: 25px; font-weight : 700" >数据看板基本信息</el-col>
                 <el-form ref="dashboard" :rules="rules" :model="dashboard" label-width="9%">
                     <el-form-item label="数据看板名" prop="name">
@@ -36,23 +36,23 @@
             </el-col>
 
             <!--步骤2-->
-            <el-col v-if="2 === index">
+            <el-col v-if="2 === pageIndex">
                 <el-col  style="margin-top: 25px; text-align: center; margin-bottom: 25px; font-weight : 700;" >数据看板报表制作</el-col>
                 <el-row  :gutter="30">
-                    <el-col :span="24 / dashboard.reportss.length" v-for="(reports, index1) in dashboard.reportss" :key="index1">
+                    <el-col :span="24 / dashboard.reportss.length" v-for="(reports, reportXAxis) in dashboard.reportss" :key="reportXAxis">
                         <el-col class="drag-box-item">
-                            <el-col class="item-title">第{{index1 + 1}}列</el-col>
-                            <draggable v-model="dashboard.reportss[index1]" @remove="removeHandle" :options="dragOptions">
-                                <transition-group tag="div" :id="'第' + (index1 + 1) + '列'" class="item-ul">
-                                    <div v-for="(report, index2) in dashboard.reportss[index1]" class="drag-list" :key="index1 + index2 + ''">
+                            <el-col class="item-title">第{{reportXAxis + 1}}列</el-col>
+                            <draggable v-model="dashboard.reportss[reportXAxis]" @remove="removeHandle" :options="dragOptions">
+                                <transition-group tag="div" :id="'第' + (reportXAxis + 1) + '列'" class="item-ul">
+                                    <div v-for="(report, reportYAxis) in dashboard.reportss[reportXAxis]" class="drag-list" :key="reportXAxis + reportYAxis + ''">
                                         {{report.name}}
-                                        <el-button type="text" icon="el-icon-edit" @click="handleEdit(index1, index2)">编辑</el-button>
-                                        <el-button type="text" icon="el-icon-delete" class="red" @click="deleteReportRow(index1, index2)">删除</el-button>
+                                        <el-button type="text" icon="el-icon-edit" @click="handleEdit(reportXAxis, reportYAxis)">编辑</el-button>
+                                        <el-button type="text" icon="el-icon-delete" class="red" @click="deleteReportRow(reportXAxis, reportYAxis)">删除</el-button>
                                     </div>
                                 </transition-group>
                             </draggable>
                             <el-col align="center">
-                                <el-button type="primary" icon="el-icon-lx-add" @click="addReportRow(index1)" style="margin-bottom: 3%; margin-top: 3%">添加一行</el-button>
+                                <el-button type="primary" icon="el-icon-lx-add" @click="addReportRow(reportXAxis)" style="margin-bottom: 3%; margin-top: 3%">添加一行</el-button>
                             </el-col>
                         </el-col>
                     </el-col>
@@ -81,7 +81,7 @@
                     </el-form-item>
                     <el-form-item label="数据集指标" prop="dataSetFieldIds">
                         <el-select v-model="handleEditForm.dataSetFieldIds" placeholder="请选择" filterable multiple>
-                            <template v-for="(metric, index) in dashboardHelper.reportssHelper[handleEditForm.index1][handleEditForm.index2].metrics">
+                            <template v-for="(metric, index) in dashboardHelper.reportssHelper[handleEditForm.reportXAxis][handleEditForm.reportYAxis].metrics">
                                 <el-option :key="metric.id" :label="metric.showName" :value="metric.id"></el-option>
                             </template>
                         </el-select>
@@ -103,7 +103,7 @@
                                     <el-form ref="handleEditForm.chartSettings" :rules="rules" :model="handleEditForm.chartSettings" label-width="20%">
                                         <el-form-item label="axisSite(设置右轴key)">
                                             <el-select v-model="handleEditForm.config.chartSettings.axisSite.right" placeholder="请选择" multiple filterable>
-                                                <template v-for="(metric, index) in dashboardHelper.reportssHelper[handleEditForm.index1][handleEditForm.index2].metrics">
+                                                <template v-for="(metric, index) in dashboardHelper.reportssHelper[handleEditForm.reportXAxis][handleEditForm.reportYAxis].metrics">
                                                     <el-option :key="metric.showName" :label="metric.showName" :value="metric.id"></el-option>
                                                 </template>
                                             </el-select>
@@ -146,7 +146,7 @@
                                         </el-form-item>
                                         <el-form-item label="多指标堆叠">
                                             <el-select v-model="handleEditForm.config.chartSettings.stack.key" placeholder="请选择" multiple>
-                                                <template v-for="(metric, index) in dashboardHelper.reportssHelper[handleEditForm.index1][handleEditForm.index2].metrics">
+                                                <template v-for="(metric, index) in dashboardHelper.reportssHelper[handleEditForm.reportXAxis][handleEditForm.reportYAxis].metrics">
                                                     <el-option :key="metric.showName" :label="metric.showName" :value="metric.id"></el-option>
                                                 </template>
                                             </el-select>
@@ -166,7 +166,7 @@
                                     <el-form ref="handleEditForm.chartSettings" :rules="rules" :model="handleEditForm.chartSettings" label-width="20%">
                                         <el-form-item label="axisSite(设置右轴key)">
                                             <el-select v-model="handleEditForm.config.chartSettings.axisSite.right" placeholder="请选择" multiple filterable>
-                                                <template v-for="(metric, index) in dashboardHelper.reportssHelper[handleEditForm.index1][handleEditForm.index2].metrics">
+                                                <template v-for="(metric, index) in dashboardHelper.reportssHelper[handleEditForm.reportXAxis][handleEditForm.reportYAxis].metrics">
                                                     <el-option :key="metric.showName" :label="metric.showName" :value="metric.id"></el-option>
                                                 </template>
                                             </el-select>
@@ -209,7 +209,7 @@
                                         </el-form-item>
                                         <el-form-item label="堆叠柱状图">
                                             <el-select v-model="handleEditForm.config.chartSettings.stack.key" placeholder="请选择" multiple>
-                                                <template v-for="(metric, index) in dashboardHelper.reportssHelper[handleEditForm.index1][handleEditForm.index2].metrics">
+                                                <template v-for="(metric, index) in dashboardHelper.reportssHelper[handleEditForm.reportXAxis][handleEditForm.reportYAxis].metrics">
                                                     <el-option :key="metric.showName" :label="metric.showName" :value="metric.id"></el-option>
                                                 </template>
                                             </el-select>
@@ -276,7 +276,7 @@
             </el-dialog>
 
             <!--步骤3-->
-            <el-col v-if="3 === index">
+            <el-col v-if="3 === pageIndex">
                 <el-col style="margin-top: 25px; text-align: center; margin-bottom: 25px; font-weight : 700;" >数据看板过滤器设置</el-col>
                 <el-form>
                     <el-form-item
@@ -296,9 +296,9 @@
                         </el-col>
                         <el-col class="line" :span="2">作用报表</el-col>
                         <el-col :span="3">
-                            <el-select v-model="reportFilter.reportIds" placeholder="请选择" multiple>
+                            <el-select v-model="reportFilter.reportKeys" placeholder="请选择" multiple>
                                 <template v-for="(report, index) in dashboardHelper.reportFilterHelper" :value="filterType.nameEn">
-                                    <el-option :key="'' + report.name + report.chartType" :label="report.name" :value="report.id"></el-option>
+                                    <el-option :key="report.reportXAxis+ '|' + report.reportYAxis" :label="report.name" :value="report.reportXAxis+ '|' + report.reportYAxis"></el-option>
                                 </template>
                             </el-select>
                         </el-col>
@@ -314,8 +314,8 @@
 
             <el-col align="center" style="margin-top: 30px">
                 <el-button-group>
-                    <el-button type="primary" icon="el-icon-arrow-left" @click="previousPage" v-if="2 === index || 3 === index">上一页</el-button>
-                    <el-button type="primary" @click="nextPage" v-if="1 === index || 2 === index">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+                    <el-button type="primary" icon="el-icon-arrow-left" @click="previousPage" v-if="2 === pageIndex || 3 === pageIndex">上一页</el-button>
+                    <el-button type="primary" @click="nextPage" v-if="1 === pageIndex || 2 === pageIndex">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
                 </el-button-group>
             </el-col>
 
@@ -367,13 +367,13 @@
                             id: 0,
                             name: "",
                             filterType: '',
-                            reportIds: []
+                            reportKeys: []
                         }
                     ],
                     reportss: [
                         [
                             {
-                                id: 1,
+                                id: 0,
                                 name : "新报表",
                                 description: "",
                                 dataSetId: "",
@@ -448,7 +448,7 @@
                         filterType: [
                             {required: true, message: '请选择过滤器类型', trigger: 'blur'}
                         ],
-                        reportIds: [
+                        reportKeys: [
                             {required: true, message: '请选择过滤器需要作用的报表', trigger: 'blur'}
                         ]
                     }
@@ -459,18 +459,15 @@
                     group: 'sortlist',
                     ghostClass: 'ghost-style'
                 },
-                index: 1,
+                pageIndex: 1,
                 editVisible: false,
                 deleteVisible: false,
-
                 handleEditForm : {
-                    index1: 0,
-                    index2: 0,
+                    reportXAxis: 0,
+                    reportYAxis: 0,
                     name: "",
                     dataSetId: "",
-                    dataSets: [],
                     chartType: '',
-                    chartTypes: [],
                     config: {
                         chartSettings: {
                             axisSite: { right: [] },
@@ -500,8 +497,7 @@
                                 }
                             }
                         }
-                    },
-                    metrics: []
+                    }
                 },
             }
         },
@@ -514,29 +510,28 @@
                     id : id
                 }
                 this.$api.REPORT_DATA_SET_API.get('GET_DATA_SET_METRICS', queryParams).then(res => {
-                    this.handleEditForm.metrics = res.data
-                    this.dashboardHelper.reportssHelper[this.handleEditForm.index1][this.handleEditForm.index2].metrics = this.handleEditForm.metrics
+                    this.dashboardHelper.reportssHelper[this.handleEditForm.reportXAxis][this.handleEditForm.reportYAxis].metrics = res.data
                 })
             },
 
             // step2-报表编辑
-            handleEdit(index1, index2) {
-                this.handleEditForm = this.dashboard.reportss[index1][index2]
+            handleEdit(reportXAxis, reportYAxis) {
+                this.handleEditForm = this.dashboard.reportss[reportXAxis][reportYAxis]
+                this.handleEditForm.reportXAxis = reportXAxis
+                this.handleEditForm.reportYAxis = reportYAxis
                 this.editVisible = true
-                this.handleEditForm.dataSets = this.dashboardConstant.reportConstant.dataSets
-                this.handleEditForm.chartTypes = this.dashboardConstant.reportConstant.chartTypes
-                this.handleEditForm.metrics = this.dashboardHelper.reportssHelper[index1][index2].metrics
-                this.handleEditForm.index1 = index1
-                this.handleEditForm.index2 = index2
             },
 
             // 添加一行
-            addReportRow(index1) {
-                let report = {
+            addReportRow(reportXAxis) {
+                let report =  {
                     id: 0,
                     name : "新报表",
                     description: "",
                     dataSetId: "",
+                    dataSetFieldIds: [],
+                    reportXAxis: reportXAxis,
+                    reportYAxis: 0,
                     config: {
                         chartSettings: {
                             // 折线图和柱状图
@@ -569,19 +564,19 @@
                         }
                     }
                 }
-                let reportInit = {
+                let reportHelper = {
                     metrics : []
                 }
-                this.dashboard.reportss[index1].push(report)
-                this.dashboardHelper.reportssHelper[index1].push(reportInit)
+                this.dashboard.reportss[reportXAxis].push(report)
+                this.dashboardHelper.reportssHelper[reportXAxis].push(reportHelper)
             },
 
             // 添加一列
             addReportColumn() {
                 let reports = []
-                let reportsInit = []
+                let reportsHelper = []
                 this.dashboard.reportss.push(reports)
-                this.dashboardHelper.reportssHelper.push(reportsInit)
+                this.dashboardHelper.reportssHelper.push(reportsHelper)
             },
 
             // 删除一列
@@ -591,10 +586,10 @@
             },
 
             // step2-报表删除
-            deleteReportRow(index1, index2) {
+            deleteReportRow(reportXAxis, reportYAxis) {
                 this.deleteVisible = true
-                this.dashboard.reportss[index1].splice(index2, 1)
-                this.dashboardHelper.reportssHelper[index1].splice(index2, 1)
+                this.dashboard.reportss[reportXAxis].splice(reportYAxis, 1)
+                this.dashboardHelper.reportssHelper[reportXAxis].splice(reportYAxis, 1)
             },
 
             // step3-添加报表过滤选项
@@ -603,7 +598,7 @@
                     id: 0,
                     name: "",
                     filterType: '',
-                    reportIds: []
+                    reportKeys: []
                 })
             },
 
@@ -613,17 +608,17 @@
 
             // 前一页
             previousPage() {
-                if (2 === this.index || 3 === this.index) {
-                    this.index--;
+                if (2 === this.pageIndex || 3 === this.pageIndex) {
+                    this.pageIndex--;
                 }
             },
 
             // 后一页
             nextPage() {
-                if (1 === this.index || 2 === this.index) {
-                    this.index++;
+                if (1 === this.pageIndex || 2 === this.pageIndex) {
+                    this.pageIndex++;
                 }
-                if (3 === this.index) {
+                if (3 === this.pageIndex) {
                     this.dashboardHelper.reportFilterHelper = []
                     this.dashboard.reportss.forEach(reports => {
                         reports.forEach(report => {
@@ -634,7 +629,6 @@
             },
 
             addDashboard() {
-                console.log(this.dashboard)
                 this.$api.REPORT_DASHBOARD_API.post('ADD_DASHBOARD', this.dashboard).then(res => {
                     this.$message.success("成功添加数据看板")
                     this.$router.replace('/dashboard_table')

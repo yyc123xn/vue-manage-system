@@ -160,7 +160,6 @@
                         this.$api.REPORT_DATA_SET_API.post('ADD_DATA_SET', this.dataSet).then(res => {
                             this.$router.push('/data_set_table')
                         }).catch(error => {
-                            console.log(error)
                             this.$message.error ("提交失败", error)
                         })
                     } else {

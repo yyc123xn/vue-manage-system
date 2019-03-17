@@ -93,7 +93,6 @@
             addDataSource(dataSource) {
                 this.$refs[dataSource].validate((valid) => {
                     if (valid) {
-                        console.log(this.dataSource)
 //                        this.$api.REPORT_DATA_SOURCE_API.post('ADD_DATA_SOURCE', this.dataSource).then(res => {
 //                            this.$message.success("成功添加员工")
 //                            this.$router.replace('/data_source_table')

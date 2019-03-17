@@ -1,13 +1,20 @@
 <template>
-  <ve-histogram :data="chartData" :settings="chartSettings" :toolbox="toolbox"></ve-histogram>
+  <ve-histogram
+          :data="chartData"
+          :settings="chartSettings"
+          :toolbox="toolbox"
+          :loading="loading"
+          :data-empty="dataEmpty">
+  </ve-histogram>
 </template>
 
 <script>
     // 使用前需先引入对应模块
     import 'echarts/lib/component/toolbox'
+    import 'v-charts/lib/style.css'
     export default {
         name: "Histogram",
-        props: {id : Number},
+        props: {id : Number, queryColumn: Array, queryCondition: Array},
         data () {
             this.chartSettings = {
             }
@@ -17,9 +24,9 @@
                 }
             }
             return {
-                chartData: {
-
-                }
+                chartData: {},
+                loading: true,
+                dataEmpty: false
             }
         },
 
@@ -33,29 +40,39 @@
                     reportData = res.data
                 })
                 return reportData
+            },
+
+            updateReportData(reportId) {
+                this.getReportData(reportId).then(res => {
+                    this.loading = true;
+                    if (0 === res.length) {
+                        this.dataEmpty = true;
+                    }
+                    this.chartData = {
+                        rows: res,
+                        columns: ['create_time', 'base_wages','status'],
+                    }
+                    this.chartSettings = {
+                    }
+                    this.loading = false;
+                })
             }
         },
 
-//        watch: {
-//            queryColumn: val => {
-//                console.log('queryColumn')
-//                console.log(val)
-//                let _this = this;
-//                console.log(this.id)
-//            }
-//        },
+        watch: {
+            queryCondition: {
+                handler (newV, oldV) {
+                    // do something, 可使用this
+                    this.updateReportData(this.id)
+                },
+                deep :true
+            }
+        },
 
         mounted() {
             let _this = this;
             let reportId =_this._props.id;
-            this.getReportData(reportId).then(res => {
-                _this.chartData = {
-                    rows: res,
-                    columns: ['create_time', 'base_wages', 'status'],
-                }
-                _this.chartSettings = {
-                }
-            })
+            this.updateReportData(reportId)
         }
     }
 </script>

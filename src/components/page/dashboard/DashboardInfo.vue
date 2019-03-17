@@ -24,7 +24,7 @@
                             <el-select
                                     v-model="reportFilter.queryCondition"
                                     v-if="'MULTI_SELECT_DROP_DOWN' === reportFilter.filterType"
-                                    multiple filterable placeholder="请选择" style="margin-right: 55px">
+                                    multiple filterable placeholder="请选择" style="margin-right: 55px" @change="changeReportFilter">
                                 <el-option
                                         v-for="item in options"
                                         :key="item.value"
@@ -41,12 +41,14 @@
                                     start-placeholder="开始日期"
                                     end-placeholder="结束日期"
                                     align="right"
-                                    value-format="yyyyMMddHH">
+                                    value-format="yyyyMMddHH"
+                                    @change="changeReportFilter">
                             </el-date-picker>
                             <el-select
                                     v-model="reportFilter.queryCondition"
                                     v-if="'DROP_DOWN' === reportFilter.filterType" filterable
-                                    placeholder="请选择" style="margin-right: 30px">
+                                    placeholder="请选择" style="margin-right: 30px"
+                                    @change="changeReportFilter">
                                 <el-option
                                         v-for="item in options"
                                         :key="item.value"
@@ -61,11 +63,11 @@
             <el-col>
                 <el-col v-for="(reports, index1) in dashboard.reportss" :key="index1">
                     <el-col :span="24 / dashboard.reportss[index1].length" v-for="(report, index2) in dashboard.reportss[index1]" :key="index2">
-                        <histogram :id="report.id" :loading="true" v-if="'HISTOGRAM' === report.chartType"></histogram>
-                        <line-dup :id="report.id" :loading="true" v-if="'LINE' === report.chartType"></line-dup>
-                        <pie :id="report.id" :loading="true" v-if="'PIE' === report.chartType"></pie>
+                        <histogram :id="report.id" :queryColumn="reportFilter.queryColumn" :queryCondition="reportFilter.queryCondition" v-if="'HISTOGRAM' === report.chartType"></histogram>
+                        <line-dup :id="report.id" :queryColumn="reportFilter.queryColumn" :queryCondition="reportFilter.queryCondition" v-if="'LINE' === report.chartType"></line-dup>
+                        <pie :id="report.id" :queryColumn="reportFilter.queryColumn" :queryCondition="reportFilter.queryCondition" v-if="'PIE' === report.chartType"></pie>
                         <!--<MonitorCard v-if="'MONITOR_CARD' === report.chartType"></MonitorCard>-->
-                        <guage :id="report.id" :loading="true" v-if="'GUAGE' === report.chartType"></guage>
+                        <guage :id="report.id" :queryColumn="reportFilter.queryColumn" :queryCondition="reportFilter.queryCondition" v-if="'GUAGE' === report.chartType"></guage>
                     </el-col>
                 </el-col>
             </el-col>
@@ -92,7 +94,10 @@
         },
 
         data: () => ({
-            filter: [],
+            reportFilter: {
+                queryColumn: [],
+                queryCondition: [],
+            },
             dashboard: {
                 id: 0,
                 name: '看板名称',
@@ -193,6 +198,22 @@
                 }
                 await this.$api.REPORT_DASHBOARD_API.get('GET_DASHBOARD_INFO', getParams).then(res => {
                     this.dashboard = res.data
+                })
+            },
+
+            changeReportFilter() {
+                this.reportFilter = {
+                    queryColumn: [],
+                    queryCondition: [],
+                }
+                this.dashboard.reportFilters.forEach(reportFilter => {
+                    let index = this.reportFilter.queryColumn.indexOf(reportFilter.queryColumn)
+                    if (index !== -1) {
+                        this.reportFilter.queryCondition[index] = reportFilter.queryCondition
+                    } else {
+                        this.reportFilter.queryColumn.push(reportFilter.queryColumn)
+                        this.reportFilter.queryCondition.push(reportFilter.queryCondition)
+                    }
                 })
             }
         }

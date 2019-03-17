@@ -48,9 +48,6 @@ router.beforeEach((to, from, next) => {
     NProgress.start()
     let userToken = window.$cookies.get("userToken")
     if (userToken) {
-        console.log(userToken)
-        console.log(from)
-        console.log(to)
         api.FINANCE_DEVELOPER_API.get('CURRENT').then(res => {
             if (res.data.loggedIn === false) {
                 next('/login')

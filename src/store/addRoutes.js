@@ -28,8 +28,6 @@ const addRoutes = {
     [ADD_ROUTES](state, dynamicRoutes) {
       let routes = []
       generateMenu(routes, dynamicRoutes) // 将后台的路由数据components转化成组件
-      console.log("路由")
-      console.log(routes)
       router.addRoutes(routes)  // 添加路由
       router.push('/')
     }

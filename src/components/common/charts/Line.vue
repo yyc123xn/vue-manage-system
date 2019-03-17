@@ -1,16 +1,17 @@
 <template>
     <ve-line
             :data="chartData"
-            :toolbox="toolbox">
+            :toolbox="toolbox" :loading="loading" :data-empty="dataEmpty">
     </ve-line>
 </template>
 
 <script>
     // 使用前需先引入对应模块
     import 'echarts/lib/component/toolbox'
+    import 'v-charts/lib/style.css'
     export default {
         name: 'Line',
-        props: {id : Number},
+        props: {id : Number, queryColumn: Array, queryCondition: Array},
         data () {
             this.toolbox = {
                 feature: {
@@ -18,8 +19,9 @@
                 }
             }
             return {
-                chartData: {
-                }
+                chartData: {},
+                loading: true,
+                dataEmpty: false
             }
         },
 
@@ -33,18 +35,37 @@
                     reportData = res.data
                 })
                 return reportData
+            },
+
+            updateReportData(reportId) {
+                this.getReportData(reportId).then(res => {
+                    this.loading = true;
+                    if (0 === res.length) {
+                        this.dataEmpty = true;
+                    }
+                    this.chartData = {
+                        rows: res,
+                        columns: ['create_time', 'status'],
+                    }
+                    this.loading = false;
+                })
             }
         },
 
         mounted() {
             let _this = this;
             let reportId =_this._props.id;
-            this.getReportData(reportId).then(res => {
-                _this.chartData = {
-                    rows: res,
-                    columns: ['create_time', 'status'],
-                }
-            })
-        }
+            this.updateReportData(reportId)
+        },
+
+        watch: {
+            queryCondition: {
+                handler (newV, oldV) {
+                    // do something, 可使用this
+                    this.updateReportData(this.id)
+                },
+                deep:true
+            }
+        },
     }
 </script>

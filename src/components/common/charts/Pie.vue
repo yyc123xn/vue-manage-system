@@ -5,17 +5,17 @@
                 :loading="loading"
                 :data-empty="dataEmpty"
                 :settings="chartSettings"
-                :toolbox="toolbox"
-        >
+                :toolbox="toolbox">
         </ve-pie>
     </div>
 </template>
 <script>
     // 使用前需先引入对应模块
     import 'echarts/lib/component/toolbox'
+    import 'v-charts/lib/style.css'
     export default {
         name: 'Pie',
-        props: {id : Number},
+        props: {id : Number, queryColumn: Array, queryCondition: Array},
         data () {
             this.toolbox = {
                 feature: {
@@ -40,21 +40,40 @@
                     reportData = res.data
                 })
                 return reportData
+            },
+
+            updateReportData(reportId) {
+                this.getReportData(reportId).then(res => {
+                    this.loading = true;
+                    if (0 === res.length) {
+                        this.dataEmpty = true;
+                    }
+                    this.chartData = {
+                        rows: res,
+                        columns: ['base_wages', 'base_wages']
+                    }
+                    this.chartSettings = {
+                        roseType: 'radius'
+                    }
+                    this.loading = false;
+                })
+            }
+        },
+
+        watch: {
+            queryCondition: {
+                handler (newV, oldV) {
+                    // do something, 可使用this
+                    this.updateReportData(this.id)
+                },
+                deep:true
             }
         },
 
         mounted() {
             let _this = this;
             let reportId =_this._props.id;
-            this.getReportData(reportId).then(res => {
-                _this.chartData = {
-                    rows: res,
-                    columns: ['base_wages', 'base_wages']
-                }
-                this.chartSettings = {
-                    roseType: 'radius'
-                }
-            })
+            this.updateReportData(reportId)
         }
     }
 </script>

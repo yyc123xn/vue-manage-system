@@ -12,12 +12,10 @@ service.defaults.headers = {
 // http request 拦截器，通过这个，我们就可以把Cookie传到后台
 service.interceptors.request.use(
     config => {
-        console.log("拦截器-请求-config")
         config.data = JSON.stringify(config.data);
         return config;
     },
     error => {
-        console.log("拦截器-请求-error")
         return Promise.reject(error);
     }
 );
@@ -26,7 +24,6 @@ service.interceptors.request.use(
 // http response 拦截器
 service.interceptors.response.use(
     response => {
-        console.log("拦截器-响应-response")
         if(response.data.code === -1) {
             router.push({
                 path: '/login',
@@ -36,7 +33,6 @@ service.interceptors.response.use(
         return response.data;
     },
     error => {
-        console.log("拦截器-响应-error")
         return Promise.reject(error)
     });
 

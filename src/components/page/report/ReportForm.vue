@@ -151,7 +151,6 @@
         },
         created() {
             this.$api.getVoucherTypes().then(res => {
-                console.log(res)
                 this.form.voucherTypes = res.data;
             })
         }

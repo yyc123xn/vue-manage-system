@@ -10,8 +10,8 @@
     import 'echarts/lib/component/toolbox'
     import 'v-charts/lib/style.css'
     export default {
-        name: 'Line',
-        props: {id : Number, queryColumn: Array, queryCondition: Array},
+        name: 'LineDup',
+        props: {id : Number, queryColumns: Array, queryConditions: Array},
         data () {
             this.toolbox = {
                 feature: {
@@ -28,10 +28,14 @@
         methods: {
             async getReportData(reportId) {
                 let reportData
-                let getParams = {
+                let postParams = {
                     id : reportId
                 }
-                await this.$api.REPORT_REPORT_API.get('GET_REPORT_DATA', getParams).then(res => {
+                if (this.queryColumns !== undefined && 0 < this.queryColumns.length) {
+                    postParams.queryColumns = this.queryColumns
+                    postParams.queryConditions = this.queryConditions
+                }
+                await this.$api.REPORT_REPORT_API.post('GET_REPORT_DATA', postParams).then(res => {
                     reportData = res.data
                 })
                 return reportData
@@ -40,13 +44,8 @@
             updateReportData(reportId) {
                 this.getReportData(reportId).then(res => {
                     this.loading = true;
-                    if (0 === res.length) {
-                        this.dataEmpty = true;
-                    }
-                    this.chartData = {
-                        rows: res,
-                        columns: ['create_time', 'status'],
-                    }
+                    this.dataEmpty = 0 === res.rows.length;
+                    this.chartData = res
                     this.loading = false;
                 })
             }
@@ -59,7 +58,7 @@
         },
 
         watch: {
-            queryCondition: {
+            queryConditions: {
                 handler (newV, oldV) {
                     // do something, 可使用this
                     this.updateReportData(this.id)

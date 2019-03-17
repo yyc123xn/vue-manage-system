@@ -63,11 +63,11 @@
             <el-col>
                 <el-col v-for="(reports, index1) in dashboard.reportss" :key="index1">
                     <el-col :span="24 / dashboard.reportss[index1].length" v-for="(report, index2) in dashboard.reportss[index1]" :key="index2">
-                        <histogram :id="report.id" :queryColumn="reportFilter.queryColumn" :queryCondition="reportFilter.queryCondition" v-if="'HISTOGRAM' === report.chartType"></histogram>
-                        <line-dup :id="report.id" :queryColumn="reportFilter.queryColumn" :queryCondition="reportFilter.queryCondition" v-if="'LINE' === report.chartType"></line-dup>
-                        <pie :id="report.id" :queryColumn="reportFilter.queryColumn" :queryCondition="reportFilter.queryCondition" v-if="'PIE' === report.chartType"></pie>
+                        <histogram :id="report.id" :queryColumns="reportFilter.queryColumns" :queryConditions="reportFilter.queryConditions" v-if="'HISTOGRAM' === report.chartType"></histogram>
+                        <line-dup :id="report.id" :queryColumns="reportFilter.queryColumns" :queryConditions="reportFilter.queryConditions" v-if="'LINE' === report.chartType"></line-dup>
+                        <pie :id="report.id" :queryColumns="reportFilter.queryColumns" :queryConditions="reportFilter.queryConditions" v-if="'PIE' === report.chartType"></pie>
                         <!--<MonitorCard v-if="'MONITOR_CARD' === report.chartType"></MonitorCard>-->
-                        <guage :id="report.id" :queryColumn="reportFilter.queryColumn" :queryCondition="reportFilter.queryCondition" v-if="'GUAGE' === report.chartType"></guage>
+                        <guage :id="report.id" :queryColumns="reportFilter.queryColumns" :queryConditions="reportFilter.queryConditions" v-if="'GUAGE' === report.chartType"></guage>
                     </el-col>
                 </el-col>
             </el-col>
@@ -95,8 +95,8 @@
 
         data: () => ({
             reportFilter: {
-                queryColumn: [],
-                queryCondition: [],
+                queryColumns: [],
+                queryConditions: [],
             },
             dashboard: {
                 id: 0,
@@ -203,16 +203,16 @@
 
             changeReportFilter() {
                 this.reportFilter = {
-                    queryColumn: [],
-                    queryCondition: [],
+                    queryColumns: [],
+                    queryConditions: [],
                 }
                 this.dashboard.reportFilters.forEach(reportFilter => {
-                    let index = this.reportFilter.queryColumn.indexOf(reportFilter.queryColumn)
+                    let index = this.reportFilter.queryColumns.indexOf(reportFilter.queryColumn)
                     if (index !== -1) {
-                        this.reportFilter.queryCondition[index] = reportFilter.queryCondition
+                        this.reportFilter.queryConditions[index] = reportFilter.queryCondition
                     } else {
-                        this.reportFilter.queryColumn.push(reportFilter.queryColumn)
-                        this.reportFilter.queryCondition.push(reportFilter.queryCondition)
+                        this.reportFilter.queryColumns.push(reportFilter.queryColumn)
+                        this.reportFilter.queryConditions.push(reportFilter.queryCondition)
                     }
                 })
             }

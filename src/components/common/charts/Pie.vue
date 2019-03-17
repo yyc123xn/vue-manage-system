@@ -15,7 +15,7 @@
     import 'v-charts/lib/style.css'
     export default {
         name: 'Pie',
-        props: {id : Number, queryColumn: Array, queryCondition: Array},
+        props: {id : Number, queryColumns: Array, queryConditions: Array},
         data () {
             this.toolbox = {
                 feature: {
@@ -33,10 +33,14 @@
         methods: {
             async getReportData(reportId) {
                 let reportData
-                let getParams = {
+                let postParams = {
                     id : reportId
                 }
-                await this.$api.REPORT_REPORT_API.get('GET_REPORT_DATA', getParams).then(res => {
+                if (this.queryColumns !== undefined && 0 < this.queryColumns.length) {
+                    postParams.queryColumns = this.queryColumns
+                    postParams.queryConditions = this.queryConditions
+                }
+                await this.$api.REPORT_REPORT_API.post('GET_REPORT_DATA', postParams).then(res => {
                     reportData = res.data
                 })
                 return reportData
@@ -44,13 +48,12 @@
 
             updateReportData(reportId) {
                 this.getReportData(reportId).then(res => {
+                    console.log(res)
                     this.loading = true;
-                    if (0 === res.length) {
-                        this.dataEmpty = true;
-                    }
+                    this.dataEmpty = 0 === res.rows.length;
                     this.chartData = {
-                        rows: res,
-                        columns: ['base_wages', 'base_wages']
+                        rows: res.rows,
+                        columns: res.columns
                     }
                     this.chartSettings = {
                         roseType: 'radius'
@@ -61,7 +64,7 @@
         },
 
         watch: {
-            queryCondition: {
+            queryConditions: {
                 handler (newV, oldV) {
                     // do something, 可使用this
                     this.updateReportData(this.id)

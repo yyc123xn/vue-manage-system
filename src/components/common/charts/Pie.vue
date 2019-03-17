@@ -15,14 +15,17 @@
     import 'echarts/lib/component/toolbox'
     export default {
         name: 'Pie',
-        props: {id : Number, chartData: Object},
+        props: {id : Number},
         data () {
             this.toolbox = {
                 feature: {
                     saveAsImage: {}
                 }
             }
+            this.chartSettings = {
+            }
             return {
+                chartData: {},
                 loading: true,
                 dataEmpty: false
             }

@@ -7,7 +7,7 @@
     import 'echarts/lib/component/toolbox'
     export default {
         name: "Histogram",
-        props: {id : Number, chartData: Object},
+        props: {id : Number},
         data () {
             this.chartSettings = {
             }
@@ -17,6 +17,9 @@
                 }
             }
             return {
+                chartData: {
+
+                }
             }
         },
 
@@ -32,6 +35,15 @@
                 return reportData
             }
         },
+
+//        watch: {
+//            queryColumn: val => {
+//                console.log('queryColumn')
+//                console.log(val)
+//                let _this = this;
+//                console.log(this.id)
+//            }
+//        },
 
         mounted() {
             let _this = this;

@@ -7,7 +7,7 @@
     import 'echarts/lib/component/toolbox'
     export default {
         name: 'Guage',
-        props: {id : Number, chartData: Object},
+        props: {id : Number},
         data () {
             this.chartSettings = {
 //                dataType: {
@@ -27,10 +27,6 @@
             }
             return {
                 chartData: {
-                    columns: ['type', 'value'],
-                    rows: [
-                        { type: '占比', value: 0.8 }
-                    ]
                 }
             }
         },

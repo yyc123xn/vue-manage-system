@@ -5,7 +5,7 @@
                 <el-breadcrumb-item><i class="el-icon-lx-favor"></i> schart图表</el-breadcrumb-item>
             </el-breadcrumb>
         </el-col>
-        <el-col class="container">
+        <el-col class="container" v-model="dashboard">
             <el-col>
                 <el-collapse>
                     <el-collapse-item :title="dashboard.name" name="1">
@@ -21,7 +21,10 @@
                 <el-form :inline="true">
                     <el-form-item  v-for="(reportFilter, index) in dashboard.reportFilters" :key="reportFilter.id" >
                             {{reportFilter.name}}
-                            <el-select v-if="'MULTI_SELECT_DROP_DOWN' === reportFilter.filterType"  multiple filterable placeholder="请选择" style="margin-right: 55px">
+                            <el-select
+                                    v-model="reportFilter.queryCondition"
+                                    v-if="'MULTI_SELECT_DROP_DOWN' === reportFilter.filterType"
+                                    multiple filterable placeholder="请选择" style="margin-right: 55px">
                                 <el-option
                                         v-for="item in options"
                                         :key="item.value"
@@ -29,8 +32,21 @@
                                         :value="item.value">
                                 </el-option>
                             </el-select>
-                            <el-date-picker v-if="'DATE' === reportFilter.filterType" type='date' placeholder="选择时间" value-format="yyyy-MM-dd" style="margin-right: 30px"></el-date-picker>
-                            <el-select v-if="'DROP_DOWN' === reportFilter.filterType" filterable placeholder="请选择" style="margin-right: 30px">
+                            <el-date-picker
+                                    v-model="reportFilter.queryCondition"
+                                    v-if="'DATE' === reportFilter.filterType"
+                                    type="datetimerange"
+                                    :picker-options="pickerOptions"
+                                    range-separator="至"
+                                    start-placeholder="开始日期"
+                                    end-placeholder="结束日期"
+                                    align="right"
+                                    value-format="yyyyMMddHH">
+                            </el-date-picker>
+                            <el-select
+                                    v-model="reportFilter.queryCondition"
+                                    v-if="'DROP_DOWN' === reportFilter.filterType" filterable
+                                    placeholder="请选择" style="margin-right: 30px">
                                 <el-option
                                         v-for="item in options"
                                         :key="item.value"
@@ -45,11 +61,11 @@
             <el-col>
                 <el-col v-for="(reports, index1) in dashboard.reportss" :key="index1">
                     <el-col :span="24 / dashboard.reportss[index1].length" v-for="(report, index2) in dashboard.reportss[index1]" :key="index2">
-                        <histogram :id="report.id" :chartData="report.chartData" :loading="true" v-if="'HISTOGRAM' === report.chartType"></histogram>
-                        <LineDup :id="report.id" :chartData="report.chartData" :loading="true" v-if="'LINE' === report.chartType"></LineDup>
-                        <Pie :id="report.id" :chartData="report.chartData" :loading="true" v-if="'PIE' === report.chartType"></Pie>
+                        <histogram :id="report.id" :loading="true" v-if="'HISTOGRAM' === report.chartType"></histogram>
+                        <line-dup :id="report.id" :loading="true" v-if="'LINE' === report.chartType"></line-dup>
+                        <pie :id="report.id" :loading="true" v-if="'PIE' === report.chartType"></pie>
                         <!--<MonitorCard v-if="'MONITOR_CARD' === report.chartType"></MonitorCard>-->
-                        <Guage :id="report.id" :chartData="report.chartData" :loading="true" v-if="'GUAGE' === report.chartType"></Guage>
+                        <guage :id="report.id" :loading="true" v-if="'GUAGE' === report.chartType"></guage>
                     </el-col>
                 </el-col>
             </el-col>
@@ -76,6 +92,7 @@
         },
 
         data: () => ({
+            filter: [],
             dashboard: {
                 id: 0,
                 name: '看板名称',
@@ -86,7 +103,8 @@
                         id: 0,
                         name: "过滤器1",
                         filterType: 'DATE',
-                        reportIds: [1]
+                        reportIds: [1],
+                        queryCondition: []
                     }
                 ],
                 reportss: [
@@ -133,6 +151,33 @@
                         }
                     ]
                 ]
+            },
+            pickerOptions: {
+                shortcuts: [{
+                    text: '最近一周',
+                    onClick(picker) {
+                        const end = new Date();
+                        const start = new Date();
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                        picker.$emit('pick', [start, end]);
+                    }
+                }, {
+                    text: '最近一个月',
+                    onClick(picker) {
+                        const end = new Date();
+                        const start = new Date();
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                        picker.$emit('pick', [start, end]);
+                    }
+                }, {
+                    text: '最近三个月',
+                    onClick(picker) {
+                        const end = new Date();
+                        const start = new Date();
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                        picker.$emit('pick', [start, end]);
+                    }
+                }]
             }
         }),
 

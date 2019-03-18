@@ -23,8 +23,7 @@
                         </el-select>
                     </el-form-item>
                     <el-form-item label="数据库&表" prop="databaseTable">
-                        <el-cascader filterable v-model="dataSet.databaseTable" :options="dataSetConstant.databasesTables"
-                                change-on-select></el-cascader>
+                        <el-cascader filterable v-model="dataSet.databaseTable" :options="dataSetConstant.databasesTables"></el-cascader>
                     </el-form-item>
                     <el-form-item label="计算周期" prop="period">
                         <el-select v-model="dataSet.period" placeholder="请选择">

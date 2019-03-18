@@ -4,7 +4,7 @@
                 :data="chartData"
                 :loading="loading"
                 :data-empty="dataEmpty"
-                :settings="config.chartSettings"
+                :settings="report.config.chartSettings"
                 :toolbox="toolbox">
         </ve-pie>
     </div>
@@ -15,7 +15,7 @@
     import 'v-charts/lib/style.css'
     export default {
         name: 'Pie',
-        props: {id : Number, queryColumns: Array, queryConditions: Array, config: Object},
+        props: {report: Object, reportFilters: Array},
         data () {
             this.toolbox = {
                 feature: {
@@ -27,7 +27,11 @@
             return {
                 chartData: {},
                 loading: true,
-                dataEmpty: false
+                dataEmpty: false,
+                queryReportFilter: {
+                    queryColumns: [],
+                    queryConditions: [],
+                }
             }
         },
         methods: {
@@ -36,9 +40,10 @@
                 let postParams = {
                     id : reportId
                 }
-                if (this.queryColumns !== undefined && 0 < this.queryColumns.length) {
-                    postParams.queryColumns = this.queryColumns
-                    postParams.queryConditions = this.queryConditions
+                this.initQueryReportFilter()
+                if (this.queryReportFilter.queryColumns !== undefined && 0 < this.queryReportFilter.queryColumns.length) {
+                    postParams.queryColumns = this.queryReportFilter.queryColumns
+                    postParams.queryConditions = this.queryReportFilter.queryConditions
                 }
                 await this.$api.REPORT_REPORT_API.post('GET_REPORT_DATA', postParams).then(res => {
                     reportData = res.data
@@ -60,22 +65,42 @@
                     this.dataEmpty = (this.chartData.rows === undefined || 0 === this.chartData.rows.length);
                     this.loading = false
                 }, 5000)
+            },
+
+            /**
+             * 重新生成queryReportFilter
+             */
+            initQueryReportFilter() {
+                this.queryReportFilter = {
+                    queryColumns: [],
+                    queryConditions: [],
+                }
+                this.reportFilters.forEach(reportFilter => {
+                    if (-1 !== reportFilter.reportIds.indexOf(this.report.id)) {
+                        if (-1 !== this.queryReportFilter.queryColumns.indexOf(reportFilter.queryColumn)) {
+                            this.queryReportFilter.queryConditions[index] = reportFilter.queryCondition
+                        } else {
+                            this.queryReportFilter.queryColumns.push(reportFilter.queryColumn)
+                            this.queryReportFilter.queryConditions.push(reportFilter.queryCondition)
+                        }
+                    }
+                })
             }
         },
 
         watch: {
-            queryConditions: {
+            reportFilters: {
                 handler (newV, oldV) {
                     // do something, 可使用this
-                    this.updateReportData(this.id)
+                    this.updateReportData(this.report.id)
                 },
-                deep:true
+                deep :true
             }
         },
 
         mounted() {
-            let _this = this;
-            let reportId =_this._props.id;
+            let _this = this
+            let reportId = _this._props.report.id
             this.updateReportData(reportId)
         }
     }

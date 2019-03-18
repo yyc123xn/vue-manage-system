@@ -24,12 +24,12 @@
                             <el-select
                                     v-model="reportFilter.queryCondition"
                                     v-if="'MULTI_SELECT_DROP_DOWN' === reportFilter.filterType"
-                                    multiple filterable placeholder="请选择" style="margin-right: 55px" @change="changeReportFilter">
+                                    multiple filterable placeholder="请选择" style="margin-right: 55px">
                                 <el-option
-                                        v-for="item in options"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
+                                        v-for="(a, index) in reportFilter.values"
+                                        :key="index"
+                                        :label="a"
+                                        :value="a">
                                 </el-option>
                             </el-select>
                             <el-date-picker
@@ -41,19 +41,17 @@
                                     start-placeholder="开始日期"
                                     end-placeholder="结束日期"
                                     align="right"
-                                    value-format="yyyyMMddHH"
-                                    @change="changeReportFilter">
+                                    value-format="yyyyMMddHH">
                             </el-date-picker>
                             <el-select
                                     v-model="reportFilter.queryCondition"
                                     v-if="'DROP_DOWN' === reportFilter.filterType" filterable
-                                    placeholder="请选择" style="margin-right: 30px"
-                                    @change="changeReportFilter">
+                                    placeholder="请选择" style="margin-right: 30px">
                                 <el-option
-                                        v-for="item in options"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
+                                        v-for="(value, index) in reportFilter.values"
+                                        :key="index"
+                                        :label="value"
+                                        :value="value">
                                 </el-option>
                             </el-select>
 
@@ -69,11 +67,11 @@
                                 <span>{{report.name}}</span>
                             </div>
                             <div>
-                                <histogram :id="report.id" :queryColumns="reportFilter.queryColumns" :queryConditions="reportFilter.queryConditions" :config="report.config" v-if="'HISTOGRAM' === report.chartType"></histogram>
-                                <line-dup :id="report.id" :queryColumns="reportFilter.queryColumns" :queryConditions="reportFilter.queryConditions" :config="report.config" v-if="'LINE' === report.chartType"></line-dup>
-                                <pie :id="report.id" :queryColumns="reportFilter.queryColumns" :queryConditions="reportFilter.queryConditions" :config="report.config" v-if="'PIE' === report.chartType"></pie>
+                                <histogram :report="report" :reportFilters="dashboard.reportFilters" v-if="'HISTOGRAM' === report.chartType"></histogram>
+                                <line-dup :report="report" :reportFilters="dashboard.reportFilters" v-if="'LINE' === report.chartType"></line-dup>
+                                <pie :report="report" :reportFilters="dashboard.reportFilters"  v-if="'PIE' === report.chartType"></pie>
                                 <!--<MonitorCard v-if="'MONITOR_CARD' === report.chartType"></MonitorCard>-->
-                                <guage :id="report.id" :queryColumns="reportFilter.queryColumns" :queryConditions="reportFilter.queryConditions" :config="report.config" v-if="'GUAGE' === report.chartType"></guage>
+                                <guage :report="report" :reportFilters="dashboard.reportFilters"  v-if="'GUAGE' === report.chartType"></guage>
                             </div>
                         </el-card>
                     </el-col>
@@ -87,8 +85,7 @@
 <script>
 
     /**
-     * todo 默认选择的日期时间为最近一周
-     * todo 改变添加dashboard时的横轴和纵轴问题
+     * todo filter精确到报表的指标单位
      */
     import Histogram from '../../common/charts/Histogram.vue'
     import LineDup from '../../common/charts/Line.vue'
@@ -107,10 +104,6 @@
         },
 
         data: () => ({
-            reportFilter: {
-                queryColumns: [],
-                queryConditions: [],
-            },
             dashboard: {
                 id: 0,
                 name: '看板名称',
@@ -160,22 +153,6 @@
                 }
                 await this.$api.REPORT_DASHBOARD_API.get('GET_DASHBOARD_INFO', getParams).then(res => {
                     this.dashboard = res.data
-                })
-            },
-
-            changeReportFilter() {
-                this.reportFilter = {
-                    queryColumns: [],
-                    queryConditions: [],
-                }
-                this.dashboard.reportFilters.forEach(reportFilter => {
-                    let index = this.reportFilter.queryColumns.indexOf(reportFilter.queryColumn)
-                    if (index !== -1) {
-                        this.reportFilter.queryConditions[index] = reportFilter.queryCondition
-                    } else {
-                        this.reportFilter.queryColumns.push(reportFilter.queryColumn)
-                        this.reportFilter.queryConditions.push(reportFilter.queryCondition)
-                    }
                 })
             }
         }

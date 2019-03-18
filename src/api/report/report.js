@@ -8,6 +8,8 @@ const reportReportApi = {
 
     GET_REPORT_DATA: '/report/report/data',
 
+    GET_REPORT_FILTER_VALUES: '/report/report/report_filter/values',
+
     get(urlName, getParams) {
         let url = this[urlName]
         return axios.get(url, {params : getParams})

@@ -15,7 +15,7 @@
                     </el-option>
                 </el-select>
                 <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
-                <el-button type="primary" icon="search" @click="search">搜索</el-button>
+                <el-button type="primary" icon="el-icon-search" @click="getDashboards">搜索</el-button>
             </el-col>
             <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="55" align="center"></el-table-column>
@@ -73,8 +73,6 @@
 </template>
 
 <script>
-    import index from "../../../router/index";
-
     export default {
         name: 'DashboardTable',
         data: function () {
@@ -109,25 +107,6 @@
             this.getDashboards();
         },
         computed: {
-//            data() {
-//                return this.tableData.filter((d) => {
-//                    let is_del = false;
-//                    for (let i = 0; i < this.del_list.length; i++) {
-//                        if (d.name === this.del_list[i].name) {
-//                            is_del = true;
-//                            break;
-//                        }
-//                    }
-//                    if (!is_del) {
-//                        if (d.address.indexOf(this.select_cate) > -1 &&
-//                            (d.name.indexOf(this.select_word) > -1 ||
-//                                d.address.indexOf(this.select_word) > -1)
-//                        ) {
-//                            return d;
-//                        }
-//                    }
-//                })
-//            }
         },
         methods: {
             // 获取看板的过滤字段
@@ -152,21 +131,10 @@
             },
 
             // 分页导航
-            handleCurrentChange(val) {
-                this.cur_page = val;
-                this.getData();
-            },
-
-            search() {
-                this.is_search = true;
-            },
-
-            formatter(row, column) {
-                return row.address;
-            },
-
-            filterTag(value, row) {
-                return row.tag === value;
+            handleCurrentChange(pageIndex) {
+                this.pageIndex = pageIndex;
+                this.$message.success(`页面下标 ${pageIndex}`);
+                this.getDataSets()
             },
 
             handleEdit(index, row) {

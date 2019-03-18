@@ -18,6 +18,8 @@ const reportDataSetApi = {
 
     GET_DATA_SET_METRICS : '/report/data_set/metrics',
 
+    GET_DATA_SETS_FIELDS: '/report/data_set/data_sets_fields',
+
     BACKFILL: '/report/data_set/backfill',
 
     get(urlName, getParams) {

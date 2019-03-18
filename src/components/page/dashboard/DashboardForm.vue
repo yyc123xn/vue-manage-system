@@ -275,7 +275,7 @@
                             :label="'过滤器' + (index + 1)"
                             :key="reportFilter.id"
                             :prop="'reportFilters.' + index + '.value'">
-                        <el-col class="line" :span="2">名称</el-col>
+                        <el-col class="line" :span="1">名称</el-col>
                         <el-col :span="3"><el-input v-model="reportFilter.name"></el-input></el-col>
                         <el-col class="line" :span="2">过滤器类型</el-col>
                         <el-col :span="3">
@@ -287,14 +287,24 @@
                         </el-col>
                         <el-col class="line" :span="2">作用报表</el-col>
                         <el-col :span="3">
-                            <el-select v-model="reportFilter.reportKeys" placeholder="请选择" multiple>
+                            <el-select v-model="reportFilter.reportKeys" placeholder="请选择" multiple filterable>
                                 <template v-for="(report, index) in dashboardHelper.reportFilterHelper" :value="filterType.nameEn">
                                     <el-option :key="report.reportXAxis+ '|' + report.reportYAxis" :label="report.name" :value="report.reportXAxis+ '|' + report.reportYAxis"></el-option>
                                 </template>
                             </el-select>
                         </el-col>
-                        <el-col class="line" :span="2">操作</el-col>
-                        <el-col :span="2"><el-button @click.prevent="removeDataSetField(dataSetField)" type="danger">删除</el-button></el-col>
+                        <el-col class="line" :span="2">数据集字段</el-col>
+                        <el-col :span="3">
+                            <el-cascader
+                                    placeholder="请选择"
+                                    :options="dashboardConstant.reportConstant.dataSetsFields"
+                                    v-model="dashboardHelper.reportFiltersHelper[index].queryColumns"
+                                    filterable
+                                    @change="changeReportFilterQueryColumns(index)"
+                            ></el-cascader>
+                        </el-col>
+                        <el-col class="line" :span="1">操作</el-col>
+                        <el-col :span="2"><el-button @click.prevent="removeReportFilter(index)" type="danger">删除</el-button></el-col>
                     </el-form-item>
                 </el-form>
                 <el-col align="center">
@@ -333,12 +343,17 @@
                     reportConstant: {
                         dataSets: [],
                         chartTypes: [],
+                        dataSetsFields: []
                     },
                 },
 
                 dashboardHelper: {
 
-                    reportFilterHelper: [],
+                    reportFiltersHelper: [
+                        {
+                            queryColumns: []
+                        }
+                    ],
                     // 用户选择的不同数据集的指标list
                     reportssHelper: [
                         [
@@ -358,7 +373,8 @@
                             id: 0,
                             name: "",
                             filterType: '',
-                            reportKeys: []
+                            reportKeys: [],
+                            queryColumn: ''
                         }
                     ],
                     reportss: [
@@ -516,6 +532,13 @@
                 })
             },
 
+            // 获取所有数据集和数据集字段的组合cascade
+            getDataSetsFields() {
+                this.$api.REPORT_DATA_SET_API.get("GET_DATA_SETS_FIELDS").then(res => {
+                    this.dashboardConstant.reportConstant.dataSetsFields = res.data
+                })
+            },
+
             // step2-报表编辑
             handleEdit(reportXAxis, reportYAxis) {
                 this.handleEditForm = this.dashboard.reportss[reportXAxis][reportYAxis]
@@ -630,8 +653,38 @@
                     id: 0,
                     name: "",
                     filterType: '',
-                    reportKeys: []
+                    reportKeys: [],
+                    queryColumn: []
                 })
+                this.dashboardHelper.reportFiltersHelper.push({
+                    queryColumns: []
+                })
+            },
+
+            // step3-删除报表过滤项
+            removeReportFilter(index) {
+                this.$confirm('删除不可恢复，是否确定删除？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.dashboard.reportFilters.splice(index, 1)
+                    this.dashboardHelper.reportFiltersHelper.splice(index, 1)
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功!'
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
+            },
+
+            // 改变helper里面的queryColumns时触发
+            changeReportFilterQueryColumns(index) {
+                this.dashboard.reportFilters[index].queryColumn = this.dashboardHelper.reportFiltersHelper[index].queryColumns[1];
             },
 
             removeHandle(event){
@@ -702,6 +755,7 @@
             this.getDataSets()
             this.getChartTypes()
             this.getFilterTypes()
+            this.getDataSetsFields()
         }
     }
 </script>

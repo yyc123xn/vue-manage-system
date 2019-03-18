@@ -178,6 +178,10 @@ module.exports = {
                 }
             },
 
+            /**
+             * 数据集dataSet
+             */
+
             '/report/data_set/periods': {
                 target: REPORT_URL_PREFIX + '/report/data_set/periods',
                 changeOrigin: true,
@@ -207,6 +211,14 @@ module.exports = {
                 changeOrigin: true,
                 pathRewrite: {
                     '^/report/data_set/metrics': ''
+                }
+            },
+
+            '/report/data_set/data_sets_fields': {
+                target: REPORT_URL_PREFIX + '/report/data_set/data_sets_fields',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/report/data_set/data_sets_fields': ''
                 }
             },
 
@@ -251,6 +263,14 @@ module.exports = {
                 changeOrigin: true,
                 pathRewrite: {
                     '^/report/report/data': ''
+                }
+            },
+
+            '/report/report/report_filter/values': {
+                target: REPORT_URL_PREFIX + '/report/report/report_filter/values',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/report/report/report_filter/values': ''
                 }
             },
 

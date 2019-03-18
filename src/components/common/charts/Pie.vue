@@ -4,7 +4,7 @@
                 :data="chartData"
                 :loading="loading"
                 :data-empty="dataEmpty"
-                :settings="chartSettings"
+                :settings="config.chartSettings"
                 :toolbox="toolbox">
         </ve-pie>
     </div>
@@ -15,7 +15,7 @@
     import 'v-charts/lib/style.css'
     export default {
         name: 'Pie',
-        props: {id : Number, queryColumns: Array, queryConditions: Array},
+        props: {id : Number, queryColumns: Array, queryConditions: Array, config: Object},
         data () {
             this.toolbox = {
                 feature: {
@@ -48,18 +48,18 @@
 
             updateReportData(reportId) {
                 this.getReportData(reportId).then(res => {
-                    console.log(res)
                     this.loading = true;
                     this.dataEmpty = 0 === res.rows.length;
                     this.chartData = {
                         rows: res.rows,
                         columns: res.columns
                     }
-                    this.chartSettings = {
-                        roseType: 'radius'
-                    }
                     this.loading = false;
                 })
+                setTimeout(() => {
+                    this.dataEmpty = (this.chartData.rows === undefined || 0 === this.chartData.rows.length);
+                    this.loading = false
+                }, 5000)
             }
         },
 

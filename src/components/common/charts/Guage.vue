@@ -1,6 +1,6 @@
 <template>
     <ve-gauge :data="chartData"
-              :settings="chartSettings"
+              :settings="config.chartSettings"
               :toolbox="toolbox"
               :loading="loading"
               :data-empty="dataEmpty"></ve-gauge>
@@ -12,7 +12,7 @@
     import 'v-charts/lib/style.css'
     export default {
         name: 'Guage',
-        props: {id : Number, queryColumns: Array, queryConditions: Array},
+        props: {id : Number, queryColumns: Array, queryConditions: Array, config: Object},
         data () {
             this.chartSettings = {
 //                dataType: {
@@ -62,6 +62,10 @@
                     }
                     this.loading = false;
                 })
+                setTimeout(() => {
+                    this.dataEmpty = (this.chartData.rows === undefined || 0 === this.chartData.rows.length);
+                    this.loading = false
+                }, 5000)
             }
         },
 

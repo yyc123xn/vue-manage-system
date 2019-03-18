@@ -1,7 +1,11 @@
 <template>
     <ve-line
             :data="chartData"
-            :toolbox="toolbox" :loading="loading" :data-empty="dataEmpty">
+            :settings="config.chartSettings"
+            :toolbox="toolbox"
+            :loading="loading"
+            :data-empty="dataEmpty"
+            :data-zoom="dataZoom">
     </ve-line>
 </template>
 
@@ -9,15 +13,21 @@
     // 使用前需先引入对应模块
     import 'echarts/lib/component/toolbox'
     import 'v-charts/lib/style.css'
+    import 'echarts/lib/component/dataZoom'
     export default {
         name: 'LineDup',
-        props: {id : Number, queryColumns: Array, queryConditions: Array},
+        props: {id : Number, queryColumns: Array, queryConditions: Array, config: Object},
         data () {
             this.toolbox = {
                 feature: {
                     saveAsImage: {}
                 }
             }
+            this.dataZoom = [
+                {
+                    type: 'slider'
+                }
+            ]
             return {
                 chartData: {},
                 loading: true,
@@ -48,12 +58,16 @@
                     this.chartData = res
                     this.loading = false;
                 })
+                setTimeout(() => {
+                    this.dataEmpty = (this.chartData.rows === undefined || 0 === this.chartData.rows.length);
+                    this.loading = false
+                }, 5000)
             }
         },
 
         mounted() {
-            let _this = this;
-            let reportId =_this._props.id;
+            let _this = this
+            let reportId =_this._props.id
             this.updateReportData(reportId)
         },
 

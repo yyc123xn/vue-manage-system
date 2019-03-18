@@ -61,13 +61,21 @@
                 </el-form>
             </el-col>
             <el-col>
+
                 <el-col v-for="(reports, index1) in dashboard.reportss" :key="index1">
                     <el-col :span="24 / dashboard.reportss[index1].length" v-for="(report, index2) in dashboard.reportss[index1]" :key="index2">
-                        <histogram :id="report.id" :queryColumns="reportFilter.queryColumns" :queryConditions="reportFilter.queryConditions" v-if="'HISTOGRAM' === report.chartType"></histogram>
-                        <line-dup :id="report.id" :queryColumns="reportFilter.queryColumns" :queryConditions="reportFilter.queryConditions" v-if="'LINE' === report.chartType"></line-dup>
-                        <pie :id="report.id" :queryColumns="reportFilter.queryColumns" :queryConditions="reportFilter.queryConditions" v-if="'PIE' === report.chartType"></pie>
-                        <!--<MonitorCard v-if="'MONITOR_CARD' === report.chartType"></MonitorCard>-->
-                        <guage :id="report.id" :queryColumns="reportFilter.queryColumns" :queryConditions="reportFilter.queryConditions" v-if="'GUAGE' === report.chartType"></guage>
+                        <el-card>
+                            <div slot="header">
+                                <span>{{report.name}}</span>
+                            </div>
+                            <div>
+                                <histogram :id="report.id" :queryColumns="reportFilter.queryColumns" :queryConditions="reportFilter.queryConditions" :config="report.config" v-if="'HISTOGRAM' === report.chartType"></histogram>
+                                <line-dup :id="report.id" :queryColumns="reportFilter.queryColumns" :queryConditions="reportFilter.queryConditions" :config="report.config" v-if="'LINE' === report.chartType"></line-dup>
+                                <pie :id="report.id" :queryColumns="reportFilter.queryColumns" :queryConditions="reportFilter.queryConditions" :config="report.config" v-if="'PIE' === report.chartType"></pie>
+                                <!--<MonitorCard v-if="'MONITOR_CARD' === report.chartType"></MonitorCard>-->
+                                <guage :id="report.id" :queryColumns="reportFilter.queryColumns" :queryConditions="reportFilter.queryConditions" :config="report.config" v-if="'GUAGE' === report.chartType"></guage>
+                            </div>
+                        </el-card>
                     </el-col>
                 </el-col>
             </el-col>
@@ -77,6 +85,11 @@
 </template>
 
 <script>
+
+    /**
+     * todo 默认选择的日期时间为最近一周
+     * todo 改变添加dashboard时的横轴和纵轴问题
+     */
     import Histogram from '../../common/charts/Histogram.vue'
     import LineDup from '../../common/charts/Line.vue'
     import Pie from '../../common/charts/Pie.vue'
@@ -103,59 +116,8 @@
                 name: '看板名称',
                 description: '看板描述',
                 privilege: '',
-                reportFilters: [
-                    {
-                        id: 0,
-                        name: "过滤器1",
-                        filterType: 'DATE',
-                        reportIds: [1],
-                        queryCondition: []
-                    }
-                ],
-                reportss: [
-                    [
-                        {
-                            id: 1,
-                            name : "新报表",
-                            description: "",
-                            dataSetId: "",
-                            dataSetFieldIds: [],
-                            chartType: 'HISTOGRAM',
-                            chartData: [],
-                            loading : true,
-                            config: {
-                                chartSettings: {
-                                    axisSite: { right: [] },
-                                    yAxisType: [],
-                                    yAxisName: [],
-                                    stack: { 'key': [] },
-                                    area: false,
-                                    // 饼图
-                                    roseType: 'radius',
-                                    dataType: 'percent'
-                                },
-                                extend: {
-                                    // 折线图显示指标数据
-                                    lineSeries: {
-                                        label: {
-                                            normal: {
-                                                show: false
-                                            }
-                                        }
-                                    },
-
-                                    // 柱状图显示指标数据
-                                    histogramSeries: {
-                                        label: {
-                                            show: false,
-                                            position: "top"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    ]
-                ]
+                reportFilters: [],
+                reportss: [[]]
             },
             pickerOptions: {
                 shortcuts: [{

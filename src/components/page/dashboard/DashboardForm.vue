@@ -104,7 +104,7 @@
                                         <el-form-item label="axisSite(设置右轴key)">
                                             <el-select v-model="handleEditForm.config.chartSettings.axisSite.right" placeholder="请选择" multiple filterable>
                                                 <template v-for="(metric, index) in dashboardHelper.reportssHelper[handleEditForm.reportXAxis][handleEditForm.reportYAxis].metrics">
-                                                    <el-option :key="metric.showName" :label="metric.showName" :value="metric.id"></el-option>
+                                                    <el-option :key="metric.showName" :label="metric.showName" :value="metric.showName"></el-option>
                                                 </template>
                                             </el-select>
                                         </el-form-item>
@@ -145,29 +145,29 @@
                                             </el-col>
                                         </el-form-item>
                                         <el-form-item label="多指标堆叠">
-                                            <el-select v-model="handleEditForm.config.chartSettings.stack.key" placeholder="请选择" multiple>
+                                            <el-select v-model="handleEditForm.config.chartSettings.stack.key" placeholder="请选择" multiple @change="showStack(handleEditForm.config.chartSettings)">
                                                 <template v-for="(metric, index) in dashboardHelper.reportssHelper[handleEditForm.reportXAxis][handleEditForm.reportYAxis].metrics">
-                                                    <el-option :key="metric.showName" :label="metric.showName" :value="metric.id"></el-option>
+                                                    <el-option :key="metric.showName" :label="metric.showName" :value="metric.showName"></el-option>
                                                 </template>
                                             </el-select>
                                         </el-form-item>
-                                        <el-form-item label="指标数值">
-                                            <el-checkbox v-model="handleEditForm.config.extend.lineSeries.label.normal.show">展示</el-checkbox>
+                                        <el-form-item label="展示指标数值">
+                                            <el-switch v-model="handleEditForm.config.extend.lineSeries.label.normal.show"></el-switch>
                                         </el-form-item>
                                     </el-form>
 
                                     <div>备注1. axisSite(设置右轴key)：例如输入‘占比’， 即将占比的数据置于右轴上。</div>
                                     <div>备注2. yAxisType(双y轴坐标类型)：y轴坐标类型，KMP单位为k(数据值为5000时，显示5k)，percent单位为%(数据为0.6时，显示60%)。</div>
                                     <div>备注3. yAxisName(双y轴名)：y轴坐标展示的单位。</div>
-                                    <div>备注4. 指标数值展示：对于每一个指标的数值是否需要展示出来。</div>
-                                    <div>备注5. 多指标堆叠：展示数据时，对于选中的指标进行堆叠展示。</div>
+                                    <div>备注4. 多指标堆叠：展示数据时，对于选中的指标进行堆叠展示。</div>
+                                    <div>备注5. 展示指标数值：对于每一个指标的数值是否需要展示出来。</div>
                                 </el-col>
                                 <el-col v-if="'HISTOGRAM' === handleEditForm.chartType">
                                     <el-form ref="handleEditForm.chartSettings" :rules="rules" :model="handleEditForm.chartSettings" label-width="20%">
                                         <el-form-item label="axisSite(设置右轴key)">
                                             <el-select v-model="handleEditForm.config.chartSettings.axisSite.right" placeholder="请选择" multiple filterable>
                                                 <template v-for="(metric, index) in dashboardHelper.reportssHelper[handleEditForm.reportXAxis][handleEditForm.reportYAxis].metrics">
-                                                    <el-option :key="metric.showName" :label="metric.showName" :value="metric.id"></el-option>
+                                                    <el-option :key="metric.showName" :label="metric.showName" :value="metric.showName"></el-option>
                                                 </template>
                                             </el-select>
                                         </el-form-item>
@@ -208,21 +208,21 @@
                                             </el-col>
                                         </el-form-item>
                                         <el-form-item label="堆叠柱状图">
-                                            <el-select v-model="handleEditForm.config.chartSettings.stack.key" placeholder="请选择" multiple>
+                                            <el-select v-model="handleEditForm.config.chartSettings.stack.key" placeholder="请选择" multiple @change="showStack(handleEditForm.config.chartSettings)">
                                                 <template v-for="(metric, index) in dashboardHelper.reportssHelper[handleEditForm.reportXAxis][handleEditForm.reportYAxis].metrics">
-                                                    <el-option :key="metric.showName" :label="metric.showName" :value="metric.id"></el-option>
+                                                    <el-option :key="metric.showName" :label="metric.showName" :value="metric.showName"></el-option>
                                                 </template>
                                             </el-select>
                                         </el-form-item>
-                                        <el-form-item label="指标数值">
-                                            <el-checkbox v-model="handleEditForm.config.extend.histogramSeries.label.show">展示</el-checkbox>
+                                        <el-form-item label="展示指标数值">
+                                            <el-switch v-model="handleEditForm.config.extend.histogramSeries.label.show"></el-switch>
                                         </el-form-item>
                                     </el-form>
                                     <div>备注1. axisSite(设置右轴key)：例如输入‘占比’， 即将占比的数据置于右轴上。</div>
                                     <div>备注2. yAxisType(双y轴坐标类型)：y轴坐标类型，KMP单位为k(数据值为5000时，显示5k)，percent单位为%(数据为0.6时，显示60%)。</div>
                                     <div>备注3. yAxisName(双y轴名)：y轴坐标展示的单位。</div>
-                                    <div>备注4. 指标数值展示：对于每一个指标的数值是否需要展示出来。</div>
-                                    <div>备注5. 堆叠柱状图展示：展示为堆叠柱状图。</div>
+                                    <div>备注5. 堆叠柱状图展示：选择相应的指标展示为堆叠柱状图。</div>
+                                    <div>备注4. 展示指标数值：对于每一个指标的数值是否需要展示出来。</div>
                                 </el-col>
                                 <el-col v-if="'TABLE' === handleEditForm.chartType">
                                     <div>与现实生活一致：与现实生活的流程、逻辑保持一致，遵循用户习惯的语言和概念；</div>
@@ -237,12 +237,12 @@
                                                 <el-option :key="'percent'" :label="'percent'" :value="'percent'"></el-option>
                                             </el-select>
                                         </el-form-item>
-                                        <el-form-item label="玫瑰图">
-                                            <el-checkbox v-model="handleEditForm.config.chartSettings.roseType">展示</el-checkbox>
+                                        <el-form-item label="展示玫瑰图">
+                                            <el-switch v-model="handleEditForm.config.chartSettings.roseTypeHelper" @change="changeRoseType(handleEditForm.config.chartSettings)"></el-switch>
                                         </el-form-item>
                                     </el-form>
                                     <div>备注1. 数据类型：展示指标的数据类型，KMP单位为k(数据值为5000时，显示5k)，percent单位为%(数据为0.6时，显示60%)。</div>
-                                    <div>备注2. 玫瑰图展示：展示为玫瑰图。</div>
+                                    <div>备注2. 展示玫瑰图：展示为玫瑰图。</div>
                                 </el-col>
                                 <el-col v-if="'GUAGE' === handleEditForm.chartType">
                                     <el-form ref="handleEditForm.chartSettings" :rules="rules" :model="handleEditForm.chartSettings" label-width="20%">
@@ -261,17 +261,8 @@
                     </el-form-item>
                 </el-form>
                 <span slot="footer" class="dialog-footer">
-                <!--<el-button @click="editVisible = false">取 消</el-button>-->
-                <el-button type="primary" @click="">确 定</el-button>
-            </span>
-            </el-dialog>
-
-            <!-- 删除提示框 -->
-            <el-dialog title="提示" :visible.sync="deleteVisible" width="300px" center>
-                <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
-                <span slot="footer" class="dialog-footer">
-                <!--<el-button @click="deleteVisible = false">取 消</el-button>-->
-                <el-button type="primary" @click="">确 定</el-button>
+                <el-button @click="editVisible = false">取 消</el-button>
+                <el-button type="primary" @click="editVisible = false">确 定</el-button>
             </span>
             </el-dialog>
 
@@ -387,7 +378,8 @@
                                         stack: { 'key': [] },
                                         area: false,
                                         // 饼图
-                                        roseType: 'radius',
+                                        roseTypeHelper: false,
+                                        roseType: '',
                                         dataType: 'percent'
                                     },
                                     extend: {
@@ -461,7 +453,6 @@
                 },
                 pageIndex: 1,
                 editVisible: false,
-                deleteVisible: false,
                 handleEditForm : {
                     reportXAxis: 0,
                     reportYAxis: 0,
@@ -476,7 +467,8 @@
                             stack: { 'key': [] },
                             area: false,
                             // 饼图
-                            roseType: 'radius',
+                            roseTypeHelper: false,
+                            roseType: '',
                             dataType: 'percent'
                         },
                         extend: {
@@ -502,6 +494,16 @@
             }
         },
         methods: {
+
+            // pie 展示为roseType
+            changeRoseType(chartSettings) {
+                chartSettings.roseType = chartSettings.roseTypeHelper ? 'radius' : '';
+            },
+
+            // line 或者 histogram 展示为堆积图
+            showStack(chartSettings) {
+                chartSettings.area = 0 < chartSettings.stack.key.length;
+            },
 
             // 获取数据集下的指标列表
             getDataSetMetrics(id) {
@@ -541,7 +543,8 @@
                             stack: { 'key': [] },
                             area: false,
                             // 饼图
-                            roseType: 'radius',
+                            roseTypeHelper: false,
+                            roseType: '',
                             dataType: 'percent'
                         },
                         extend: {
@@ -581,15 +584,44 @@
 
             // 删除一列
             deleteReportColumn() {
-                this.dashboard.reportss.pop()
-                this.dashboardHelper.reportssHelper.pop()
+                this.$confirm('删除不可恢复，是否确定删除？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.dashboard.reportss.pop()
+                    this.dashboardHelper.reportssHelper.pop()
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功!'
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
             },
 
             // step2-报表删除
             deleteReportRow(reportXAxis, reportYAxis) {
-                this.deleteVisible = true
-                this.dashboard.reportss[reportXAxis].splice(reportYAxis, 1)
-                this.dashboardHelper.reportssHelper[reportXAxis].splice(reportYAxis, 1)
+                this.$confirm('删除不可恢复，是否确定删除？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.dashboard.reportss[reportXAxis].splice(reportYAxis, 1)
+                    this.dashboardHelper.reportssHelper[reportXAxis].splice(reportYAxis, 1)
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功!'
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
             },
 
             // step3-添加报表过滤选项

@@ -16,19 +16,75 @@
                         <el-input type="textarea" rows="5" v-model="voucher.description"></el-input>
                     </el-form-item>
                     <el-form-item label="票据时间" prop="date">
-                        <el-date-picker type="date" placeholder="选择日期" v-model="voucher.date" style="width: 100%;"></el-date-picker>
+                        <el-date-picker
+                                v-model="voucher.date"
+                                type="datetime"
+                                placeholder="选择日期时间"
+                                align="right"
+                                :picker-options="pickerOptions">
+                        </el-date-picker>
                     </el-form-item>
                     <el-form-item label="票据类型" prop="type">
                         <el-select v-model="voucher.type" placeholder="请选择">
                             <template v-for="(type, index) in voucherConstant.types">
-                                <el-option :key="type.nameEn" :label="type.nameCn" :value="type.nameEn"></el-option>
+                                <el-option :key="type.nameEn" :label="type.nameCn" :value="type.nameEn">
+                                    <span style="float: left">{{ type.nameCn }}</span>
+                                    <span style="float: right; color: #8492a6; font-size: 13px">{{ type.nameEn }}</span>
+                                </el-option>
                             </template>
                         </el-select>
+                    </el-form-item>
+                    <el-form-item label="票据详情">
+                        <el-table
+                                :data="voucher.voucherDetails"
+                                style="width: 100%">
+                            <el-table-column type="expand">
+                                <template slot-scope="props">
+                                    <el-form label-position="left" class="demo-table-expand">
+                                        <el-form-item label="名称">
+                                            <el-input v-model="props.row.name"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="描述" style="width: 100%" >
+                                            <el-input type="textarea" rows="5" v-model="props.row.description"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="合计">
+                                            <el-input-number v-model="props.row.sum" :precision="2" :step="0.1"></el-input-number>
+                                        </el-form-item>
+                                    </el-form>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    label="名称"
+                                    prop="name">
+                            </el-table-column>
+                            <el-table-column
+                                    label="描述"
+                                    prop="description">
+                            </el-table-column>
+                            <el-table-column
+                                    label="合计"
+                                    prop="sum">
+                            </el-table-column>
+                            <el-table-column label="操作">
+                                <template slot-scope="scope">
+                                    <el-button
+                                            size="mini"
+                                            type="danger"
+                                            @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="addVoucherDetail">添加票据详情</el-button>
                     </el-form-item>
                     <el-form-item label="票据状态" prop="status">
                         <el-select v-model="voucher.status" placeholder="请选择">
                             <template v-for="(status, index) in voucherConstant.statuses">
-                                <el-option :key="status.nameEn" :label="status.nameCn" :value="status.nameEn"></el-option>
+                                <el-option :key="status.nameEn" :label="status.nameCn" :value="status.nameEn">
+                                    <span style="float: left">{{ status.nameCn }}</span>
+                                    <span style="float: right; color: #8492a6; font-size: 13px">{{ status.nameEn }}</span>
+                                </el-option>
                             </template>
                         </el-select>
                     </el-form-item>
@@ -44,10 +100,10 @@
 </template>
 
 <script>
-    import ElSwitch from "../../../../node_modules/element-ui/packages/switch/src/component.vue";
+    import ElCol from "element-ui/packages/col/src/col";
 
     export default {
-        components: {ElSwitch},
+        components: {ElCol},
         name: 'DeveloperForm',
         data: function(){
             return {
@@ -57,7 +113,13 @@
                     description : '',
                     date: '',
                     status: '',
-                    type: ''
+                    type: '',
+                    voucherDetails: [{
+                        id: 0,
+                        name: '票据详情1',
+                        description: '票据描述1',
+                        sum: 0
+                    }]
                 },
 
                 voucherConstant: {
@@ -81,7 +143,30 @@
                     status: [
                         { required: true, message: '请选择票据状态', trigger: 'blur' }
                     ]
-                }
+                },
+
+                pickerOptions: {
+                    shortcuts: [{
+                        text: '今天',
+                        onClick(picker) {
+                            picker.$emit('pick', new Date());
+                        }
+                    }, {
+                        text: '昨天',
+                        onClick(picker) {
+                            const date = new Date();
+                            date.setTime(date.getTime() - 3600 * 1000 * 24);
+                            picker.$emit('pick', date);
+                        }
+                    }, {
+                        text: '一周前',
+                        onClick(picker) {
+                            const date = new Date();
+                            date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+                            picker.$emit('pick', date);
+                        }
+                    }]
+                },
             }
         },
         methods: {
@@ -109,6 +194,23 @@
                 this.$api.FINANCE_VOUCHER_API.get('GET_VOUCHER_STATUSES').then(res => {
                     this.voucherConstant.statuses = res.data
                 })
+            },
+
+            handleDelete(index, row) {
+                if (this.voucher.voucherDetails.length > 1) {
+                    this.voucher.voucherDetails.splice(index, 1)
+                } else {
+                    this.$message.error("请至少填写一条票据详情记录")
+                }
+            },
+
+            addVoucherDetail() {
+                this.voucher.voucherDetails.push({
+                    id: 0,
+                    name: '票据详情' + (this.voucher.voucherDetails.length + 1),
+                    description: '票据描述' + (this.voucher.voucherDetails.length + 1),
+                    sum: 0
+                })
             }
         },
         created() {
@@ -117,3 +219,13 @@
         }
     }
 </script>
+
+<style>
+    .demo-table-expand label {
+        width: 90px;
+        color: #99a9bf;
+    }
+    .demo-table-expand {
+        width: 100%;
+    }
+</style>

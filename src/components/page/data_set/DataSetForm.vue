@@ -28,49 +28,85 @@
                     <el-form-item label="计算周期" prop="period">
                         <el-select v-model="dataSet.period" placeholder="请选择">
                             <template v-for="(period, index) in dataSetConstant.periods">
-                                <el-option :key="period.nameEn" :label="period.nameCn" :value="period.nameEn"></el-option>
+                                <el-option :key="period.nameEn" :label="period.nameCn" :value="period.nameEn">
+                                    <span style="float: left">{{ period.nameCn }}</span>
+                                    <span style="float: right; color: #8492a6; font-size: 13px">{{ period.nameEn }}</span>
+                                </el-option>
                             </template>
                         </el-select>
                     </el-form-item>
-                    <el-form-item
-                        v-for="(dataSetField, index) in dataSet.dataSetFields"
-                        :label="'字段' + (index + 1)"
-                        :key="dataSetField.key"
-                        :prop="'dataSetFields.' + index + '.value'">
-                        <el-col class="line" :span="1">表达式</el-col>
-                        <el-col :span="3"><el-input v-model="dataSetField.expression"></el-input></el-col>
-                        <el-col class="line" :span="1">名称</el-col>
-                        <el-col :span="2"><el-input v-model="dataSetField.showName"></el-input></el-col>
-                        <el-col class="line" :span="2">数据类型</el-col>
-                        <el-col :span="2">
-                            <el-select v-model="dataSetField.dataType" placeholder="请选择">
-                                <template v-for="(dataType, index) in dataSetConstant.dataSetFieldsConstant.dataTypes">
-                                    <el-option :key="dataType.nameEn" :label="dataType.nameEn" :value="dataType.nameEn"></el-option>
+                    <el-form-item label="字段详情">
+                        <el-table
+                                :data="dataSet.dataSetFields">
+                            <el-table-column type="expand">
+                                <template slot-scope="props">
+                                    <el-form label-position="right" inline class="demo-table-expand">
+                                        <el-form-item label="表达式">
+                                            <el-input v-model="props.row.expression"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="名称">
+                                            <el-input v-model="props.row.showName"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="数据类型">
+                                            <el-select v-model="props.row.dataType" placeholder="请选择">
+                                                <template v-for="(dataType, index) in dataSetConstant.dataSetFieldsConstant.dataTypes">
+                                                    <el-option :key="dataType.nameEn" :label="dataType.nameEn" :value="dataType.nameEn"></el-option>
+                                                </template>
+                                            </el-select>
+                                        </el-form-item>
+                                        <el-form-item label="字段类型">
+                                            <el-select v-model="props.row.fieldType" placeholder="请选择">
+                                                <template v-for="(fieldType, index) in dataSetConstant.dataSetFieldsConstant.fieldTypes">
+                                                    <el-option :key="fieldType.nameEn" :label="fieldType.nameEn" :value="fieldType.nameEn"></el-option>
+                                                </template>
+                                            </el-select>
+                                        </el-form-item>
+                                        <el-form-item label="计算方式">
+                                            <el-select v-model="props.row.calculateType" placeholder="请选择">
+                                                <template v-for="(calculateType, index) in dataSetConstant.dataSetFieldsConstant.calculateTypes">
+                                                    <el-option :key="calculateType.nameEn" :label="calculateType.nameEn" :value="calculateType.nameEn"></el-option>
+                                                </template>
+                                            </el-select>
+                                        </el-form-item>
+                                        <el-form-item label="周期日期">
+                                            <el-switch v-model="dataSetHelper.dataSetFieldsHelper[props.$index].isDate" @change="changeIsDate(props.$index)"></el-switch>
+                                        </el-form-item>
+                                    </el-form>
                                 </template>
-                            </el-select>
-                        </el-col>
-                        <el-col class="line" :span="2">字段类型</el-col>
-                        <el-col :span="2">
-                            <el-select v-model="dataSetField.fieldType" placeholder="请选择">
-                                <template v-for="(fieldType, index) in dataSetConstant.dataSetFieldsConstant.fieldTypes">
-                                    <el-option :key="fieldType.nameEn" :label="fieldType.nameEn" :value="fieldType.nameEn"></el-option>
+                            </el-table-column>
+                            <el-table-column
+                                    label="表达式"
+                                    prop="expression">
+                            </el-table-column>
+                            <el-table-column
+                                    label="名称"
+                                    prop="showName">
+                            </el-table-column>
+                            <el-table-column
+                                    label="数据类型"
+                                    prop="dataType">
+                            </el-table-column>
+                            <el-table-column
+                                    label="字段类型"
+                                    prop="fieldType">
+                            </el-table-column>
+                            <el-table-column
+                                    label="计算方式"
+                                    prop="calculateType">
+                            </el-table-column>
+                            <el-table-column
+                                    label="周期日期"
+                                    prop="isDate">
+                            </el-table-column>
+                            <el-table-column label="操作">
+                                <template slot-scope="scope">
+                                    <el-button
+                                            size="mini"
+                                            type="danger"
+                                            @click="removeDataSetField(scope.$index)">删除</el-button>
                                 </template>
-                            </el-select>
-                        </el-col>
-                        <el-col class="line" :span="2">计算方式</el-col>
-                        <el-col :span="2">
-                            <el-select v-model="dataSetField.calculateType" placeholder="请选择">
-                                <template v-for="(calculateType, index) in dataSetConstant.dataSetFieldsConstant.calculateTypes">
-                                    <el-option :key="calculateType.nameEn" :label="calculateType.nameEn" :value="calculateType.nameEn"></el-option>
-                                </template>
-                            </el-select>
-                        </el-col>
-                        <el-col class="line" :span="2">周期日期</el-col>
-                        <el-col :span="1">
-                            <el-checkbox v-model="dataSetHelper.dataSetFieldsHelper[index].isDate"></el-checkbox>
-                        </el-col>
-                        <el-col class="line" :span="1">操作</el-col>
-                        <el-col :span="1"><el-button @click.prevent="removeDataSetField(dataSetField)" type="danger">删除</el-button></el-col>
+                            </el-table-column>
+                        </el-table>
                     </el-form-item>
                     <el-form-item>
                         <el-button @click="addDataSetField" type="primary">新增数据集字段</el-button>
@@ -119,9 +155,9 @@
                     databaseTable: [],
                     dataSourceType: "",
                     dataSetFields: [{
-                        expression: '',
+                        expression: 'expression1',
                         dataType: '',
-                        showName: '',
+                        showName: '名称1',
                         calculateType: '',
                         fieldType: '',
                         isDate: 0
@@ -147,14 +183,16 @@
             }
         },
         methods: {
+
+            changeIsDate(index) {
+                this.dataSet.dataSetFields[index].isDate = this.dataSetHelper.dataSetFieldsHelper[index].isDate ? 1 : 0;
+            },
+
             addDataSet(dataSet) {
                 this.$refs[dataSet].validate((valid) => {
                     if (valid) {
                         this.dataSet.database = this.dataSet.databaseTable[0]
                         this.dataSet.sourceTable = this.dataSet.databaseTable[1]
-                        for (let index = 0; index < this.dataSet.dataSetFields.length; index++) {
-                            this.dataSet.dataSetFields[index].isDate = this.dataSetHelper.dataSetFieldsHelper[index].isDate ? 1 : 0;
-                        }
                         console.log(this.dataSet)
                         this.$api.REPORT_DATA_SET_API.post('ADD_DATA_SET', this.dataSet).then(res => {
                             this.$router.push('/data_set_table')
@@ -209,21 +247,21 @@
                 this.$refs[formName].resetFields();
             },
 
-            removeDataSetField(item) {
-                var index = this.dataSet.dataSetFields.indexOf(item)
-                if (index !== -1) {
+            removeDataSetField(index) {
+                if (this.dataSet.dataSetFields.length > 1) {
                     this.dataSet.dataSetFields.splice(index, 1)
-                    this.dataSetInit.dataSetFields.splice(index, 1)
+                } else {
+                    this.$message.error("数据集至少有一个字段")
                 }
             },
 
             addDataSetField() {
                 this.dataSet.dataSetFields.push({
-                    expression: '',
+                    expression: 'expression' + (this.dataSet.dataSetFields.length + 1),
                     dataType: '',
                     calculateType: '',
                     fieldType: '',
-                    showName: '',
+                    showName: '名称' + (this.dataSet.dataSetFields.length + 1),
                     isDate: false,
                     key: Date.now()
                 })
@@ -242,3 +280,16 @@
         }
     }
 </script>
+
+<style>
+    .demo-table-expand {
+    }
+    .demo-table-expand label {
+        width: 90px;
+        color: #99a9bf;
+    }
+    .demo-table-expand .el-form-item {
+        margin-right: 0;
+        width: 50%;
+    }
+</style>

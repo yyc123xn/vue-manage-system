@@ -30,7 +30,10 @@
                     <el-form-item label="权限" prop="privilege">
                         <el-select v-model="developer.privilege" placeholder="请选择">
                             <template v-for="(privilege, index) in developerConstant.privileges">
-                                <el-option :key="privilege.nameEn" :label="privilege.nameCn" :value="privilege.nameEn"></el-option>
+                                <el-option :key="privilege.nameEn" :label="privilege.nameCn" :value="privilege.nameEn">
+                                    <span style="float: left">{{ privilege.nameCn }}</span>
+                                    <span style="float: right; color: #8492a6; font-size: 13px">{{ privilege.nameEn }}</span>
+                                </el-option>
                             </template>
                         </el-select>
                     </el-form-item>
@@ -40,21 +43,24 @@
                     <el-form-item label="学历" prop="academicDegree">
                         <el-select v-model="developer.academicDegree" placeholder="请选择">
                             <template v-for="(academicDegree, index) in developerConstant.academicDegrees">
-                                <el-option :key="academicDegree.nameEn" :label="academicDegree.nameCn" :value="academicDegree.nameEn"></el-option>
+                                <el-option :key="academicDegree.nameEn" :label="academicDegree.nameCn" :value="academicDegree.nameEn">
+                                    <span style="float: left">{{ academicDegree.nameCn }}</span>
+                                    <span style="float: right; color: #8492a6; font-size: 13px">{{ academicDegree.nameEn }}</span>
+                                </el-option>
                             </template>
                         </el-select>
                     </el-form-item>
                     <el-form-item label="基本工资">
-                        <el-input v-model="developer.baseWages"></el-input>
+                        <el-input-number v-model="developer.baseWages" :precision="2" :min="0" :step="0.1"></el-input-number>
                     </el-form-item>
                     <el-form-item label="职务工资">
-                        <el-input v-model="developer.dutyWages"></el-input>
+                        <el-input-number v-model="developer.dutyWages" :precision="2" :min="0" :step="0.1"></el-input-number>
                     </el-form-item>
                     <el-form-item label="住房补贴">
-                        <el-input v-model="developer.housingWages"></el-input>
+                        <el-input-number v-model="developer.housingWages" :precision="2" :min="0" :step="0.1"></el-input-number>
                     </el-form-item>
                     <el-form-item label="退休金">
-                        <el-input v-model="developer.pension"></el-input>
+                        <el-input-number v-model="developer.pension" :precision="2" :min="0" :step="0.1"></el-input-number>
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="addDeveloper('developer')">表单提交</el-button>

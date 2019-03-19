@@ -8,7 +8,7 @@
         </el-col>
         <el-col class="container">
             <el-col class="form-box">
-                <el-form ref="dataSource" :rules="rules" :model="dataSource" label-width="7%">
+                <el-form ref="dataSource" :rules="rules" :model="dataSource" label-width="8%">
                     <el-form-item label="url" prop="url">
                         <el-input v-model="dataSource.url"></el-input>
                     </el-form-item>
@@ -31,7 +31,10 @@
                     <el-form-item label="权限" prop="privilege">
                         <el-select v-model="dataSource.privilege" placeholder="请选择">
                             <template v-for="(privilege, index) in dataSourceConstant.privileges">
-                                <el-option :key="privilege.nameEn" :label="privilege.nameCn" :value="privilege.nameEn"></el-option>
+                                <el-option :key="privilege.nameEn" :label="privilege.nameCn" :value="privilege.nameEn">
+                                    <span style="float: left">{{ privilege.nameCn }}</span>
+                                    <span style="float: right; color: #8492a6; font-size: 13px">{{ privilege.nameEn }}</span>
+                                </el-option>
                             </template>
                         </el-select>
                     </el-form-item>

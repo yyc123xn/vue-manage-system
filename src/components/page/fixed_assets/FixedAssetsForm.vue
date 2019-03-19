@@ -16,10 +16,16 @@
                         <el-input type="textarea" rows="5" v-model="fixedAssets.description"></el-input>
                     </el-form-item>
                     <el-form-item label="破损率" prop="broken">
-                        <el-input v-model.number="fixedAssets.broken"></el-input>
+                        <el-input-number v-model="fixedAssets.broken" :precision="2" :min="0" :step="0.1" :max="1"></el-input-number>
                     </el-form-item>
                     <el-form-item label="破损时间" prop="brokenTime">
-                        <el-date-picker type="date" placeholder="选择日期" v-model="fixedAssets.brokenTime" style="width: 100%;"></el-date-picker>
+                        <el-date-picker
+                                v-model="fixedAssets.brokenTime"
+                                type="datetime"
+                                placeholder="选择日期时间"
+                                align="right"
+                                :picker-options="pickerOptions">
+                        </el-date-picker>
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="addFixedAssets('fixedAssets')">表单提交</el-button>
@@ -59,7 +65,30 @@
                     brokenTime : [
                         { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
                     ]
-                }
+                },
+
+                pickerOptions: {
+                    shortcuts: [{
+                        text: '今天',
+                        onClick(picker) {
+                            picker.$emit('pick', new Date());
+                        }
+                    }, {
+                        text: '昨天',
+                        onClick(picker) {
+                            const date = new Date();
+                            date.setTime(date.getTime() - 3600 * 1000 * 24);
+                            picker.$emit('pick', date);
+                        }
+                    }, {
+                        text: '一周前',
+                        onClick(picker) {
+                            const date = new Date();
+                            date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+                            picker.$emit('pick', date);
+                        }
+                    }]
+                },
             }
         },
         methods: {

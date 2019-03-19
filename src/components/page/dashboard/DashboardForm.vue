@@ -28,7 +28,10 @@
                     <el-form-item label="权限" prop="privilege">
                         <el-select v-model="dashboard.privilege" placeholder="请选择">
                             <template v-for="(privilege, index) in dashboardConstant.privileges">
-                                <el-option :key="privilege.nameEn" :label="privilege.nameCn" :value="privilege.nameEn"></el-option>
+                                <el-option :key="privilege.nameEn" :label="privilege.nameCn" :value="privilege.nameEn">
+                                    <span style="float: left">{{ privilege.nameCn }}</span>
+                                    <span style="float: right; color: #8492a6; font-size: 13px">{{ privilege.nameEn }}</span>
+                                </el-option>
                             </template>
                         </el-select>
                     </el-form-item>
@@ -89,7 +92,10 @@
                     <el-form-item label="报表类型" prop="chartType">
                         <el-select v-model="handleEditForm.chartType" placeholder="请选择">
                             <template v-for="(chartType, index) in dashboardConstant.reportConstant.chartTypes">
-                                <el-option :key="chartType.nameEn" :label="chartType.nameCn" :value="chartType.nameEn"></el-option>
+                                <el-option :key="chartType.nameEn" :label="chartType.nameCn" :value="chartType.nameEn">
+                                    <span style="float: left">{{ chartType.nameCn }}</span>
+                                    <span style="float: right; color: #8492a6; font-size: 13px; margin-left: 20px">{{ chartType.nameEn }}</span>
+                                </el-option>
                             </template>
                         </el-select>
                     </el-form-item>
@@ -310,7 +316,10 @@
                         <el-col :span="3">
                             <el-select v-model="reportFilter.filterType" placeholder="请选择">
                                 <template v-for="(filterType, index) in dashboardConstant.reportFilterConstant.filterTypes">
-                                    <el-option :key="filterType.nameEn" :label="filterType.nameCn" :value="filterType.nameEn"></el-option>
+                                    <el-option :key="filterType.nameEn" :label="filterType.nameCn" :value="filterType.nameEn">
+                                        <span style="float: left">{{ filterType.nameCn }}</span>
+                                        <span style="float: right; color: #8492a6; font-size: 13px; margin-left: 20px">{{ filterType.nameEn }}</span>
+                                    </el-option>
                                 </template>
                             </el-select>
                         </el-col>

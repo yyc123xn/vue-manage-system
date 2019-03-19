@@ -5,7 +5,8 @@
             :toolbox="toolbox"
             :loading="loading"
             :data-empty="dataEmpty"
-            :data-zoom="dataZoom">
+            :data-zoom="dataZoom"
+            :extend="report.config.extend.line">
     </ve-line>
 </template>
 
@@ -78,7 +79,9 @@
                     queryConditions: [],
                 }
                 this.reportFilters.forEach(reportFilter => {
-                    if (-1 !== reportFilter.reportIds.indexOf(this.report.id)) {
+                    if (-1 !== reportFilter.reportIds.indexOf(this.report.id)
+                        && null !== reportFilter.queryCondition
+                        && 0 !== reportFilter.queryCondition.length) {
                         if (-1 !== this.queryReportFilter.queryColumns.indexOf(reportFilter.queryColumn)) {
                             this.queryReportFilter.queryConditions[index] = reportFilter.queryCondition
                         } else {

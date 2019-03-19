@@ -86,6 +86,7 @@
 
     /**
      * todo filter精确到报表的指标单位
+     * todo 图表的cofig
      */
     import Histogram from '../../common/charts/Histogram.vue'
     import LineDup from '../../common/charts/Line.vue'

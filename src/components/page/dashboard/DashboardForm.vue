@@ -114,8 +114,8 @@
                                             </el-col>
                                             <el-col :span="10">
                                                 <el-select v-model="handleEditForm.config.chartSettings.yAxisType[0]" placeholder="请选择">
-                                                    <el-option :key="'KMP'" :label="'KMP'" :value="'KMP'"></el-option>
-                                                    <el-option :key="'MP'" :label="'MP'" :value="'MP'"></el-option>
+                                                    <el-option :key="'KMB'" :label="'KMB'" :value="'KMB'"></el-option>
+                                                    <el-option :key="'MB'" :label="'MB'" :value="'MB'"></el-option>
                                                     <el-option :key="'percent'" :label="'percent'" :value="'percent'"></el-option>
                                                 </el-select>
                                             </el-col>
@@ -124,8 +124,8 @@
                                             </el-col>
                                             <el-col :span="10">
                                                 <el-select v-model="handleEditForm.config.chartSettings.yAxisType[1]" placeholder="请选择">
-                                                    <el-option :key="'KMP'" :label="'KMP'" :value="'KMP'"></el-option>
-                                                    <el-option :key="'MP'" :label="'MP'" :value="'MP'"></el-option>
+                                                    <el-option :key="'KMB'" :label="'KMB'" :value="'KMB'"></el-option>
+                                                    <el-option :key="'MB'" :label="'MB'" :value="'MB'"></el-option>
                                                     <el-option :key="'percent'" :label="'percent'" :value="'percent'"></el-option>
                                                 </el-select>
                                             </el-col>
@@ -144,6 +144,14 @@
                                                 <el-input v-model="handleEditForm.config.chartSettings.yAxisName[1]"></el-input>
                                             </el-col>
                                         </el-form-item>
+                                        <el-form-item label="xAxisType(x轴坐标类型)">
+                                            <el-col :span="10">
+                                                <el-select v-model="handleEditForm.config.chartSettings.xAxisType" placeholder="请选择">
+                                                    <el-option :key="'value'" :label="'连续数值'" :value="'value'"></el-option>
+                                                    <el-option :key="'time'" :label="'连续时间'" :value="'time'"></el-option>
+                                                </el-select>
+                                            </el-col>
+                                        </el-form-item>
                                         <el-form-item label="多指标堆叠">
                                             <el-select v-model="handleEditForm.config.chartSettings.stack.key" placeholder="请选择" multiple @change="showStack(handleEditForm.config.chartSettings)">
                                                 <template v-for="(metric, index) in dashboardHelper.reportssHelper[handleEditForm.reportXAxis][handleEditForm.reportYAxis].metrics">
@@ -152,15 +160,16 @@
                                             </el-select>
                                         </el-form-item>
                                         <el-form-item label="展示指标数值">
-                                            <el-switch v-model="handleEditForm.config.extend.lineSeries.label.normal.show"></el-switch>
+                                            <el-switch v-model="handleEditForm.config.extend.line.series.label.normal.show"></el-switch>
                                         </el-form-item>
                                     </el-form>
 
                                     <div>备注1. axisSite(设置右轴key)：例如输入‘占比’， 即将占比的数据置于右轴上。</div>
-                                    <div>备注2. yAxisType(双y轴坐标类型)：y轴坐标类型，KMP单位为k(数据值为5000时，显示5k)，percent单位为%(数据为0.6时，显示60%)。</div>
+                                    <div>备注2. yAxisType(双y轴坐标类型)：y轴坐标类型，KMB单位为k(数据值为5000时，显示5k)，percent单位为%(数据为0.6时，显示60%)。</div>
                                     <div>备注3. yAxisName(双y轴名)：y轴坐标展示的单位。</div>
-                                    <div>备注4. 多指标堆叠：展示数据时，对于选中的指标进行堆叠展示。</div>
-                                    <div>备注5. 展示指标数值：对于每一个指标的数值是否需要展示出来。</div>
+                                    <div>备注4. xAxisType(x轴坐标类型)：x轴坐标类型，可展示为连续的时间轴或数值轴。</div>
+                                    <div>备注5. 多指标堆叠：展示数据时，对于选中的指标进行堆叠展示。</div>
+                                    <div>备注6. 展示指标数值：对于每一个指标的数值是否需要展示出来。</div>
                                 </el-col>
                                 <el-col v-if="'HISTOGRAM' === handleEditForm.chartType">
                                     <el-form ref="handleEditForm.chartSettings" :rules="rules" :model="handleEditForm.chartSettings" label-width="20%">
@@ -177,8 +186,8 @@
                                             </el-col>
                                             <el-col :span="10">
                                                 <el-select v-model="handleEditForm.config.chartSettings.yAxisType[0]" placeholder="请选择">
-                                                    <el-option :key="'KMP'" :label="'KMP'" :value="'KMP'"></el-option>
-                                                    <el-option :key="'MP'" :label="'MP'" :value="'MP'"></el-option>
+                                                    <el-option :key="'KMB'" :label="'KMB'" :value="'KMB'"></el-option>
+                                                    <el-option :key="'MB'" :label="'MB'" :value="'MB'"></el-option>
                                                     <el-option :key="'percent'" :label="'percent'" :value="'percent'"></el-option>
                                                 </el-select>
                                             </el-col>
@@ -187,8 +196,8 @@
                                             </el-col>
                                             <el-col :span="10">
                                                 <el-select v-model="handleEditForm.config.chartSettings.yAxisType[1]" placeholder="请选择">
-                                                    <el-option :key="'KMP'" :label="'KMP'" :value="'KMP'"></el-option>
-                                                    <el-option :key="'MP'" :label="'MP'" :value="'MP'"></el-option>
+                                                    <el-option :key="'KMB'" :label="'KMB'" :value="'KMB'"></el-option>
+                                                    <el-option :key="'MB'" :label="'MB'" :value="'MB'"></el-option>
                                                     <el-option :key="'percent'" :label="'percent'" :value="'percent'"></el-option>
                                                 </el-select>
                                             </el-col>
@@ -207,6 +216,13 @@
                                                 <el-input v-model="handleEditForm.config.chartSettings.yAxisName[1]"></el-input>
                                             </el-col>
                                         </el-form-item>
+                                        <el-form-item label="xAxisType(x轴坐标类型)">
+                                            <el-col :span="10">
+                                                <el-select v-model="handleEditForm.config.chartSettings.xAxisType" placeholder="请选择">
+                                                    <el-option :key="'value'" :label="'连续数值'" :value="'value'"></el-option>
+                                                </el-select>
+                                            </el-col>
+                                        </el-form-item>
                                         <el-form-item label="堆叠柱状图">
                                             <el-select v-model="handleEditForm.config.chartSettings.stack.key" placeholder="请选择" multiple @change="showStack(handleEditForm.config.chartSettings)">
                                                 <template v-for="(metric, index) in dashboardHelper.reportssHelper[handleEditForm.reportXAxis][handleEditForm.reportYAxis].metrics">
@@ -214,15 +230,24 @@
                                                 </template>
                                             </el-select>
                                         </el-form-item>
+                                        <el-form-item label="指标展示为折线">
+                                            <el-select v-model="handleEditForm.config.chartSettings.showLine" placeholder="请选择" multiple @change="showStack(handleEditForm.config.chartSettings)">
+                                                <template v-for="(metric, index) in dashboardHelper.reportssHelper[handleEditForm.reportXAxis][handleEditForm.reportYAxis].metrics">
+                                                    <el-option :key="metric.showName" :label="metric.showName" :value="metric.showName"></el-option>
+                                                </template>
+                                            </el-select>
+                                        </el-form-item>
                                         <el-form-item label="展示指标数值">
-                                            <el-switch v-model="handleEditForm.config.extend.histogramSeries.label.show"></el-switch>
+                                            <el-switch v-model="handleEditForm.config.extend.histogram.series.label.show"></el-switch>
                                         </el-form-item>
                                     </el-form>
                                     <div>备注1. axisSite(设置右轴key)：例如输入‘占比’， 即将占比的数据置于右轴上。</div>
-                                    <div>备注2. yAxisType(双y轴坐标类型)：y轴坐标类型，KMP单位为k(数据值为5000时，显示5k)，percent单位为%(数据为0.6时，显示60%)。</div>
+                                    <div>备注2. yAxisType(双y轴坐标类型)：y轴坐标类型，KMB单位为k(数据值为5000时，显示5k)，percent单位为%(数据为0.6时，显示60%)。</div>
                                     <div>备注3. yAxisName(双y轴名)：y轴坐标展示的单位。</div>
+                                    <div>备注4. xAxisType(x轴坐标类型)：x轴坐标类型，可展示为连续的时间轴或数值轴。</div>
                                     <div>备注5. 堆叠柱状图展示：选择相应的指标展示为堆叠柱状图。</div>
-                                    <div>备注4. 展示指标数值：对于每一个指标的数值是否需要展示出来。</div>
+                                    <div>备注6. 指标展示为折线：选择相应的指标展示为折线图。</div>
+                                    <div>备注7. 展示指标数值：对于每一个指标的数值是否需要展示出来。</div>
                                 </el-col>
                                 <el-col v-if="'TABLE' === handleEditForm.chartType">
                                     <div>与现实生活一致：与现实生活的流程、逻辑保持一致，遵循用户习惯的语言和概念；</div>
@@ -232,29 +257,33 @@
                                     <el-form ref="handleEditForm.chartSettings" :rules="rules" :model="handleEditForm.chartSettings" label-width="20%">
                                         <el-form-item label="数据类型">
                                             <el-select v-model="handleEditForm.config.chartSettings.dataType" placeholder="请选择">
-                                                <el-option :key="'KMP'" :label="'KMP'" :value="'KMP'"></el-option>
-                                                <el-option :key="'MP'" :label="'MP'" :value="'MP'"></el-option>
+                                                <el-option :key="'KMB'" :label="'KMB'" :value="'KMB'"></el-option>
+                                                <el-option :key="'MB'" :label="'MB'" :value="'MB'"></el-option>
                                                 <el-option :key="'percent'" :label="'percent'" :value="'percent'"></el-option>
                                             </el-select>
                                         </el-form-item>
                                         <el-form-item label="展示玫瑰图">
                                             <el-switch v-model="handleEditForm.config.chartSettings.roseTypeHelper" @change="changeRoseType(handleEditForm.config.chartSettings)"></el-switch>
                                         </el-form-item>
+                                        <el-form-item label="选中模式">
+                                            <el-switch v-model="handleEditForm.config.chartSettings.selectedMode"></el-switch>
+                                        </el-form-item>
                                     </el-form>
-                                    <div>备注1. 数据类型：展示指标的数据类型，KMP单位为k(数据值为5000时，显示5k)，percent单位为%(数据为0.6时，显示60%)。</div>
-                                    <div>备注2. 展示玫瑰图：展示为玫瑰图。</div>
+                                    <div>备注1. 数据类型：展示指标的数据类型，KMB单位为k(数据值为5000时，显示5k)，percent单位为%(数据为0.6时，显示60%)。</div>
+                                    <div>备注2. 展示玫瑰图：展示为南丁格尔玫瑰图。</div>
+                                    <div>备注3. 选中模式：将选中的饼图块分离展示。</div>
                                 </el-col>
                                 <el-col v-if="'GUAGE' === handleEditForm.chartType">
                                     <el-form ref="handleEditForm.chartSettings" :rules="rules" :model="handleEditForm.chartSettings" label-width="20%">
                                         <el-form-item label="数据类型">
                                             <el-select v-model="handleEditForm.config.chartSettings.dataType" placeholder="请选择">
-                                                <el-option :key="'KMP'" :label="'KMP'" :value="'KMP'"></el-option>
-                                                <el-option :key="'MP'" :label="'MP'" :value="'MP'"></el-option>
+                                                <el-option :key="'KMB'" :label="'KMB'" :value="'KMB'"></el-option>
+                                                <el-option :key="'MB'" :label="'MB'" :value="'MB'"></el-option>
                                                 <el-option :key="'percent'" :label="'percent'" :value="'percent'"></el-option>
                                             </el-select>
                                         </el-form-item>
                                     </el-form>
-                                    <div>备注1. 数据类型：展示指标的数据，KMP单位为k(数据值为5000时，显示5k)，percent单位为%(数据为0.6时，显示60%)。</div>
+                                    <div>备注1. 数据类型：展示指标的数据，KMB单位为k(数据值为5000时，显示5k)，percent单位为%(数据为0.6时，显示60%)。</div>
                                 </el-col>
                             </el-collapse-item>
                         </el-collapse>
@@ -327,9 +356,11 @@
 
 <script>
     import draggable from 'vuedraggable'
+    import ElFormItem from "../../../../node_modules/element-ui/packages/form/src/form-item.vue";
     export default {
         name: 'DashboardForm',
         components : {
+            ElFormItem,
             draggable
         },
         data: function(){
@@ -391,28 +422,35 @@
                                         axisSite: { right: [] },
                                         yAxisType: [],
                                         yAxisName: [],
+                                        xAxisType: '',
                                         stack: { 'key': [] },
+                                        showLine: [],
                                         area: false,
                                         // 饼图
                                         roseTypeHelper: false,
                                         roseType: '',
-                                        dataType: 'percent'
+                                        dataType: 'percent',
+                                        selectedMode: false
                                     },
                                     extend: {
                                         // 折线图显示指标数据
-                                        lineSeries: {
-                                            label: {
-                                                normal: {
-                                                    show: false
+                                        line: {
+                                            series: {
+                                                label: {
+                                                    normal: {
+                                                        show: false
+                                                    }
                                                 }
                                             }
                                         },
 
                                         // 柱状图显示指标数据
-                                        histogramSeries: {
-                                            label: {
-                                                show: false,
-                                                position: "top"
+                                        histogram: {
+                                            series: {
+                                                label: {
+                                                    show: false,
+                                                    position: "top"
+                                                }
                                             }
                                         }
                                     }
@@ -480,28 +518,35 @@
                             axisSite: { right: [] },
                             yAxisType: [],
                             yAxisName: [],
+                            xAxisType: '',
                             stack: { 'key': [] },
+                            showLine: [],
                             area: false,
                             // 饼图
                             roseTypeHelper: false,
                             roseType: '',
-                            dataType: 'percent'
+                            dataType: 'percent',
+                            selectedMode: false
                         },
                         extend: {
                             // 折线图显示指标数据
-                            lineSeries: {
-                                label: {
-                                    normal: {
-                                        show: false
+                            line: {
+                                series: {
+                                    label: {
+                                        normal: {
+                                            show: false
+                                        }
                                     }
                                 }
                             },
 
                             // 柱状图显示指标数据
-                            histogramSeries: {
-                                label: {
-                                    show: false,
-                                    position: "top"
+                            histogram: {
+                                series: {
+                                    label: {
+                                        show: false,
+                                        position: "top"
+                                    }
                                 }
                             }
                         }
@@ -563,28 +608,35 @@
                             axisSite: { right: [] },
                             yAxisType: [],
                             yAxisName: [],
+                            xAxisType: '',
                             stack: { 'key': [] },
+                            showLine: [],
                             area: false,
                             // 饼图
                             roseTypeHelper: false,
                             roseType: '',
-                            dataType: 'percent'
+                            dataType: 'percent',
+                            selectedMode: false
                         },
                         extend: {
                             // 折线图显示指标数据
-                            lineSeries: {
-                                label: {
-                                    normal: {
-                                        show: false
+                            line: {
+                                series: {
+                                    label: {
+                                        normal: {
+                                            show: false
+                                        }
                                     }
                                 }
                             },
 
                             // 柱状图显示指标数据
-                            histogramSeries: {
-                                label: {
-                                    show: false,
-                                    position: "top"
+                            histogram: {
+                                series: {
+                                    label: {
+                                        show: false,
+                                        position: "top"
+                                    }
                                 }
                             }
                         }

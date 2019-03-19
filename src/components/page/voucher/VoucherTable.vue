@@ -2,29 +2,28 @@
     <div class="table">
         <el-col class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-lx-cascades"></i> 公司票据</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-lx-cascades"></i> 公司员工</el-breadcrumb-item>
             </el-breadcrumb>
         </el-col>
         <el-col class="container">
             <el-col class="handle-box">
-                <el-button type="primary" icon="delete" class="handle-del mr10" @click="delAll">批量删除</el-button>
-                <el-select v-model="defaultVoucherFilterFields" placeholder="筛选项" class="handle-select mr10">
+                <el-button type="primary" icon="delete" class="handle-del mr10">批量删除</el-button>
+                <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10">
                     <el-option v-for="voucherFilterField in voucherFilterFields"
                                :key="voucherFilterField.columnName" :label="voucherFilterField.columnComment"
-                               :value="voucherFilterField.columnComment">
+                               :value="voucherFilterField.columnName">
                     </el-option>
                 </el-select>
-                <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
-                <el-button type="primary" icon="search" @click="search">搜索</el-button>
+                <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
+                <el-button type="primary" icon="el-icon-search" @click="getVouchers">搜索</el-button>
             </el-col>
-            <el-table :data="data" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">
+            <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="55" align="center"></el-table-column>
-                <el-table-column prop="date" label="日期" sortable width="150">
-                </el-table-column>
-                <el-table-column prop="name" label="姓名" width="120">
-                </el-table-column>
-                <el-table-column prop="address" label="地址" :formatter="formatter">
-                </el-table-column>
+                <el-table-column prop="id" label="id" sortable></el-table-column>
+                <el-table-column prop="name" label="名称"></el-table-column>
+                <el-table-column prop="status" label="票据状态" sortable></el-table-column>
+                <el-table-column prop="type" label="票据类型" sortable></el-table-column>
+                <el-table-column prop="createTime" label="创建时间"></el-table-column>
                 <el-table-column label="操作" width="180" align="center">
                     <template slot-scope="scope">
                         <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -33,7 +32,7 @@
                 </el-table-column>
             </el-table>
             <el-col class="pagination">
-                <el-pagination background @current-change="handleCurrentChange" layout="prev, pager, next" :total="1000">
+                <el-pagination background @current-change="handleCurrentChange" layout="prev, pager, next" :page-size="pageSize" :total="total">
                 </el-pagination>
             </el-col>
         </el-col>
@@ -71,28 +70,16 @@
 
 <script>
     export default {
-        name: 'VoucherTable',
+        name: 'DeveloperTable',
         data: function () {
             return {
-                defaultVoucherFilterFields: "",
-                voucherFilterFields: [
-                    {
-                        columnName: "name1",
-                        columnComment: "comment1"
-                    },
-                    {
-                        columnName: "name2",
-                        columnComment: "comment2"
-                    }
-                ],
-                url: './vuetable.json',
+                voucherFilterFields: [],
                 tableData: [],
-                cur_page: 1,
-                multipleSelection: [],
-                select_cate: '',
-                select_word: '',
-                del_list: [],
-                is_search: false,
+                pageIndex: 1,
+                pageSize: 10,
+                total : 0,
+                queryColumn: "",
+                queryCondition: [],
                 editVisible: false,
                 delVisible: false,
                 form: {
@@ -104,29 +91,10 @@
             }
         },
         created() {
-            this.getFilterFields();
-            this.getData();
+            this.getFilterFields()
+            this.getVouchers()
         },
         computed: {
-            data() {
-                return this.tableData.filter((d) => {
-                    let is_del = false;
-                    for (let i = 0; i < this.del_list.length; i++) {
-                        if (d.name === this.del_list[i].name) {
-                            is_del = true;
-                            break;
-                        }
-                    }
-                    if (!is_del) {
-                        if (d.address.indexOf(this.select_cate) > -1 &&
-                            (d.name.indexOf(this.select_word) > -1 ||
-                                d.address.indexOf(this.select_word) > -1)
-                        ) {
-                            return d;
-                        }
-                    }
-                })
-            }
         },
         methods: {
             // 获取票据的过滤字段
@@ -136,32 +104,20 @@
                 })
             },
 
-            // 分页导航
-            handleCurrentChange(val) {
-                this.cur_page = val;
-                this.getData();
-            },
-            // 获取 easy-mock 的模拟数据
-            getData() {
-                // 开发环境使用 easy-mock 数据，正式环境使用 json 文件
-                if (process.env.NODE_ENV === 'development') {
-                    this.url = '/ms/table/list';
-                };
-                this.$axios.post(this.url, {
-                    page: this.cur_page
-                }).then((res) => {
-                    this.tableData = res.data.list;
+            // 获取固定资产列表
+            getVouchers() {
+                let queryParams = {
+                    pageIndex: this.pageIndex,
+                    pageSize: this.pageSize,
+                    queryColumn: this.queryColumn,
+                    queryCondition: this.queryCondition,
+                }
+                this.$api.FINANCE_VOUCHER_API.get('GET_VOUCHERS' ,queryParams).then(res => {
+                    this.tableData = res.data.list
+                    this.total = res.data.total
                 })
             },
-            search() {
-                this.is_search = true;
-            },
-            formatter(row, column) {
-                return row.address;
-            },
-            filterTag(value, row) {
-                return row.tag === value;
-            },
+
             handleEdit(index, row) {
                 this.idx = index;
                 const item = this.tableData[index];
@@ -176,19 +132,16 @@
                 this.idx = index;
                 this.delVisible = true;
             },
-            delAll() {
-                const length = this.multipleSelection.length;
-                let str = '';
-                this.del_list = this.del_list.concat(this.multipleSelection);
-                for (let i = 0; i < length; i++) {
-                    str += this.multipleSelection[i].name + ' ';
-                }
-                this.$message.error('删除了' + str);
-                this.multipleSelection = [];
-            },
             handleSelectionChange(val) {
                 this.multipleSelection = val;
             },
+
+            // 分页导航
+            handleCurrentChange(pageIndex) {
+                this.pageIndex = pageIndex;
+                this.getDevelopers()
+            },
+
             // 保存编辑
             saveEdit() {
                 this.$set(this.tableData, this.idx, this.form);

@@ -61,13 +61,35 @@ module.exports = {
                     '^/finance/common/menu': ''
                 }
             },
-            '/finance/voucher/voucher_type': {
-                target: FINANCE_URL_PREFIX + '/finance/voucher/voucher_type',
+
+            /**
+             * 票据 voucher
+             */
+
+            '/finance/voucher': {
+                target: FINANCE_URL_PREFIX + '/finance/voucher',
                 changeOrigin: true,
                 pathRewrite: {
-                    '^/finance/voucher/voucher_type': ''
+                    '^/finance/voucher': ''
                 }
             },
+
+            '/finance/voucher/voucher_types': {
+                target: FINANCE_URL_PREFIX + '/finance/voucher/voucher_types',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/finance/voucher/voucher_types': ''
+                }
+            },
+
+            '/finance/voucher/voucher_statuses': {
+                target: FINANCE_URL_PREFIX + '/finance/voucher/voucher_statuses',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/finance/voucher/voucher_statuses': ''
+                }
+            },
+
             '/finance/voucher/voucher_filter_fields': {
                 target: FINANCE_URL_PREFIX + '/finance/voucher/voucher_filter_fields',
                 changeOrigin: true,
@@ -75,11 +97,25 @@ module.exports = {
                     '^/finance/voucher/voucher_filter_fields': ''
                 }
             },
+
+
+            /**
+             * 固定资产 fixedAssets
+             */
+
             '/finance/fixed_assets/fixed_assets_filter_fields': {
                 target: FINANCE_URL_PREFIX + '/finance/fixed_assets/fixed_assets_filter_fields',
                 changeOrigin: true,
                 pathRewrite: {
                     '^/finance/fixed_assets/fixed_assets_filter_fields': ''
+                }
+            },
+
+            '/finance/fixed_assets': {
+                target: FINANCE_URL_PREFIX + '/finance/fixed_assets',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/finance/fixed_assets': ''
                 }
             },
 

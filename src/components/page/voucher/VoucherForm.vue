@@ -8,56 +8,32 @@
         </el-col>
         <el-col class="container">
             <el-col class="form-box">
-                <el-form ref="form" :model="form" label-width="80px">
-                    <el-form-item label="票据名称">
-                        <el-input v-model="form.name"></el-input>
+                <el-form ref="voucher" :rules="rules" :model="voucher" label-width="7%">
+                    <el-form-item label="名称" prop="name">
+                        <el-input v-model="voucher.name"></el-input>
                     </el-form-item>
-                    <el-form-item label="票据描述">
-                        <el-input type="textarea" rows="5" v-model="form.desc"></el-input>
+                    <el-form-item label="描述" prop="description">
+                        <el-input type="textarea" rows="5" v-model="voucher.description"></el-input>
                     </el-form-item>
-                    <el-form-item label="票据时间">
-                        <el-col :span="12">
-                            <el-date-picker type="date" placeholder="选择日期" v-model="form.date1" style="width: 100%;"></el-date-picker>
-                        </el-col>
+                    <el-form-item label="票据时间" prop="date">
+                        <el-date-picker type="date" placeholder="选择日期" v-model="voucher.date" style="width: 100%;"></el-date-picker>
                     </el-form-item>
-                    <el-form-item label="票据类型">
-                        <el-select v-model="form.region" placeholder="请选择">
-                            <template v-for="(voucherType, index) in form.voucherTypes">
-                                <el-option :key="voucherType.nameEn" :label="voucherType.nameCn" :value="voucherType.nameCn"></el-option>
+                    <el-form-item label="票据类型" prop="type">
+                        <el-select v-model="voucher.type" placeholder="请选择">
+                            <template v-for="(type, index) in voucherConstant.types">
+                                <el-option :key="type.nameEn" :label="type.nameCn" :value="type.nameEn"></el-option>
                             </template>
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="日期时间">
-                        <el-col :span="11">
-                            <el-date-picker type="date" placeholder="选择日期" v-model="form.date1" style="width: 100%;"></el-date-picker>
-                        </el-col>
-                        <el-col class="line" :span="2">-</el-col>
-                        <el-col :span="11">
-                            <el-time-picker placeholder="选择时间" v-model="form.date2" style="width: 100%;"></el-time-picker>
-                        </el-col>
-                    </el-form-item>
-                    <el-form-item label="城市级联">
-                        <el-cascader :options="options" v-model="form.options"></el-cascader>
-                    </el-form-item>
-                    <el-form-item label="选择开关">
-                        <el-switch v-model="form.delivery"></el-switch>
-                    </el-form-item>
-                    <el-form-item label="多选框">
-                        <el-checkbox-group v-model="form.type">
-                            <el-checkbox label="步步高" name="type"></el-checkbox>
-                            <el-checkbox label="小天才" name="type"></el-checkbox>
-                            <el-checkbox label="imoo" name="type"></el-checkbox>
-                        </el-checkbox-group>
-                    </el-form-item>
-                    <el-form-item label="单选框">
-                        <el-radio-group v-model="form.resource">
-                            <el-radio label="步步高"></el-radio>
-                            <el-radio label="小天才"></el-radio>
-                            <el-radio label="imoo"></el-radio>
-                        </el-radio-group>
+                    <el-form-item label="票据状态" prop="status">
+                        <el-select v-model="voucher.status" placeholder="请选择">
+                            <template v-for="(status, index) in voucherConstant.statuses">
+                                <el-option :key="status.nameEn" :label="status.nameCn" :value="status.nameEn"></el-option>
+                            </template>
+                        </el-select>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="onSubmit">表单提交</el-button>
+                        <el-button type="primary" @click="addVoucher('voucher')">表单提交</el-button>
                         <el-button>取消</el-button>
                     </el-form-item>
                 </el-form>
@@ -68,92 +44,76 @@
 </template>
 
 <script>
+    import ElSwitch from "../../../../node_modules/element-ui/packages/switch/src/component.vue";
+
     export default {
-        name: 'VoucherForm',
+        components: {ElSwitch},
+        name: 'DeveloperForm',
         data: function(){
             return {
-                form: {
-                    name: '',
-                    region: '',
-                    // 数据从后端获取
-                    voucherTypes: [
-                        {
-                            nameEn : "yangyichao",
-                            nameCn : "羊艺超"
-                        }
-                    ],
-                    date1: '',
-                    date2: '',
-                    delivery: true,
-                    type: ['步步高'],
-                    resource: '小天才',
-                    desc: '',
-                    options: []
+                voucher: {
+                    id : 0,
+                    name : '',
+                    description : '',
+                    date: '',
+                    status: '',
+                    type: ''
                 },
-                options:[
-                    {
-                        value: 'guangdong',
-                        label: '广东省',
-                        children: [
-                            {
-                                value: 'guangzhou',
-                                label: '广州市',
-                                children: [
-                                    {
-                                        value: 'tianhe',
-                                        label: '天河区'
-                                    },
-                                    {
-                                        value: 'haizhu',
-                                        label: '海珠区'
-                                    }
-                                ]
-                            },
-                            {
-                                value: 'dongguan',
-                                label: '东莞市',
-                                children: [
-                                    {
-                                        value: 'changan',
-                                        label: '长安镇'
-                                    },
-                                    {
-                                        value: 'humen',
-                                        label: '虎门镇'
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        value: 'hunan',
-                        label: '湖南省',
-                        children: [
-                            {
-                                value: 'changsha',
-                                label: '长沙市',
-                                children: [
-                                    {
-                                        value: 'yuelu',
-                                        label: '岳麓区'
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
+
+                voucherConstant: {
+                    types: [],
+                    statuses: []
+                },
+
+                rules: {
+                    name: [
+                        { required: true, message: '请输入票据名称', trigger: 'blur' }
+                    ],
+                    description: [
+                        { required: true, message: '请输入票据描述', trigger: 'blur' }
+                    ],
+                    date : [
+                        { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
+                    ],
+                    type: [
+                        { required: true, message: '请选择票据类型', trigger: 'blur' }
+                    ],
+                    status: [
+                        { required: true, message: '请选择票据状态', trigger: 'blur' }
+                    ]
+                }
             }
         },
         methods: {
-            onSubmit() {
-                this.$message.success('提交成功！');
+            addVoucher(voucher) {
+                this.$refs[voucher].validate((valid) => {
+                    if (valid) {
+                        this.$api.FINANCE_VOUCHER_API.post('ADD_VOUCHER', this.fixedAssets).then(res => {
+                            this.$message.success("成功添加票据")
+                            this.$router.replace('/voucher_table')
+                        })
+                    } else {
+                        this.$message.error("请将票据信息填写完整")
+                        return false;
+                    }
+                })
+            },
+
+            getVoucherTypes() {
+                this.$api.FINANCE_VOUCHER_API.get('GET_VOUCHER_TYPES').then(res => {
+                    this.voucherConstant.types = res.data
+                })
+            },
+
+            getVoucherStatuses() {
+                this.$api.FINANCE_VOUCHER_API.get('GET_VOUCHER_STATUSES').then(res => {
+                    this.voucherConstant.statuses = res.data
+                })
             }
         },
         created() {
-            this.$api.FINANCE_VOUCHER_API.get('GET_VOUCHER_TYPES').then(res => {
-                console.log(res)
-                this.form.voucherTypes = res.data;
-            })
+            this.getVoucherTypes()
+            this.getVoucherStatuses()
         }
     }
 </script>

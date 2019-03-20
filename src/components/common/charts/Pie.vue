@@ -31,6 +31,17 @@
                 queryReportFilter: {
                     queryColumns: [],
                     queryConditions: [],
+                },
+                defaultChartData: {
+                    columns: ['日期', '访问用户'],
+                    rows: [
+                        { '日期': '1/1', '访问用户': 1393 },
+                        { '日期': '1/2', '访问用户': 3530 },
+                        { '日期': '1/3', '访问用户': 2923 },
+                        { '日期': '1/4', '访问用户': 1723 },
+                        { '日期': '1/5', '访问用户': 3792 },
+                        { '日期': '1/6', '访问用户': 4593 }
+                    ]
                 }
             }
         },
@@ -94,7 +105,9 @@
             reportFilters: {
                 handler (newV, oldV) {
                     // do something, 可使用this
-                    this.updateReportData(this.report.id)
+                    if (0 !== this.report.id) {
+                        this.updateReportData(this.report.id)
+                    }
                 },
                 deep :true
             }
@@ -103,7 +116,12 @@
         mounted() {
             let _this = this
             let reportId = _this._props.report.id
-            this.updateReportData(reportId)
+            if (0 === reportId) {
+                this.chartData = this.defaultChartData
+                this.loading = false;
+            } else {
+                this.updateReportData(reportId)
+            }
         }
     }
 </script>

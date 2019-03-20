@@ -37,6 +37,12 @@
                 queryReportFilter: {
                     queryColumns: [],
                     queryConditions: [],
+                },
+                defaultChartData: {
+                    columns: ['type', 'value'],
+                    rows: [
+                        { type: '占比', value: 0.8 }
+                    ]
                 }
             }
         },
@@ -100,7 +106,9 @@
             reportFilters: {
                 handler (newV, oldV) {
                     // do something, 可使用this
-                    this.updateReportData(this.report.id)
+                    if (0 !== this.report.id) {
+                        this.updateReportData(this.report.id)
+                    }
                 },
                 deep :true
             }
@@ -109,7 +117,12 @@
         mounted() {
             let _this = this
             let reportId = _this._props.report.id
-            this.updateReportData(reportId)
+            if (0 === reportId) {
+                this.chartData = this.defaultChartData
+                this.loading = false;
+            } else {
+                this.updateReportData(reportId)
+            }
         }
     }
 </script>

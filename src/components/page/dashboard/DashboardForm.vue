@@ -10,12 +10,13 @@
         <el-col class="container">
 
             <el-steps :active="pageIndex - 1" finish-status="success" simple>
-                <el-step title="步骤 1" ></el-step>
-                <el-step title="步骤 2" ></el-step>
-                <el-step title="步骤 3" ></el-step>
+                <el-step title="看板基本信息" ></el-step>
+                <el-step title="看板报表" ></el-step>
+                <el-step title="看板过滤器" ></el-step>
+                <el-step title="看板预览" ></el-step>
             </el-steps>
 
-            <!--步骤1-->
+            <!--看板基本信息-->
             <el-col class="form-box" v-if="1 === pageIndex">
                 <el-col  style="margin-top: 25px; text-align: center; margin-bottom: 25px; font-weight : 700" >数据看板基本信息</el-col>
                 <el-form ref="dashboard" :rules="rules" :model="dashboard" label-width="9%">
@@ -38,7 +39,7 @@
                 </el-form>
             </el-col>
 
-            <!--步骤2-->
+            <!--看板报表-->
             <el-col v-if="2 === pageIndex">
                 <el-col  style="margin-top: 25px; text-align: center; margin-bottom: 25px; font-weight : 700;" >数据看板报表制作</el-col>
                 <el-row  :gutter="30">
@@ -66,16 +67,16 @@
                 </el-col>
             </el-col>
 
-            <!-- 编辑报表弹出框 -->
+            <!--编辑报表弹出框 -->
             <el-dialog title="编辑报表" :visible.sync="editVisible" width="70%">
-                <el-form ref="form" :rules="rules.reportRules" :model="handleEditForm" label-width="10%">
+                <el-form ref="handleEditForm" :rules="rules.reportRules" :model="handleEditForm" label-width="10%">
                     <el-form-item label="报表名称" prop="name">
                         <el-input v-model="handleEditForm.name"></el-input>
                     </el-form-item>
                     <el-form-item label="报表描述" prop="description">
                         <el-input type="textarea" rows="5" v-model="handleEditForm.description"></el-input>
                     </el-form-item>
-                    <el-form-item label="数据集列表" prop="dataSet">
+                    <el-form-item label="数据集列表" prop="dataSetId">
                         <el-select v-model="handleEditForm.dataSetId" placeholder="请选择" filterable @change="getDataSetMetrics" @click="getDataSetMetrics">
                             <template v-for="(dataSet, index) in dashboardConstant.reportConstant.dataSets">
                                 <el-option :key="dataSet.id" :label="dataSet.name" :value="dataSet.id"></el-option>
@@ -297,64 +298,174 @@
                 </el-form>
                 <span slot="footer" class="dialog-footer">
                 <el-button @click="editVisible = false">取 消</el-button>
-                <el-button type="primary" @click="editVisible = false">确 定</el-button>
+                <el-button type="primary" @click="saveEditForm('handleEditForm')">确 定</el-button>
             </span>
             </el-dialog>
 
-            <!--步骤3-->
+            <!--看板过滤器-->
             <el-col v-if="3 === pageIndex">
                 <el-col style="margin-top: 25px; text-align: center; margin-bottom: 25px; font-weight : 700;" >数据看板过滤器设置</el-col>
                 <el-form>
-                    <el-form-item
-                            v-for="(reportFilter, index) in dashboard.reportFilters"
-                            :label="'过滤器' + (index + 1)"
-                            :key="reportFilter.id"
-                            :prop="'reportFilters.' + index + '.value'">
-                        <el-col class="line" :span="1">名称</el-col>
-                        <el-col :span="3"><el-input v-model="reportFilter.name"></el-input></el-col>
-                        <el-col class="line" :span="2">过滤器类型</el-col>
-                        <el-col :span="3">
-                            <el-select v-model="reportFilter.filterType" placeholder="请选择">
-                                <template v-for="(filterType, index) in dashboardConstant.reportFilterConstant.filterTypes">
-                                    <el-option :key="filterType.nameEn" :label="filterType.nameCn" :value="filterType.nameEn">
-                                        <span style="float: left">{{ filterType.nameCn }}</span>
-                                        <span style="float: right; color: #8492a6; font-size: 13px; margin-left: 20px">{{ filterType.nameEn }}</span>
-                                    </el-option>
+                    <el-form-item>
+                        <el-table :data="dashboard.reportFilters">
+                            <el-table-column type="expand">
+                                <template slot-scope="props">
+                                    <el-form label-position="right" inline class="demo-table-expand">
+                                        <el-form-item label="名称">
+                                            <el-input v-model="props.row.name"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="过滤器类型">
+                                            <el-select v-model="props.row.filterType" placeholder="请选择">
+                                                <template v-for="(filterType, index) in dashboardConstant.reportFilterConstant.filterTypes">
+                                                    <el-option :key="filterType.nameEn" :label="filterType.nameCn" :value="filterType.nameEn">
+                                                        <span style="float: left">{{ filterType.nameCn }}</span>
+                                                        <span style="float: right; color: #8492a6; font-size: 13px; margin-left: 20px">{{ filterType.nameEn }}</span>
+                                                    </el-option>
+                                                </template>
+                                            </el-select>
+                                        </el-form-item>
+                                        <el-form-item label="作用报表">
+                                            <el-select v-model="props.row.reportKeys" placeholder="请选择" multiple filterable>
+                                                <template v-for="(report, index) in dashboardHelper.reportFilterHelper" :value="filterType.nameEn">
+                                                    <el-option :key="report.reportXAxis+ '|' + report.reportYAxis" :label="report.name" :value="report.reportXAxis+ '|' + report.reportYAxis"></el-option>
+                                                </template>
+                                            </el-select>
+                                        </el-form-item>
+                                        <el-form-item label="数据集字段">
+                                            <el-cascader
+                                                    placeholder="请选择"
+                                                    :options="dashboardConstant.reportConstant.dataSetsFields"
+                                                    v-model="dashboardHelper.reportFiltersHelper[props.$index].queryColumns"
+                                                    filterable
+                                                    @change="changeReportFilterQueryColumns(props.$index)"
+                                            ></el-cascader>
+                                        </el-form-item>
+                                    </el-form>
                                 </template>
-                            </el-select>
-                        </el-col>
-                        <el-col class="line" :span="2">作用报表</el-col>
-                        <el-col :span="3">
-                            <el-select v-model="reportFilter.reportKeys" placeholder="请选择" multiple filterable>
-                                <template v-for="(report, index) in dashboardHelper.reportFilterHelper" :value="filterType.nameEn">
-                                    <el-option :key="report.reportXAxis+ '|' + report.reportYAxis" :label="report.name" :value="report.reportXAxis+ '|' + report.reportYAxis"></el-option>
+                            </el-table-column>
+                            <el-table-column
+                                    label="名称"
+                                    prop="name">
+                            </el-table-column>
+                            <el-table-column
+                                    label="过滤器类型"
+                                    prop="filterType">
+                            </el-table-column>
+                            <el-table-column label="作用报表">
+                                <template slot-scope="scope">
+                                    <el-col v-for="(reportKey, index) in dashboard.reportFilters[scope.$index].reportKeys">
+                                        {{index + 1}}.{{dashboard.reportss[reportKey.split('|')[0]][reportKey.split('|')[1]].name}}
+                                    </el-col>
                                 </template>
-                            </el-select>
-                        </el-col>
-                        <el-col class="line" :span="2">数据集字段</el-col>
-                        <el-col :span="3">
-                            <el-cascader
-                                    placeholder="请选择"
-                                    :options="dashboardConstant.reportConstant.dataSetsFields"
-                                    v-model="dashboardHelper.reportFiltersHelper[index].queryColumns"
-                                    filterable
-                                    @change="changeReportFilterQueryColumns(index)"
-                            ></el-cascader>
-                        </el-col>
-                        <el-col class="line" :span="1">操作</el-col>
-                        <el-col :span="2"><el-button @click.prevent="removeReportFilter(index)" type="danger">删除</el-button></el-col>
+                            </el-table-column>
+                            <el-table-column
+                                    label="查询字段"
+                                    prop="queryColumn">
+                            </el-table-column>
+                            <el-table-column label="操作">
+                                <template slot-scope="scope">
+                                    <el-button @click.prevent="removeReportFilter(scope.$index)" size="mini" type="danger">删除</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
                     </el-form-item>
                 </el-form>
                 <el-col align="center">
                     <el-button type="primary" icon="el-icon-lx-add" @click="addReportFilter" style="margin-top: 2%">添加过滤器</el-button>
+                </el-col>
+            </el-col>
+
+            <!--看板预览-->
+            <el-col v-if="4 === pageIndex" v-model="dashboard">
+                <el-col style="margin-top: 25px; text-align: center; margin-bottom: 25px; font-weight : 700;" >数据看板预览</el-col>
+                <el-col>
+                    <el-collapse>
+                        <el-collapse-item :title="dashboard.name" name="1">
+                            <div>{{dashboard.name}}</div>
+                        </el-collapse-item>
+                        <el-collapse-item title="简介" name="2">
+                            <div>{{dashboard.description}}</div>
+                        </el-collapse-item>
+                    </el-collapse>
+                </el-col>
+                <el-col style="margin-top: 30px; margin-bottom: 30px">过滤条件</el-col>
+                <el-col style="margin-bottom: 30px">
+                    <el-form :inline="true">
+                        <el-form-item label="日期">
+                            <el-date-picker
+                                    type="datetimerange"
+                                    :picker-options="pickerOptions"
+                                    range-separator="至"
+                                    start-placeholder="开始日期"
+                                    end-placeholder="结束日期"
+                                    align="right"
+                                    value-format="yyyyMMddHH">
+                            </el-date-picker>
+                        </el-form-item>
+                        <el-form-item  v-for="(reportFilter, index) in dashboard.reportFilters" :key="reportFilter.id" >
+                            {{reportFilter.name}}
+                            <el-select
+                                    v-if="'MULTI_SELECT_DROP_DOWN' === reportFilter.filterType"
+                                    multiple filterable placeholder="请选择" style="margin-right: 55px">
+                                <el-option
+                                        v-for="(a, index) in reportFilter.values"
+                                        :key="index"
+                                        :label="a"
+                                        :value="a">
+                                </el-option>
+                            </el-select>
+                            <el-date-picker
+                                    v-if="'DATE' === reportFilter.filterType"
+                                    type="datetimerange"
+                                    :picker-options="pickerOptions"
+                                    range-separator="至"
+                                    start-placeholder="开始日期"
+                                    end-placeholder="结束日期"
+                                    align="right"
+                                    value-format="yyyyMMddHH">
+                            </el-date-picker>
+                            <el-select
+                                    v-if="'DROP_DOWN' === reportFilter.filterType" filterable
+                                    placeholder="请选择" style="margin-right: 30px">
+                                <el-option
+                                        v-for="(value, index) in reportFilter.values"
+                                        :key="index"
+                                        :label="value"
+                                        :value="value">
+                                </el-option>
+                            </el-select>
+
+                        </el-form-item>
+                    </el-form>
+                </el-col>
+                <el-col>
+
+                    <el-col v-for="(reports, index1) in dashboardHelper.reportssSymmetryHelper" :key="index1">
+                        <el-col :span="24 / dashboardHelper.reportssSymmetryHelper[index1].length" v-for="(report, index2) in dashboardHelper.reportssSymmetryHelper[index1]" :key="index2">
+                            <el-card>
+                                <div slot="header">
+                                    <span>{{report.name}} (模拟数据)</span>
+                                </div>
+                                <div>
+                                    <histogram :report="report" v-if="'HISTOGRAM' === report.chartType"></histogram>
+                                    <line-dup :report="report" v-if="'LINE' === report.chartType"></line-dup>
+                                    <pie :report="report" v-if="'PIE' === report.chartType"></pie>
+                                    <!--<MonitorCard v-if="'MONITOR_CARD' === report.chartType"></MonitorCard>-->
+                                    <guage :report="report" v-if="'GUAGE' === report.chartType"></guage>
+                                </div>
+                            </el-card>
+                        </el-col>
+                    </el-col>
+                </el-col>
+                <el-col align="center">
                     <el-button type="primary" icon="el-icon-lx-add" @click="addDashboard" style="margin-top: 2%">提交</el-button>
                 </el-col>
             </el-col>
 
             <el-col align="center" style="margin-top: 30px">
                 <el-button-group>
-                    <el-button type="primary" icon="el-icon-arrow-left" @click="previousPage" v-if="2 === pageIndex || 3 === pageIndex">上一页</el-button>
-                    <el-button type="primary" @click="nextPage" v-if="1 === pageIndex || 2 === pageIndex">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+                    <el-button type="primary" icon="el-icon-arrow-left" @click="previousPage" v-if="2 === pageIndex || 3 === pageIndex || 4 === pageIndex">上一页</el-button>
+                    <el-button type="primary" @click="nextPage" v-if="1 === pageIndex || 2 === pageIndex || 3 === pageIndex">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
                 </el-button-group>
             </el-col>
 
@@ -365,12 +476,23 @@
 
 <script>
     import draggable from 'vuedraggable'
+    import Histogram from '../../common/charts/Histogram.vue'
+    import LineDup from '../../common/charts/Line.vue'
+    import Pie from '../../common/charts/Pie.vue'
+    import MonitorCard from '../../common/charts/MonitorCard.vue'
+    import Guage from '../../common/charts/Guage.vue'
+    import 'echarts/lib/component/toolbox'
     import ElFormItem from "../../../../node_modules/element-ui/packages/form/src/form-item.vue";
     export default {
         name: 'DashboardForm',
         components : {
             ElFormItem,
-            draggable
+            draggable,
+            Histogram,
+            LineDup,
+            Pie,
+            MonitorCard,
+            Guage
         },
         data: function(){
             return {
@@ -401,22 +523,16 @@
                                 metrics: []
                             }
                         ]
-                    ]
+                    ],
+
+                    reportssSymmetryHelper: [[]]
                 },
                 dashboard: {
                     id: 0,
                     name: '',
                     description: '',
                     privilege: '',
-                    reportFilters: [
-                        {
-                            id: 0,
-                            name: "",
-                            filterType: '',
-                            reportKeys: [],
-                            queryColumn: ''
-                        }
-                    ],
+                    reportFilters: [],
                     reportss: [
                         [
                             {
@@ -486,14 +602,14 @@
                         description: [
                             {required: true, message: '请输入报表描述', trigger: 'blur'}
                         ],
-                        dataSet: [
-                            {required: true, message: '请输入报表名', trigger: 'blur'}
+                        dataSetId: [
+                            {required: true, message: '请选择数据集', trigger: 'change'}
                         ],
                         chartType: [
-                            {required: true, message: '请输入报表描述', trigger: 'blur'}
+                            {required: true, message: '请选择报表类型', trigger: 'change'}
                         ],
                         dataSetFieldIds: [
-                            {required: true, message: '请输入报表描述', trigger: 'blur'}
+                            {required: true, message: '请选择数据集指标', trigger: 'change'}
                         ]
                     },
                     reportFilterRules: {
@@ -501,7 +617,7 @@
                             {required: true, message: '请输入过滤器名', trigger: 'blur'}
                         ],
                         filterType: [
-                            {required: true, message: '请选择过滤器类型', trigger: 'blur'}
+                            {required: true, message: '请选择过滤器类型', trigger: 'change'}
                         ],
                         reportKeys: [
                             {required: true, message: '请选择过滤器需要作用的报表', trigger: 'blur'}
@@ -561,9 +677,49 @@
                         }
                     }
                 },
+
+                pickerOptions: {
+                    shortcuts: [{
+                        text: '最近一周',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '最近一个月',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }, {
+                        text: '最近三个月',
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                            picker.$emit('pick', [start, end]);
+                        }
+                    }]
+                }
             }
         },
         methods: {
+
+            // 保存时候的校验
+            saveEditForm(handleEditForm) {
+                this.$refs[handleEditForm].validate((valid) => {
+                    if (valid) {
+                        this.editVisible = false
+                    } else {
+                        this.$message.error("请将报表信息填写完整")
+                        return false;
+                    }
+                })
+            },
 
             // pie 展示为roseType
             changeRoseType(chartSettings) {
@@ -660,59 +816,116 @@
 
             // 添加一列
             addReportColumn() {
-                let reports = []
-                let reportsHelper = []
+                let reports =  [{
+                    id: 0,
+                    name : "新报表",
+                    description: "",
+                    dataSetId: "",
+                    dataSetFieldIds: [],
+                    reportXAxis: 0,
+                    reportYAxis: 0,
+                    config: {
+                        chartSettings: {
+                            // 折线图和柱状图
+                            axisSite: { right: [] },
+                            yAxisType: [],
+                            yAxisName: [],
+                            xAxisType: '',
+                            stack: { 'key': [] },
+                            showLine: [],
+                            area: false,
+                            // 饼图
+                            roseTypeHelper: false,
+                            roseType: '',
+                            dataType: 'percent',
+                            selectedMode: false
+                        },
+                        extend: {
+                            // 折线图显示指标数据
+                            line: {
+                                series: {
+                                    label: {
+                                        normal: {
+                                            show: false
+                                        }
+                                    }
+                                }
+                            },
+
+                            // 柱状图显示指标数据
+                            histogram: {
+                                series: {
+                                    label: {
+                                        show: false,
+                                        position: "top"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }]
+                let reportsHelper = [{
+                    metrics : []
+                }]
                 this.dashboard.reportss.push(reports)
                 this.dashboardHelper.reportssHelper.push(reportsHelper)
             },
 
             // 删除一列
             deleteReportColumn() {
-                this.$confirm('删除不可恢复，是否确定删除？', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    this.dashboard.reportss.pop()
-                    this.dashboardHelper.reportssHelper.pop()
-                    this.$message({
-                        type: 'success',
-                        message: '删除成功!'
+                if (1 < this.dashboard.reportss.length) {
+                    this.$confirm('删除不可恢复，是否确定删除？', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        this.dashboard.reportss.pop()
+                        this.dashboardHelper.reportssHelper.pop()
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功!'
+                        });
+                    }).catch(() => {
+                        this.$message({
+                            type: 'info',
+                            message: '已取消删除'
+                        });
                     });
-                }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '已取消删除'
-                    });
-                });
+                } else {
+                    this.$message.error("请至少配置一列报表")
+                }
             },
 
             // step2-报表删除
             deleteReportRow(reportXAxis, reportYAxis) {
-                this.$confirm('删除不可恢复，是否确定删除？', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    this.dashboard.reportss[reportXAxis].splice(reportYAxis, 1)
-                    this.dashboardHelper.reportssHelper[reportXAxis].splice(reportYAxis, 1)
-                    this.$message({
-                        type: 'success',
-                        message: '删除成功!'
+                if (1 < this.dashboard.reportss[reportXAxis].length) {
+                    this.$confirm('删除不可恢复，是否确定删除？', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        this.dashboard.reportss[reportXAxis].splice(reportYAxis, 1)
+                        this.dashboardHelper.reportssHelper[reportXAxis].splice(reportYAxis, 1)
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功!'
+                        });
+                    }).catch(() => {
+                        this.$message({
+                            type: 'info',
+                            message: '已取消删除'
+                        });
                     });
-                }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '已取消删除'
-                    });
-                });
+                } else {
+                    this.$message.error("请每列至少配置一个报表")
+                }
             },
 
             // step3-添加报表过滤选项
             addReportFilter() {
                 this.dashboard.reportFilters.push({
                     id: 0,
-                    name: "",
+                    name: "过滤器" + (this.dashboard.reportFilters.length + 1),
                     filterType: '',
                     reportKeys: [],
                     queryColumn: []
@@ -754,14 +967,14 @@
 
             // 前一页
             previousPage() {
-                if (2 === this.pageIndex || 3 === this.pageIndex) {
+                if (2 === this.pageIndex || 3 === this.pageIndex || 4 === this.pageIndex) {
                     this.pageIndex--;
                 }
             },
 
             // 后一页
             nextPage() {
-                if (1 === this.pageIndex || 2 === this.pageIndex) {
+                if (1 === this.pageIndex || 2 === this.pageIndex || 3 === this.pageIndex) {
                     this.pageIndex++;
                 }
                 if (3 === this.pageIndex) {
@@ -772,13 +985,24 @@
                         })
                     })
                 }
+                if (4 === this.pageIndex) {
+                    this.dashboardHelper.reportssSymmetryHelper = []
+                    this.dashboard.reportss[0].forEach(reports => this.dashboardHelper.reportssSymmetryHelper.push([]))
+                    for (let i = 0; i < this.dashboard.reportss.length; i++) {
+                        let reports = this.dashboard.reportss[i];
+                        for (let j = 0; j < reports.length; j++) {
+                            this.dashboardHelper.reportssSymmetryHelper[j].push(reports[j]);
+                        }
+                    }
+                }
             },
 
             addDashboard() {
-                this.$api.REPORT_DASHBOARD_API.post('ADD_DASHBOARD', this.dashboard).then(res => {
-                    this.$message.success("成功添加数据看板")
-                    this.$router.replace('/dashboard_table')
-                })
+                console.log(this.dashboard)
+//                this.$api.REPORT_DASHBOARD_API.post('ADD_DASHBOARD', this.dashboard).then(res => {
+//                    this.$message.success("成功添加数据看板")
+//                    this.$router.replace('/dashboard_table')
+//                })
             },
 
             // 获取数据集列表
@@ -870,5 +1094,16 @@
 
     .red{
         color: #ff0000;
+    }
+
+    .demo-table-expand {
+    }
+    .demo-table-expand label {
+        width: 90px;
+        color: #99a9bf;
+    }
+    .demo-table-expand .el-form-item {
+        margin-right: 0;
+        width: 50%;
     }
 </style>

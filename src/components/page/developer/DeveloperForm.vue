@@ -38,7 +38,7 @@
                         </el-select>
                     </el-form-item>
                     <el-form-item label="部门" prop="group">
-                        <el-cascader :options="developerConstant.groups" v-model="developerHelper.group" change-on-select></el-cascader>
+                        <el-cascader :options="developerConstant.groups" v-model="developerHelper.group" change-on-select filterable></el-cascader>
                     </el-form-item>
                     <el-form-item label="学历" prop="academicDegree">
                         <el-select v-model="developer.academicDegree" placeholder="请选择">

@@ -283,14 +283,14 @@ export default [
                     title: '看板表单'
                 }
             },
-            {
-                path: 'dashboard_info',
-                component: "DashboardInfo",
-                name: 'dashboard_info',
-                meta: {
-                    title: '看板详情'
-                }
-            }
+            // {
+            //     path: 'dashboard_info',
+            //     component: "DashboardInfo",
+            //     name: 'dashboard_info',
+            //     meta: {
+            //         title: '看板详情'
+            //     }
+            // }
         ]
     },
     {
@@ -321,32 +321,32 @@ export default [
             }
         ]
     },
-    {
-        path: "/",
-        component: "Home",
-        name: 'report',
-        meta: {
-            title: '报表',
-            icon: 'el-icon-lx-pic',
-        },
-        children: [
-            {
-                path: 'report_table',
-                component: "ReportTable",
-                name: 'report_table',
-                meta: {
-                    icon: 'el-icon-lx-cascades',
-                    title: '报表列表'
-                }
-            },
-            {
-                path: 'report_form',
-                component: "ReportForm",
-                name: 'report_form',
-                meta: {
-                    title: '报表表单'
-                }
-            }
-        ]
-    }
+    // {
+    //     path: "/",
+    //     component: "Home",
+    //     name: 'report',
+    //     meta: {
+    //         title: '报表',
+    //         icon: 'el-icon-lx-pic',
+    //     },
+    //     children: [
+    //         {
+    //             path: 'report_table',
+    //             component: "ReportTable",
+    //             name: 'report_table',
+    //             meta: {
+    //                 icon: 'el-icon-lx-cascades',
+    //                 title: '报表列表'
+    //             }
+    //         },
+    //         {
+    //             path: 'report_form',
+    //             component: "ReportForm",
+    //             name: 'report_form',
+    //             meta: {
+    //                 title: '报表表单'
+    //             }
+    //         }
+    //     ]
+    // }
 ]

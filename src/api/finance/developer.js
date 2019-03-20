@@ -19,6 +19,13 @@ const financeDeveloperApi = {
     post(urlName, postParams) {
         let url = this[urlName]
         return axios.post(url, postParams)
+    },
+
+    DELETE_DEVELOPER:'/finance/developer',
+
+    delete(urlName, deleteParams) {
+        let url = this[urlName]
+        return axios.delete(url, {params : deleteParams})
     }
 }
 

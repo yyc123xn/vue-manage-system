@@ -90,7 +90,7 @@
             <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="delVisible = false">取 消</el-button>
-                <el-button type="primary" @click="deleteDataSet">确 定</el-button>
+                <el-button type="primary">确 定</el-button>
             </span>
         </el-dialog>
     </div>
@@ -230,20 +230,29 @@
             },
 
             handleDelete(index, row) {
-                this.handleDeleteIndex = index;
-                this.delVisible = true;
-            },
-
-            // 确定删除
-            deleteDataSet(){
-                let deleteParams = {
-                    id : this.tableData[this.handleDeleteIndex].id
-                }
-                this.tableData.splice(this.handleDeleteIndex, 1);
-                this.$api.REPORT_DATA_SET_API.delete('DELETE_DATA_SET', deleteParams).then(res => {
-                    this.$message.success("删除成功")
-                    this.delVisible = false;
-                })
+                this.$confirm('删除不可恢复，是否确定删除？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    let dataSetId = this.tableData[index].id;
+                    let deleteParams = {
+                        id: dataSetId
+                    }
+                    this.$api.REPORT_DATA_SET_API.delete('DELETE_DATA_SET', deleteParams).then(res => {
+                        this.tableData.splice(index, 1);
+                        this.$message.success("删除成功")
+                    })
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功!'
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
             },
 
             handleSelectionChange(val) {

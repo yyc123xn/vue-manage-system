@@ -7,7 +7,7 @@
         </el-col>
         <el-col class="container">
             <el-col class="handle-box">
-                <el-button type="primary" icon="delete" class="handle-del mr10" @click="delAll">批量删除</el-button>
+                <el-button type="primary" icon="delete" class="handle-del mr10">批量删除</el-button>
                 <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10">
                     <el-option v-for="dataSourceFilterField in dataSourceFilterFields"
                                :key="dataSourceFilterField.columnName" :label="dataSourceFilterField.columnComment"
@@ -147,13 +147,6 @@
                     privilege : '',
                 },
                 tables: [],
-                url: './vuetable.json',
-                cur_page: 1,
-                multipleSelection: [],
-                select_cate: '',
-                select_word: '',
-                del_list: [],
-                is_search: false,
                 infoVisible: false,
                 editVisible: false,
                 delVisible: false,
@@ -167,29 +160,7 @@
         },
         created() {
             this.getFilterFields();
-//            this.getData();
             this.getDataSources()
-        },
-        computed: {
-            data() {
-                return this.tableData.filter((d) => {
-                    let is_del = false;
-                    for (let i = 0; i < this.del_list.length; i++) {
-                        if (d.name === this.del_list[i].name) {
-                            is_del = true;
-                            break;
-                        }
-                    }
-                    if (!is_del) {
-                        if (d.address.indexOf(this.select_cate) > -1 &&
-                            (d.name.indexOf(this.select_word) > -1 ||
-                                d.address.indexOf(this.select_word) > -1)
-                        ) {
-                            return d;
-                        }
-                    }
-                })
-            }
         },
         methods: {
             // 获取票据的过滤字段
@@ -237,11 +208,6 @@
                 })
             },
 
-            // 分页导航
-            handleCurrentChange(val) {
-                this.cur_page = val;
-                this.getData();
-            },
             // 获取 easy-mock 的模拟数据
             getData() {
                 // 开发环境使用 easy-mock 数据，正式环境使用 json 文件
@@ -254,15 +220,7 @@
                     this.tableData = res.data.list;
                 })
             },
-            search() {
-                this.is_search = true;
-            },
-            formatter(row, column) {
-                return row.address;
-            },
-            filterTag(value, row) {
-                return row.tag === value;
-            },
+
             handleEdit(index, row) {
                 this.idx = index;
                 const item = this.tableData[index];
@@ -273,9 +231,31 @@
                 }
                 this.editVisible = true;
             },
+
             handleDelete(index, row) {
-                this.idx = index;
-                this.delVisible = true;
+                this.$confirm('删除不可恢复，是否确定删除？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    let dataSourceId = this.tableData[index].id;
+                    let deleteParams = {
+                        id: dataSourceId
+                    }
+                    this.$api.REPORT_DATA_SOURCE_API.delete('DELETE_DATA_SOURCE', deleteParams).then(res => {
+                        this.tableData.splice(index, 1);
+                        this.$message.success("删除成功")
+                    })
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功!'
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
             },
 
             handleInfo(index, row) {
@@ -287,24 +267,13 @@
                 this.infoVisible = true;
             },
 
-            delAll() {
-                const length = this.multipleSelection.length;
-                let str = '';
-                this.del_list = this.del_list.concat(this.multipleSelection);
-                for (let i = 0; i < length; i++) {
-                    str += this.multipleSelection[i].name + ' ';
-                }
-                this.$message.error('删除了' + str);
-                this.multipleSelection = [];
-            },
-
             handleSelectionChange(val) {
                 this.multipleSelection = val;
             },
 
+            // 分页导航
             handleCurrentChange(pageIndex) {
                 this.pageIndex = pageIndex;
-                this.$message.success(`页面下标 ${pageIndex}`);
                 this.getDataSources()
             },
 

@@ -105,13 +105,13 @@
 
             // 获取固定资产列表
             getFixedAssets() {
-                let queryParams = {
+                let getParams = {
                     pageIndex: this.pageIndex,
                     pageSize: this.pageSize,
                     queryColumn: this.queryColumn,
                     queryCondition: this.queryCondition,
                 }
-                this.$api.FINANCE_FIXED_ASSETS_API.get('GET_FIXED_ASSETS' ,queryParams).then(res => {
+                this.$api.FINANCE_FIXED_ASSETS_API.get('GET_FIXED_ASSETS', getParams).then(res => {
                     this.tableData = res.data.list
                     this.total = res.data.total
                 })
@@ -128,9 +128,31 @@
                 this.editVisible = true;
             },
             handleDelete(index, row) {
-                this.idx = index;
-                this.delVisible = true;
+                this.$confirm('删除不可恢复，是否确定删除？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    let fixedAssetsId = this.tableData[index].id;
+                    let deleteParams = {
+                        id: fixedAssetsId
+                    }
+                    this.$api.FINANCE_FIXED_ASSETS_API.delete('DELETE_FIXED_ASSETS', deleteParams).then(res => {
+                        this.tableData.splice(index, 1);
+                        this.$message.success("删除成功")
+                    })
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功!'
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
             },
+
             handleSelectionChange(val) {
                 this.multipleSelection = val;
             },

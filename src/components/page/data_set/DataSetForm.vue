@@ -94,9 +94,10 @@
                                     label="计算方式"
                                     prop="calculateType">
                             </el-table-column>
-                            <el-table-column
-                                    label="周期日期"
-                                    prop="isDate">
+                            <el-table-column label="周期日期">
+                                <template slot-scope="scope">
+                                    {{0 === dataSet.dataSetFields[scope.$index].isDate ? '否' : '是'}}
+                                </template>
                             </el-table-column>
                             <el-table-column label="操作">
                                 <template slot-scope="scope">

@@ -77,16 +77,23 @@
                         <el-input type="textarea" rows="5" v-model="handleEditForm.description"></el-input>
                     </el-form-item>
                     <el-form-item label="数据集列表" prop="dataSetId">
-                        <el-select v-model="handleEditForm.dataSetId" placeholder="请选择" filterable @change="getDataSetMetrics" @click="getDataSetMetrics">
+                        <el-select v-model="handleEditForm.dataSetId" placeholder="请选择" filterable @change="getDataSetMetricsAndDimensions" @click="getDataSetMetricsAndDimensions">
                             <template v-for="(dataSet, index) in dashboardConstant.reportConstant.dataSets">
                                 <el-option :key="dataSet.id" :label="dataSet.name" :value="dataSet.id"></el-option>
                             </template>
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="数据集指标" prop="dataSetFieldIds">
-                        <el-select v-model="handleEditForm.dataSetFieldIds" placeholder="请选择" filterable multiple>
+                    <el-form-item label="数据集指标" prop="dataSetMetricFieldIds">
+                        <el-select v-model="handleEditForm.dataSetMetricFieldIds" placeholder="请选择" filterable multiple>
                             <template v-for="(metric, index) in dashboardHelper.reportssHelper[handleEditForm.reportXAxis][handleEditForm.reportYAxis].metrics">
                                 <el-option :key="metric.id" :label="metric.showName" :value="metric.id"></el-option>
+                            </template>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="数据集维度" prop="dataSetDimensionFieldId">
+                        <el-select v-model="handleEditForm.dataSetDimensionFieldId" placeholder="请选择" filterable>
+                            <template v-for="(dimension, index) in dashboardHelper.reportssHelper[handleEditForm.reportXAxis][handleEditForm.reportYAxis].dimensions">
+                                <el-option :key="dimension.id" :label="dimension.showName" :value="dimension.id"></el-option>
                             </template>
                         </el-select>
                     </el-form-item>
@@ -353,7 +360,7 @@
                             </el-table-column>
                             <el-table-column label="作用报表">
                                 <template slot-scope="scope">
-                                    <el-col v-for="(reportKey, index) in dashboard.reportFilters[scope.$index].reportKeys">
+                                    <el-col v-for="(reportKey, index) in dashboard.reportFilters[scope.$index].reportKeys" :key="index">
                                         {{index + 1}}.{{dashboard.reportss[reportKey.split('|')[0]][reportKey.split('|')[1]].name}}
                                     </el-col>
                                 </template>
@@ -391,17 +398,6 @@
                 <el-col style="margin-top: 30px; margin-bottom: 30px">过滤条件</el-col>
                 <el-col style="margin-bottom: 30px">
                     <el-form :inline="true">
-                        <el-form-item label="日期">
-                            <el-date-picker
-                                    type="datetimerange"
-                                    :picker-options="pickerOptions"
-                                    range-separator="至"
-                                    start-placeholder="开始日期"
-                                    end-placeholder="结束日期"
-                                    align="right"
-                                    value-format="yyyyMMddHH">
-                            </el-date-picker>
-                        </el-form-item>
                         <el-form-item  v-for="(reportFilter, index) in dashboard.reportFilters" :key="reportFilter.id" >
                             {{reportFilter.name}}
                             <el-select
@@ -520,7 +516,8 @@
                     reportssHelper: [
                         [
                             {
-                                metrics: []
+                                metrics: [],
+                                dimensions: []
                             }
                         ]
                     ],
@@ -540,7 +537,8 @@
                                 name : "新报表",
                                 description: "",
                                 dataSetId: "",
-                                dataSetFieldIds: [],
+                                dataSetMetricFieldIds: [],
+                                dataSetDimensionFieldId: '',
                                 chartType: '',
                                 config: {
                                     chartSettings: {
@@ -608,9 +606,12 @@
                         chartType: [
                             {required: true, message: '请选择报表类型', trigger: 'change'}
                         ],
-                        dataSetFieldIds: [
+                        dataSetMetricFieldIds: [
                             {required: true, message: '请选择数据集指标', trigger: 'change'}
-                        ]
+                        ],
+                        dataSetDimensionFieldId: [
+                            {required: true, message: '请选择数据集维度', trigger: 'change'}
+                        ],
                     },
                     reportFilterRules: {
                         name: [
@@ -731,14 +732,30 @@
                 chartSettings.area = 0 < chartSettings.stack.key.length;
             },
 
+            getDataSetMetricsAndDimensions(id) {
+                this.getDataSetMetrics(id)
+                this.getDataSetDimensions(id)
+            },
+
             // 获取数据集下的指标列表
             getDataSetMetrics(id) {
-                this.handleEditForm.dataSetFieldIds = []
+                this.handleEditForm.dataSetMetricFieldIds = []
                 let queryParams = {
                     id : id
                 }
                 this.$api.REPORT_DATA_SET_API.get('GET_DATA_SET_METRICS', queryParams).then(res => {
                     this.dashboardHelper.reportssHelper[this.handleEditForm.reportXAxis][this.handleEditForm.reportYAxis].metrics = res.data
+                })
+            },
+
+            // 获取数据集下的维度列表
+            getDataSetDimensions(id) {
+                this.handleEditForm.dataSetDimensionFieldId = ''
+                let queryParams = {
+                    id : id
+                }
+                this.$api.REPORT_DATA_SET_API.get('GET_DATA_SET_DIMENSIONS', queryParams).then(res => {
+                    this.dashboardHelper.reportssHelper[this.handleEditForm.reportXAxis][this.handleEditForm.reportYAxis].dimensions = res.data
                 })
             },
 
@@ -764,7 +781,8 @@
                     name : "新报表",
                     description: "",
                     dataSetId: "",
-                    dataSetFieldIds: [],
+                    dataSetMetricFieldIds: [],
+                    dataSetDimensionFieldId: '',
                     reportXAxis: reportXAxis,
                     reportYAxis: 0,
                     config: {
@@ -808,7 +826,8 @@
                     }
                 }
                 let reportHelper = {
-                    metrics : []
+                    metrics : [],
+                    dimensions: []
                 }
                 this.dashboard.reportss[reportXAxis].push(report)
                 this.dashboardHelper.reportssHelper[reportXAxis].push(reportHelper)
@@ -821,7 +840,8 @@
                     name : "新报表",
                     description: "",
                     dataSetId: "",
-                    dataSetFieldIds: [],
+                    dataSetMetricFieldIds: [],
+                    dataSetDimensionFieldId: '',
                     reportXAxis: 0,
                     reportYAxis: 0,
                     config: {
@@ -865,7 +885,8 @@
                     }
                 }]
                 let reportsHelper = [{
-                    metrics : []
+                    metrics : [],
+                    dimensions: [],
                 }]
                 this.dashboard.reportss.push(reports)
                 this.dashboardHelper.reportssHelper.push(reportsHelper)
@@ -999,10 +1020,10 @@
 
             addDashboard() {
                 console.log(this.dashboard)
-//                this.$api.REPORT_DASHBOARD_API.post('ADD_DASHBOARD', this.dashboard).then(res => {
-//                    this.$message.success("成功添加数据看板")
-//                    this.$router.replace('/dashboard_table')
-//                })
+                this.$api.REPORT_DASHBOARD_API.post('ADD_DASHBOARD', this.dashboard).then(res => {
+                    this.$message.success("成功添加数据看板")
+                    this.$router.replace('/dashboard_table')
+                })
             },
 
             // 获取数据集列表

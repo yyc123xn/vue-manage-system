@@ -82,6 +82,7 @@
                 queryCondition: [],
                 editVisible: false,
                 delVisible: false,
+                mapping: {},
                 form: {
                     name: '',
                     date: '',
@@ -115,6 +116,19 @@
                 this.$api.FINANCE_VOUCHER_API.get('GET_VOUCHERS' ,queryParams).then(res => {
                     this.tableData = res.data.list
                     this.total = res.data.total
+                    this.mapping = res.data.mapping
+                    this.tableData.forEach(voucher => {
+                        this.mapping.status.forEach(voucherStatus => {
+                            if (voucher.status === voucherStatus.nameEn) {
+                                voucher.status = voucherStatus.nameCn
+                            }
+                        })
+                        this.mapping.type.forEach(voucherType => {
+                            if (voucher.type === voucherType.nameEn) {
+                                voucher.type = voucherType.nameCn
+                            }
+                        })
+                    })
                 })
             },
 
@@ -129,8 +143,29 @@
                 this.editVisible = true;
             },
             handleDelete(index, row) {
-                this.idx = index;
-                this.delVisible = true;
+                this.$confirm('删除不可恢复，是否确定删除？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    let voucherId = this.tableData[index].id;
+                    let deleteParams = {
+                        id: voucherId
+                    }
+                    this.$api.FINANCE_VOUCHER_API.delete('DELETE_VOUCHER', deleteParams).then(res => {
+                        this.tableData.splice(index, 1);
+                        this.$message.success("删除成功")
+                    })
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功!'
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
             },
             handleSelectionChange(val) {
                 this.multipleSelection = val;

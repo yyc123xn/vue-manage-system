@@ -7,7 +7,7 @@
         </el-col>
         <el-col class="container">
             <el-col class="handle-box">
-                <el-button type="primary" icon="delete" class="handle-del mr10" @click="delAll">批量删除</el-button>
+                <el-button type="primary" icon="delete" class="handle-del mr10">批量删除</el-button>
                 <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10">
                     <el-option v-for="developerFilterField in developerFilterFields"
                                :key="developerFilterField.columnName" :label="developerFilterField.columnComment"
@@ -128,8 +128,29 @@
                 this.editVisible = true;
             },
             handleDelete(index, row) {
-                this.idx = index;
-                this.delVisible = true;
+                this.$confirm('删除不可恢复，是否确定删除？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    let developerId = this.tableData[index].id;
+                    let deleteParams = {
+                        id: developerId
+                    }
+                    this.$api.FINANCE_DEVELOPER_API.delete('DELETE_DEVELOPER', deleteParams).then(res => {
+                        this.tableData.splice(index, 1);
+                        this.$message.success("删除成功")
+                    })
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功!'
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
             },
             handleSelectionChange(val) {
                 this.multipleSelection = val;

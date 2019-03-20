@@ -16,6 +16,13 @@ const financeFixedAssetsApi = {
     post(urlName, postParams) {
         let url = this[urlName]
         return axios.post(url, postParams)
+    },
+
+    DELETE_FIXED_ASSETS: '/finance/fixed_assets',
+
+    delete(urlName, deleteParams) {
+        let url = this[urlName]
+        return axios.delete(url, {params: deleteParams})
     }
 }
 

@@ -20,6 +20,13 @@ const financeVoucherApi = {
     post(urlName, postParams) {
         let url = this[urlName]
         return axios.post(url, postParams)
+    },
+
+    DELETE_VOUCHER: '/finance/voucher',
+
+    delete(urlName, deleteParams) {
+        let url = this[urlName]
+        return axios.delete(url, {params : deleteParams})
     }
 }
 

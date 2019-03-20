@@ -43,6 +43,7 @@
                                     align="right"
                                     value-format="yyyyMMddHH">
                             </el-date-picker>
+                        <!--todo reportFilter.queryCondition-->
                             <el-select
                                     v-model="reportFilter.queryCondition"
                                     v-if="'DROP_DOWN' === reportFilter.filterType" filterable

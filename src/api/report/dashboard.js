@@ -18,6 +18,13 @@ const reportDashboardApi = {
     post(urlName, postParams) {
         let url = this[urlName]
         return axios.post(url, postParams)
+    },
+
+    DELETE_DASHBOARD: '/report/dashboard',
+
+    delete(urlName, deleteParams) {
+        let url = this[urlName]
+        return axios.delete(url, {params: deleteParams})
     }
 }
 

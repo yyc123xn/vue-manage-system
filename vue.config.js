@@ -250,6 +250,14 @@ module.exports = {
                 }
             },
 
+            '/report/data_set/dimensions': {
+                target: REPORT_URL_PREFIX + '/report/data_set/dimensions',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/report/data_set/dimensions': ''
+                }
+            },
+
             '/report/data_set/data_sets_fields': {
                 target: REPORT_URL_PREFIX + '/report/data_set/data_sets_fields',
                 changeOrigin: true,

@@ -119,14 +119,13 @@
             },
 
             handleEdit(index, row) {
-                this.idx = index;
-                const item = this.tableData[index];
-                this.form = {
-                    name: item.name,
-                    date: item.date,
-                    address: item.address
-                }
-                this.editVisible = true;
+                let developerId = this.tableData[index].id;
+                this.$router.push({
+                    path: '/developer_form',
+                    query: {
+                        id: developerId
+                    }
+                })
             },
             handleDelete(index, row) {
                 this.$confirm('删除不可恢复，是否确定删除？', '提示', {

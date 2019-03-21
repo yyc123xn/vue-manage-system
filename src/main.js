@@ -50,20 +50,22 @@ router.beforeEach((to, from, next) => {
     NProgress.start()
     let userToken = window.$cookies.get("userToken")
     if (userToken) {
-        api.FINANCE_DEVELOPER_API.get('CURRENT').then(res => {
-            if (res.data.loggedIn === false) {
+        api.FINANCE_DEVELOPER_API.get('CURRENT').then(developerRes => {
+            if (developerRes.data.loggedIn === false) {
                 next('/login')
             } else {
-                api.FINANCE_COMMON_API.get("GET_MENUS").then(res => {
-                    // Vue.set(Sidebar.items, 0, res.data)
-                    console.log(Sidebar)
+                // api.FINANCE_COMMON_API.get("GET_MENUS").then(menuRes => {
                     if (to.path === '/login') {
                         next('/')
                     } else {
-                        localStorage.setItem('username', res.data.nameCn)
+                        localStorage.setItem('username', developerRes.data.nameCn)
                         next()
+                        // console.log(menuRes.data)
+                        // Sidebar.data().items = menuRes.data
+                        // Vue.set(Sidebar.$data, "items", menuRes.data)
+                        // console.log(Sidebar.data())
                     }
-                })
+                // })
             }
         })
     } else {

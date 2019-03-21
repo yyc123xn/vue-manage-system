@@ -90,7 +90,7 @@
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="addVoucher('voucher')">表单提交</el-button>
-                        <el-button>取消</el-button>
+                        <el-button @click="redirect2VoucherTable">取消</el-button>
                     </el-form-item>
                 </el-form>
             </el-col>
@@ -173,10 +173,20 @@
             addVoucher(voucher) {
                 this.$refs[voucher].validate((valid) => {
                     if (valid) {
-                        this.$api.FINANCE_VOUCHER_API.post('ADD_VOUCHER', this.fixedAssets).then(res => {
-                            this.$message.success("成功添加票据")
-                            this.$router.replace('/voucher_table')
-                        })
+                        let voucherId = this.$route.query.id
+                        console.log(voucherId)
+                        if (undefined === voucherId) {
+                            // 添加
+                            this.$api.FINANCE_VOUCHER_API.post('ADD_VOUCHER', this.voucher).then(res => {
+                                this.$message.success("成功添加票据")
+                            })
+                        } else {
+                            // 编辑
+                            this.$api.FINANCE_VOUCHER_API.put("EDIT_VOUCHER", this.voucher).then(res => {
+                                this.$message.success("成功编辑票据")
+                            })
+                        }
+                        this.$router.replace('/voucher_table')
                     } else {
                         this.$message.error("请将票据信息填写完整")
                         return false;
@@ -211,9 +221,27 @@
                     description: '票据描述' + (this.voucher.voucherDetails.length + 1),
                     sum: 0
                 })
+            },
+
+            getVoucherInfo(voucherId) {
+                let getParams = {
+                    id : voucherId
+                }
+                this.$api.FINANCE_VOUCHER_API.get("GET_VOUCHER_INFO", getParams).then(res => {
+                    this.voucher = res.data
+                    this.voucher.date = new Date(this.voucher.date)
+                })
+            },
+
+            redirect2VoucherTable() {
+                this.$router.push("/voucher_table")
             }
         },
         created() {
+            let voucherId = this.$route.query.id
+            if (undefined !== voucherId) {
+                this.getVoucherInfo(voucherId)
+            }
             this.getVoucherTypes()
             this.getVoucherStatuses()
         }

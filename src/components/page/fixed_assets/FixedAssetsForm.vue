@@ -29,7 +29,7 @@
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="addFixedAssets('fixedAssets')">表单提交</el-button>
-                        <el-button>取消</el-button>
+                        <el-button @click="redirect2FixedAssetsTable">取消</el-button>
                     </el-form-item>
                 </el-form>
             </el-col>
@@ -95,18 +95,45 @@
             addFixedAssets(fixedAssets) {
                 this.$refs[fixedAssets].validate((valid) => {
                     if (valid) {
-                        this.$api.FINANCE_FIXED_ASSETS_API.post('ADD_FIXED_ASSETS', this.fixedAssets).then(res => {
-                            this.$message.success("成功添加固定资产")
-                            this.$router.replace('/fixed_assets_table')
-                        })
+                        let fixedAssetsId = this.$route.query.id
+                        if (undefined !== fixedAssetsId) {
+                            // 编辑
+                            this.$api.FINANCE_FIXED_ASSETS_API.put('EDIT_FIXED_ASSETS', this.fixedAssets).then(res => {
+                                this.$message.success("成功添加固定资产")
+                            })
+                        } else {
+                            // 添加
+                            this.$api.FINANCE_FIXED_ASSETS_API.post('ADD_FIXED_ASSETS', this.fixedAssets).then(res => {
+                                this.$message.success("成功编辑固定资产")
+                            })
+                        }
+                        this.$router.replace('/fixed_assets_table')
                     } else {
                         this.$message.error("请将固定资产信息填写完整")
                         return false;
                     }
                 })
+            },
+
+            getFixedAssetsInfo(fixedAssetsId) {
+                let getParams = {
+                    id : fixedAssetsId
+                }
+                this.$api.FINANCE_FIXED_ASSETS_API.get("GET_FIXED_ASSETS_INFO", getParams).then(res => {
+                    this.fixedAssets = res.data
+                    this.fixedAssets.brokenTime = new Date(this.fixedAssets.brokenTime)
+                })
+            },
+
+            redirect2FixedAssetsTable() {
+                this.$router.push("/fixed_assets_table")
             }
         },
         created() {
+            let fixedAssetsId = this.$route.query.id
+            if (undefined !== fixedAssetsId) {
+                this.getFixedAssetsInfo(fixedAssetsId)
+            }
         }
     }
 </script>

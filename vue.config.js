@@ -6,6 +6,10 @@ module.exports = {
     devServer: {
         proxy: {
 
+            /**
+             * 用户 developer
+             */
+
             '/finance/developer' : {
                 target: FINANCE_URL_PREFIX + '/finance/developer',
                 changeOrigin: true,
@@ -54,6 +58,18 @@ module.exports = {
                 }
             },
 
+            '/finance/developer/info': {
+                target: FINANCE_URL_PREFIX + '/finance/developer/info',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/finance/developer/info': ''
+                }
+            },
+
+            /**
+             * 通用 common
+             */
+
             '/finance/common/menu': {
                 target: FINANCE_URL_PREFIX + '/finance/common/menu',
                 changeOrigin: true,
@@ -98,6 +114,14 @@ module.exports = {
                 }
             },
 
+            '/finance/voucher/info': {
+                target: FINANCE_URL_PREFIX + '/finance/voucher/info',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/finance/voucher/info': ''
+                }
+            },
+
 
             /**
              * 固定资产 fixedAssets
@@ -116,6 +140,14 @@ module.exports = {
                 changeOrigin: true,
                 pathRewrite: {
                     '^/finance/fixed_assets': ''
+                }
+            },
+
+            '/finance/fixed_assets/info': {
+                target: FINANCE_URL_PREFIX + '/finance/fixed_assets/info',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/finance/fixed_assets/info': ''
                 }
             },
 

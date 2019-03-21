@@ -64,7 +64,7 @@
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="addDeveloper('developer')">表单提交</el-button>
-                        <el-button>取消</el-button>
+                        <el-button @click="redirect2DeveloperTable">取消</el-button>
                     </el-form-item>
                 </el-form>
             </el-col>
@@ -187,11 +187,19 @@
                     if (valid) {
                         this.developer.sex = '男' === this.developerHelper.sex ? 1 : 0;
                         this.developer.group = this.developerHelper.group[0]
-                        console.log(this.developer)
-//                this.$api.FINANCE_DEVELOPER_API.post('ADD_DEVELOPER', this.developer).then(res => {
-//                    this.$message.success("成功添加员工")
-//                    this.$router.replace('/developer_table')
-//                })
+                        let developerId = this.$route.query.id
+                        if (undefined !== developerId) {
+                            // 编辑
+                            this.$api.FINANCE_DEVELOPER_API.put('EDIT_DEVELOPER', this.developer).then(res => {
+                                this.$message.success("成功编辑员工信息")
+                            })
+                        } else {
+                            // 添加
+                            this.$api.FINANCE_DEVELOPER_API.post('ADD_DEVELOPER', this.developer).then(res => {
+                                this.$message.success("成功添加员工信息")
+                            })
+                        }
+                        this.$router.replace('/developer_table')
                     } else {
                         this.$message.error("请将员工信息填写完整")
                         return false;
@@ -211,11 +219,24 @@
                 })
             },
 
-            onSubmit() {
-                this.$message.success('提交成功！');
+            getDeveloperInfo(developerId) {
+                let getParams = {
+                    id : developerId
+                }
+                this.$api.FINANCE_DEVELOPER_API.get("GET_DEVELOPER_INFO", getParams).then(res => {
+                    this.developer = res.data
+                })
+            },
+
+            redirect2DeveloperTable() {
+                this.$router.push("/developer_table")
             }
         },
         created() {
+            let developerId = this.$route.query.id
+            if (undefined !== developerId) {
+                this.getDeveloperInfo(developerId)
+            }
             this.getPrivileges()
             this.getAcademicDegrees()
         }

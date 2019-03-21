@@ -8,6 +8,7 @@ const financeDeveloperApi = {
     GET_DEVELOPER_FILTER_FIELDS : '/finance/developer/developer_filter_fields',
     GET_PRIVILEGES : '/finance/developer/privileges',
     GET_ACADEMIC_DEGREES : '/finance/developer/academic_degrees',
+    GET_DEVELOPER_INFO: '/finance/developer/info',
 
     get(urlName, getParams) {
         let url = this[urlName]
@@ -26,6 +27,13 @@ const financeDeveloperApi = {
     delete(urlName, deleteParams) {
         let url = this[urlName]
         return axios.delete(url, {params : deleteParams})
+    },
+
+    EDIT_DEVELOPER: '/finance/developer',
+
+    put(urlName, putParams) {
+        let url = this[urlName]
+        return axios.put(url, putParams)
     }
 }
 

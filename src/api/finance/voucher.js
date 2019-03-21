@@ -10,6 +10,8 @@ const financeVoucherApi = {
 
     GET_VOUCHER_FILTER_FIELDS : '/finance/voucher/voucher_filter_fields',
 
+    GET_VOUCHER_INFO: '/finance/voucher/info',
+
     get(urlName, getParams) {
         let url = this[urlName]
         return axios.get(url, {params : getParams})
@@ -27,6 +29,13 @@ const financeVoucherApi = {
     delete(urlName, deleteParams) {
         let url = this[urlName]
         return axios.delete(url, {params : deleteParams})
+    },
+
+    EDIT_VOUCHER: '/finance/voucher',
+
+    put(urlName, putParams) {
+        let url = this[urlName]
+        return axios.put(url, putParams)
     }
 }
 

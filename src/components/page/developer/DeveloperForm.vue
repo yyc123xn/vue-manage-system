@@ -2,8 +2,8 @@
     <el-col>
         <el-col class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-lx-calendar"></i> 表单</el-breadcrumb-item>
-                <el-breadcrumb-item>基本表单</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-lx-profile"></i> 公司员工</el-breadcrumb-item>
+                <el-breadcrumb-item>员工表单</el-breadcrumb-item>
             </el-breadcrumb>
         </el-col>
         <el-col class="container">
@@ -182,7 +182,6 @@
             }
         },
         methods: {
-            // todo validata，每函数的validate都加上
             addDeveloper(developer) {
                 this.$refs[developer].validate((valid) => {
                     if (valid) {

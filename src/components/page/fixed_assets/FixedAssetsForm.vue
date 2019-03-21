@@ -2,8 +2,8 @@
     <el-col>
         <el-col class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-lx-calendar"></i> 表单</el-breadcrumb-item>
-                <el-breadcrumb-item>基本表单</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-lx-apps"></i> 公司固定资产</el-breadcrumb-item>
+                <el-breadcrumb-item>固定资产表单</el-breadcrumb-item>
             </el-breadcrumb>
         </el-col>
         <el-col class="container">

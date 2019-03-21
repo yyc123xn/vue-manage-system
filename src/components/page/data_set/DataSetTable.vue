@@ -2,7 +2,8 @@
     <div class="table">
         <el-col class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-lx-cascades"></i> 数据集</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-lx-text"></i> 数据集</el-breadcrumb-item>
+                <el-breadcrumb-item>数据集列表</el-breadcrumb-item>
             </el-breadcrumb>
         </el-col>
         <el-col class="container">

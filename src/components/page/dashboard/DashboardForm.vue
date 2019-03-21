@@ -2,8 +2,8 @@
     <el-col>
         <el-col class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-lx-calendar"></i> 表单</el-breadcrumb-item>
-                <el-breadcrumb-item>基本表单</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-lx-rank"></i> 数据看板</el-breadcrumb-item>
+                <el-breadcrumb-item>看板表单</el-breadcrumb-item>
             </el-breadcrumb>
         </el-col>
 
@@ -440,7 +440,15 @@
                         <el-col :span="24 / dashboardHelper.reportssSymmetryHelper[index1].length" v-for="(report, index2) in dashboardHelper.reportssSymmetryHelper[index1]" :key="index2">
                             <el-card>
                                 <div slot="header">
+                                <span>
                                     <span>{{report.name}} (模拟数据)</span>
+                                    <span v-for="(value, key) in chartTypeToolTips" style="float: right" :key="key">
+                                        <el-tooltip v-if="report.chartType === key" placement="top">
+                                            <div slot="content" v-html="value"></div>
+                                            <el-button type="primary" icon="el-icon-search" circle plain></el-button>
+                                        </el-tooltip>
+                                    </span>
+                                </span>
                                 </div>
                                 <div>
                                     <histogram :report="report" v-if="'HISTOGRAM' === report.chartType"></histogram>
@@ -705,6 +713,13 @@
                             picker.$emit('pick', [start, end]);
                         }
                     }]
+                },
+
+                chartTypeToolTips: {
+                    GUAGE: "仪表盘统计规则：<br/>展示数据为所选维度<br/>之下所有指标[之和]",
+                    HISTOGRAM: "柱状图统计规则：<br/>展示数据为所选维度<br/>之下的指标",
+                    LINE: "折线图统计规则：<br/>展示数据为所选维度<br/>之下的指标",
+                    PIE: "饼图统计规则：<br/>展示数据为所选维度<br/>之下的指标"
                 }
             }
         },

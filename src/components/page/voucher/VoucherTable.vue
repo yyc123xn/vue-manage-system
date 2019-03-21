@@ -2,7 +2,8 @@
     <div class="table">
         <el-col class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-lx-cascades"></i> 公司员工</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-lx-punch"></i> 公司票据</el-breadcrumb-item>
+                <el-breadcrumb-item>票据列表</el-breadcrumb-item>
             </el-breadcrumb>
         </el-col>
         <el-col class="container">

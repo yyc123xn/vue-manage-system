@@ -2,7 +2,7 @@
     <el-col>
         <el-col class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-lx-warn"></i> 权限测试</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-lx-warn"></i> 无权限</el-breadcrumb-item>
             </el-breadcrumb>
         </el-col>
         <el-col class="container">

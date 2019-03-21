@@ -2,7 +2,8 @@
     <el-col>
         <el-col class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-lx-favor"></i> schart图表</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-lx-rank"></i> 数据看板</el-breadcrumb-item>
+                <el-breadcrumb-item>看板详情</el-breadcrumb-item>
             </el-breadcrumb>
         </el-col>
         <el-col class="container" v-model="dashboard">
@@ -43,7 +44,6 @@
                                     align="right"
                                     value-format="yyyyMMddHH">
                             </el-date-picker>
-                        <!--todo reportFilter.queryCondition-->
                             <el-select
                                     v-model="reportFilter.queryCondition"
                                     v-if="'DROP_DOWN' === reportFilter.filterType" filterable
@@ -55,7 +55,6 @@
                                         :value="value">
                                 </el-option>
                             </el-select>
-
                     </el-form-item>
                 </el-form>
             </el-col>
@@ -65,7 +64,15 @@
                     <el-col :span="24 / dashboard.reportss[index1].length" v-for="(report, index2) in dashboard.reportss[index1]" :key="index2">
                         <el-card>
                             <div slot="header">
-                                <span>{{report.name}}</span>
+                                <span>
+                                    <span>{{report.name}}</span>
+                                    <span v-for="(value, key) in chartTypeToolTips" style="float: right" :key="key">
+                                        <el-tooltip v-if="report.chartType === key" placement="top">
+                                            <div slot="content" v-html="value"></div>
+                                            <el-button type="primary" icon="el-icon-search" circle plain></el-button>
+                                        </el-tooltip>
+                                    </span>
+                                </span>
                             </div>
                             <div>
                                 <histogram :report="report" :reportFilters="dashboard.reportFilters" v-if="'HISTOGRAM' === report.chartType"></histogram>
@@ -86,7 +93,6 @@
 <script>
 
     /**
-     * todo filter精确到报表的指标单位
      * todo 图表的cofig
      */
     import Histogram from '../../common/charts/Histogram.vue'
@@ -95,9 +101,11 @@
     import MonitorCard from '../../common/charts/MonitorCard.vue'
     import Guage from '../../common/charts/Guage.vue'
     import 'echarts/lib/component/toolbox'
+    import ElCol from "element-ui/packages/col/src/col";
     export default {
         name: 'DashboardInfo',
         components: {
+            ElCol,
             Histogram,
             LineDup,
             Pie,
@@ -140,6 +148,12 @@
                         picker.$emit('pick', [start, end]);
                     }
                 }]
+            },
+            chartTypeToolTips: {
+                GUAGE: "仪表盘统计规则：<br/>展示数据为所选维度<br/>之下所有指标[之和]",
+                HISTOGRAM: "柱状图统计规则：<br/>展示数据为所选维度<br/>之下的指标",
+                LINE: "折线图统计规则：<br/>展示数据为所选维度<br/>之下的指标",
+                PIE: "饼图统计规则：<br/>展示数据为所选维度<br/>之下的指标"
             }
         }),
 

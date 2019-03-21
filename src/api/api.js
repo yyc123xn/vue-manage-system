@@ -1,4 +1,5 @@
 import axios from '../interceptor'
+import financeCommonApi from './finance/common'
 import financeDeveloperApi from './finance/developer'
 import financeFixedAssetsApi from './finance/fixed_assets'
 import financeVoucherApi from './finance/voucher'
@@ -10,12 +11,7 @@ import reportReportApi from './report/report'
 
 const api = {
 
-    GET_MENU : '/finance/common/menu',
-
-    getMenu () {
-        let url = this.GET_MENU
-        return axios.get(url)
-    },
+    FINANCE_COMMON_API: financeCommonApi,
 
     FINANCE_DEVELOPER_API : financeDeveloperApi,
 

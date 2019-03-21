@@ -23,6 +23,8 @@ import 'nprogress/nprogress.css' //这个样式必须引入
 
 import {validator} from './utils/validator'
 
+import Sidebar from './components/common/Sidebar.vue'
+
 // 简单配置
 NProgress.inc(0.2)
 NProgress.configure({ easing: 'ease', speed: 500, showSpinner: false })
@@ -52,16 +54,19 @@ router.beforeEach((to, from, next) => {
             if (res.data.loggedIn === false) {
                 next('/login')
             } else {
-                if (to.path === '/login') {
-                    next('/')
-                } else {
-                    localStorage.setItem('username', res.data.nameCn)
-                    next()
-                }
+                api.FINANCE_COMMON_API.get("GET_MENUS").then(res => {
+                    // Vue.set(Sidebar.items, 0, res.data)
+                    console.log(Sidebar)
+                    if (to.path === '/login') {
+                        next('/')
+                    } else {
+                        localStorage.setItem('username', res.data.nameCn)
+                        next()
+                    }
+                })
             }
         })
     } else {
-        console.log("else")
         if (to.path !== '/login') {
             next('/login')
         } else {

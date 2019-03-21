@@ -52,28 +52,36 @@
         },
 
         methods: {
-            async getReportData(reportId) {
+            async getReportData(reportId, newV, oldV) {
                 let reportData
                 let postParams = {
                     id : reportId
                 }
-                this.initQueryReportFilter()
-                if (this.queryReportFilter.queryColumns !== undefined && 0 < this.queryReportFilter.queryColumns.length) {
-                    postParams.queryColumns = this.queryReportFilter.queryColumns
-                    postParams.queryConditions = this.queryReportFilter.queryConditions
+                let queryReportFilter = this.initQueryReportFilter()
+                if (undefined === newV
+                    || undefined === oldV
+                    || JSON.stringify(queryReportFilter) !== JSON.stringify(this.queryReportFilter)) {
+                    this.queryReportFilter = queryReportFilter
+                    if (this.queryReportFilter.queryColumns !== undefined && 0 < this.queryReportFilter.queryColumns.length) {
+                        postParams.queryColumns = this.queryReportFilter.queryColumns
+                        postParams.queryConditions = this.queryReportFilter.queryConditions
+                    }
+                    await this.$api.REPORT_REPORT_API.post('GET_REPORT_DATA', postParams).then(res => {
+                        reportData = res.data
+                    })
+                    return reportData
+                    // 查数据
                 }
-                await this.$api.REPORT_REPORT_API.post('GET_REPORT_DATA', postParams).then(res => {
-                    reportData = res.data
-                })
-                return reportData
             },
 
-            updateReportData(reportId) {
-                this.getReportData(reportId).then(res => {
-                    this.loading = true;
-                    this.dataEmpty = 0 === res.rows.length;
-                    this.chartData = res
-                    this.loading = false;
+            updateReportData(reportId, newV, oldV) {
+                this.getReportData(reportId, newV, oldV).then(res => {
+                    if (undefined !== res) {
+                        this.loading = true;
+                        this.dataEmpty = 0 === res.rows.length;
+                        this.chartData = res
+                        this.loading = false;
+                    }
                 })
                 setTimeout(() => {
                     this.dataEmpty = (this.chartData.rows === undefined || 0 === this.chartData.rows.length);
@@ -85,7 +93,7 @@
              * 重新生成queryReportFilter
              */
             initQueryReportFilter() {
-                this.queryReportFilter = {
+                let queryReportFilter = {
                     queryColumns: [],
                     queryConditions: [],
                 }
@@ -93,14 +101,15 @@
                     if (-1 !== reportFilter.reportIds.indexOf(this.report.id)
                         && null !== reportFilter.queryCondition
                         && 0 !== reportFilter.queryCondition.length) {
-                        if (-1 !== this.queryReportFilter.queryColumns.indexOf(reportFilter.queryColumn)) {
-                            this.queryReportFilter.queryConditions[index] = reportFilter.queryCondition
+                        if (-1 !== queryReportFilter.queryColumns.indexOf(reportFilter.queryColumn)) {
+                            queryReportFilter.queryConditions[index] = reportFilter.queryCondition
                         } else {
-                            this.queryReportFilter.queryColumns.push(reportFilter.queryColumn)
-                            this.queryReportFilter.queryConditions.push(reportFilter.queryCondition)
+                            queryReportFilter.queryColumns.push(reportFilter.queryColumn)
+                            queryReportFilter.queryConditions.push(reportFilter.queryCondition)
                         }
                     }
                 })
+                return queryReportFilter
             }
         },
 
@@ -109,7 +118,7 @@
                 handler (newV, oldV) {
                     // do something, 可使用this
                     if (0 !== this.report.id) {
-                        this.updateReportData(this.report.id)
+                        this.updateReportData(this.report.id, newV, oldV)
                     }
                 },
                 deep :true

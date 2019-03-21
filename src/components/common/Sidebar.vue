@@ -40,7 +40,7 @@
         data() {
             return {
                 collapse: false,
-                items: items
+                items: []
             }
         },
         computed:{
@@ -53,6 +53,17 @@
             bus.$on('collapse', msg => {
                 this.collapse = msg;
             })
+
+            // todo 用户直接输入url所以会导航到相关页面
+            this.getMenus()
+        },
+
+        methods: {
+            getMenus() {
+                this.$api.FINANCE_COMMON_API.get("GET_MENUS").then(res => {
+                    this.items = res.data
+                })
+            }
         }
     }
 </script>

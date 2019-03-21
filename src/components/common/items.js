@@ -2,10 +2,10 @@ export default [
     {
         path: "/",
         component: "Home",
-        name: 'home',
+        name: "home",
         meta: {
-            title: '基础组件',
-            icon: 'el-icon-lx-home',
+            title: "基础组件",
+            icon: "el-icon-lx-home",
         },
         children: [
             {

@@ -223,14 +223,13 @@
             },
 
             handleEdit(index, row) {
-                this.idx = index;
-                const item = this.tableData[index];
-                this.form = {
-                    name: item.name,
-                    date: item.date,
-                    address: item.address
-                }
-                this.editVisible = true;
+                let dataSourceId = this.tableData[index].id;
+                this.$router.push({
+                    path: '/data_source_form',
+                    query: {
+                        id: dataSourceId
+                    }
+                })
             },
 
             handleDelete(index, row) {

@@ -1087,21 +1087,60 @@
                 this.$api.REPORT_DASHBOARD_API.get('GET_DASHBOARD_INFO', getParams).then(res => {
                     this.dashboard = res.data
                     this.dashboardHelper.reportFiltersHelper = []
+                    /**
+                     * report矩阵进行轴对称
+                     * @type {Array}
+                     */
+                    this.dashboardHelper.reportssSymmetryHelper = []
+                    this.dashboard.reportss[0].forEach(reports => this.dashboardHelper.reportssSymmetryHelper.push([]))
+                    for (let i = 0; i < this.dashboard.reportss.length; i++) {
+                        let reports = this.dashboard.reportss[i];
+                        for (let j = 0; j < reports.length; j++) {
+                            this.dashboardHelper.reportssSymmetryHelper[j].push(reports[j]);
+                            reports[j].reportXAxis = j
+                            reports[j].reportYAxis = i
+                        }
+                    }
+                    /**
+                     * filter中queryColumns进行初始化
+                     * @type {Array}
+                     */
+                    this.dashboard.reportss = this.dashboardHelper.reportssSymmetryHelper
                     this.dashboard.reportFilters.forEach(reportFilter => {
                         this.dashboardHelper.reportFiltersHelper.push({
                             queryColumns: []
                         })
                     })
+
+                    /**
+                     * 报表的数据集指标和维度
+                     * @type {Array}
+                     */
                     this.dashboardHelper.reportssHelper = []
-                    for(let i = 0; i < this.dashboard.reportss.length; i++) {
-                        this.dashboardHelper.reportssHelper.push([]);
-                        this.dashboard.reportss[i].forEach(report => {
-                            this.dashboardHelper.reportssHelper[i].push({
-                                metrics: [],
-                                dimensions: []
-                            })
+                    let dataSetIds = []
+                    this.dashboard.reportss.forEach(reports => {
+                        reports.forEach(report => {
+                            if (-1 === dataSetIds.indexOf(report.dataSetId)) {
+                                dataSetIds.push(report.dataSetId)
+                            }
                         })
+                    })
+                    let getParams = {
+                        ids : dataSetIds
                     }
+                    this.$api.REPORT_DATA_SET_API.get("GET_DATA_SETS_FIELDS", getParams).then(res => {
+                        for(let i = 0; i < this.dashboard.reportss.length; i++) {
+                            this.dashboardHelper.reportssHelper.push([]);
+                            this.dashboard.reportss[i].forEach(report => {
+                                let dataSetId = report.dataSetId
+                                this.dashboardHelper.reportssHelper[i].push({
+                                    metrics: res.data[dataSetId].metrics,
+                                    dimensions: res.data[dataSetId].dimensions
+                                })
+                            })
+                        }
+                    })
+                    console.log(this.dashboard)
                 })
             },
 

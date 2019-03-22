@@ -31,6 +31,13 @@ const reportDataSourceApi = {
     delete(urlName, deleteParams) {
         let url = this[urlName]
         return axios.delete(url, {params: deleteParams})
+    },
+
+    EDIT_DATA_SOURCE: '/report/data_source',
+
+    put(urlName, putParams) {
+        let url = this[urlName]
+        return axios.put(url, putParams)
     }
 }
 

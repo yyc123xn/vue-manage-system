@@ -40,7 +40,7 @@
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="addDataSource('dataSource')">表单提交</el-button>
-                        <el-button>取消</el-button>
+                        <el-button @click="redirect2DataSourceTable">取消</el-button>
                     </el-form-item>
                 </el-form>
             </el-col>
@@ -96,10 +96,19 @@
             addDataSource(dataSource) {
                 this.$refs[dataSource].validate((valid) => {
                     if (valid) {
-//                        this.$api.REPORT_DATA_SOURCE_API.post('ADD_DATA_SOURCE', this.dataSource).then(res => {
-//                            this.$message.success("成功添加员工")
-//                            this.$router.replace('/data_source_table')
-//                        })
+                        let dataSourceId = this.$route.query.id
+                        if (undefined !== dataSourceId) {
+                            // 编辑
+                            this.$api.REPORT_DATA_SOURCE_API.put('EDIT_DATA_SOURCE', this.dataSource).then(res => {
+                                this.$message.success("成功编辑数据源信息")
+                            })
+                        } else {
+                            // 添加
+                            this.$api.REPORT_DATA_SOURCE_API.post('ADD_DATA_SOURCE', this.dataSource).then(res => {
+                                this.$message.success("成功添加数据源信息")
+                            })
+                        }
+                        this.$router.replace('/data_source_table')
                     } else {
                         this.$message.error("请将数据源信息填写完整")
                         return false;
@@ -118,9 +127,27 @@
                     this.dataSourceConstant.dataSourceTypes = res.data;
                     this.dataSourceConstant.dataSourceType = this.dataSourceConstant.dataSourceTypes[0].nameEn;
                 })
+            },
+
+            getDataSourceInfo(id) {
+                let queryParams = {
+                    id : id
+                }
+                this.$api.REPORT_DATA_SOURCE_API.get('GET_DATA_SOURCE_INFO', queryParams).then(res => {
+                    console.log(res)
+                    this.dataSource =  res.data
+                })
+            },
+
+            redirect2DataSourceTable() {
+                this.$router.push("/data_source_table")
             }
         },
         created() {
+            let dataSourceId = this.$route.query.id
+            if (undefined !== dataSourceId) {
+                this.getDataSourceInfo(dataSourceId)
+            }
             this.getPrivileges()
             this.getDataSourceTypes()
         }

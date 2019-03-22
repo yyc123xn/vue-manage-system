@@ -25,6 +25,13 @@ const reportDashboardApi = {
     delete(urlName, deleteParams) {
         let url = this[urlName]
         return axios.delete(url, {params: deleteParams})
+    },
+
+    EDIT_DASHBOARD: '/report/dashboard',
+
+    put(urlName, putParams) {
+        let url = this[urlName]
+        return axios.put(url, putParams)
     }
 }
 

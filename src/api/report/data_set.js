@@ -41,6 +41,13 @@ const reportDataSetApi = {
     delete(urlName, deleteParams) {
         let url = this[urlName]
         return axios.delete(url, {params: deleteParams})
+    },
+
+    EDIT_DATA_SET: '/report/data_set',
+
+    put(urlName, putParams) {
+        let url = this[urlName]
+        return axios.put(url, putParams)
     }
 }
 

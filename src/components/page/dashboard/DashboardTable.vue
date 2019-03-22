@@ -24,7 +24,7 @@
                 </el-table-column>
                 <el-table-column prop="name" label="名称">
                 </el-table-column>
-                <el-table-column prop="developer" label="负责人">
+                <el-table-column prop="createDeveloper" label="负责人">
                 </el-table-column>
                 <el-table-column prop="createTime" label="创建时间" sortable>
                 </el-table-column>
@@ -139,14 +139,13 @@
             },
 
             handleEdit(index, row) {
-                this.idx = index;
-                const item = this.tableData[index];
-                this.form = {
-                    name: item.name,
-                    date: item.date,
-                    address: item.address
-                }
-                this.editVisible = true;
+                let dashboardId = this.tableData[index].id;
+                this.$router.push({
+                    path: '/dashboard_form',
+                    query: {
+                        id: dashboardId
+                    }
+                })
             },
 
             handleDelete(index, row) {

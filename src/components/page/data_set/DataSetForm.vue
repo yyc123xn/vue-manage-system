@@ -69,7 +69,7 @@
                                             </el-select>
                                         </el-form-item>
                                         <el-form-item label="周期日期">
-                                            <el-switch v-model="dataSetHelper.dataSetFieldsHelper[props.$index].isDate" @change="changeIsDate(props.$index)"></el-switch>
+                                            <el-switch v-model="props.row.isDate"></el-switch>
                                         </el-form-item>
                                     </el-form>
                                 </template>
@@ -96,7 +96,7 @@
                             </el-table-column>
                             <el-table-column label="周期日期">
                                 <template slot-scope="scope">
-                                    {{0 === dataSet.dataSetFields[scope.$index].isDate ? '否' : '是'}}
+                                    {{dataSet.dataSetFields[scope.$index].isDate ? '是' : '否'}}
                                 </template>
                             </el-table-column>
                             <el-table-column label="操作">
@@ -117,7 +117,7 @@
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="addDataSet('dataSet')">表单提交</el-button>
-                        <el-button>取消</el-button>
+                        <el-button @click="redirect2DataSetTable">取消</el-button>
                     </el-form-item>
                 </el-form>
             </el-col>
@@ -161,15 +161,10 @@
                         showName: '名称1',
                         calculateType: '',
                         fieldType: '',
-                        isDate: 0
+                        isDate: false
                     }],
                     period: "",
                     extraExpression: ''
-                },
-                dataSetHelper: {
-                    dataSetFieldsHelper: [{
-                        isDate: false
-                    }]
                 },
                 dataSetConstant: {
                     databasesTables: [],
@@ -185,21 +180,29 @@
         },
         methods: {
 
-            changeIsDate(index) {
-                this.dataSet.dataSetFields[index].isDate = this.dataSetHelper.dataSetFieldsHelper[index].isDate ? 1 : 0;
-            },
-
             addDataSet(dataSet) {
                 this.$refs[dataSet].validate((valid) => {
                     if (valid) {
                         this.dataSet.database = this.dataSet.databaseTable[0]
                         this.dataSet.sourceTable = this.dataSet.databaseTable[1]
                         console.log(this.dataSet)
-                        this.$api.REPORT_DATA_SET_API.post('ADD_DATA_SET', this.dataSet).then(res => {
-                            this.$router.push('/data_set_table')
-                        }).catch(error => {
-                            this.$message.error ("提交失败", error)
-                        })
+                        let dataSetId = this.$route.query.id
+                        if (undefined !== dataSetId) {
+                            // 编辑
+                            this.$api.REPORT_DATA_SET_API.put('EDIT_DATA_SET', this.dataSet).then(res => {
+                                this.$message.success("成功编辑数据集")
+                            }).catch(error => {
+                                this.$message.error ("提交失败", error)
+                            })
+                        } else {
+                            // 添加
+                            this.$api.REPORT_DATA_SET_API.post('ADD_DATA_SET', this.dataSet).then(res => {
+                                this.$message.success("成功添加数据集")
+                            }).catch(error => {
+                                this.$message.error ("提交失败", error)
+                            })
+                        }
+                        this.$router.push('/data_set_table')
                     } else {
                         this.$message.error("请将数据集信息填写完整")
                         return false;
@@ -266,12 +269,28 @@
                     isDate: false,
                     key: Date.now()
                 })
-                this.dataSetHelper.dataSetFieldsHelper.push({
-                    isDate: false
+            },
+
+            // 获取数据集详情
+            getDataSetInfo(dataSetId) {
+                let queryParams = {
+                    id : dataSetId
+                }
+                this.$api.REPORT_DATA_SET_API.get('GET_DATA_SET_INFO', queryParams).then(res => {
+                    this.dataSet = res.data
+                    this.dataSet.databaseTable = [this.dataSet.database, this.dataSet.sourceTable]
                 })
-            }
+            },
+
+            redirect2DataSetTable() {
+                this.$router.push("/data_set_table")
+            },
         },
         created() {
+            let dataSetId = this.$route.query.id
+            if (undefined !== dataSetId) {
+                this.getDataSetInfo(dataSetId)
+            }
             this.getDatabasesTables(),
             this.getPeriods(),
             this.getDataTypes(),

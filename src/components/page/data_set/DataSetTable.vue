@@ -22,7 +22,7 @@
                 <el-table-column type="selection" width="55%" align="center"></el-table-column>
                 <el-table-column prop="id" label="id" sortable></el-table-column>
                 <el-table-column prop="name" label="名称"></el-table-column>
-                <el-table-column prop="developer" label="创建人"></el-table-column>
+                <el-table-column prop="createDeveloper" label="创建人"></el-table-column>
                 <el-table-column prop="createTime" label="创建时间" sortable></el-table-column>
                 <el-table-column prop="lastCalculateTime" label="上次运算时间" sortable></el-table-column>
                 <el-table-column prop="period" label="周期"></el-table-column>
@@ -178,10 +178,6 @@
                 })
             },
 
-            // 编辑数据集
-            editDataSet(id) {
-            },
-
             delAll() {
                 const length = this.multipleSelection.length;
                 let str = '';
@@ -194,9 +190,9 @@
             },
 
             // 获取数据集详情
-            getDataSetInfo(id) {
+            getDataSetInfo(dataSetId) {
                 let queryParams = {
-                    id : id
+                    id : dataSetId
                 }
                 this.$api.REPORT_DATA_SET_API.get('GET_DATA_SET_INFO', queryParams).then(res => {
 //                    console.log(res.data)
@@ -219,15 +215,13 @@
             },
 
             handleEdit(index, row) {
-                const dataSet = this.tableData[index];
-                let id = dataSet.id
-                this.getDataSetInfo(id)
-                this.form = {
-                    name: dataSet.name,
-                    date: dataSet.date,
-                    address: dataSet.address
-                }
-                this.editVisible = true;
+                let dataSetId = this.tableData[index].id;
+                this.$router.push({
+                    path: '/data_set_form',
+                    query: {
+                        id: dataSetId
+                    }
+                })
             },
 
             handleDelete(index, row) {

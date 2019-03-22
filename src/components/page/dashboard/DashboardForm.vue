@@ -1035,10 +1035,19 @@
 
             addDashboard() {
                 console.log(this.dashboard)
-                this.$api.REPORT_DASHBOARD_API.post('ADD_DASHBOARD', this.dashboard).then(res => {
-                    this.$message.success("成功添加数据看板")
-                    this.$router.replace('/dashboard_table')
-                })
+                let dashboardId = this.$route.query.id
+                if (undefined !== dashboardId) {
+                    // 编辑
+                    this.$api.REPORT_DASHBOARD_API.put('EDIT_DASHBOARD', this.dashboard).then(res => {
+                        this.$message.success("成功编辑数据看板")
+                    })
+                } else {
+                    // 添加
+                    this.$api.REPORT_DASHBOARD_API.post('ADD_DASHBOARD', this.dashboard).then(res => {
+                        this.$message.success("成功添加数据看板")
+                    })
+                }
+                this.$router.replace('/dashboard_table')
             },
 
             // 获取数据集列表
@@ -1069,9 +1078,43 @@
                 this.$api.REPORT_REPORT_API.get('GET_FILTER_TYPES').then(res => {
                     this.dashboardConstant.reportFilterConstant.filterTypes = res.data
                 })
-            }
+            },
+
+            getDashboardInfo(dashboardId) {
+                let getParams = {
+                    id : dashboardId
+                }
+                this.$api.REPORT_DASHBOARD_API.get('GET_DASHBOARD_INFO', getParams).then(res => {
+                    this.dashboard = res.data
+                    this.dashboardHelper.reportFiltersHelper = []
+                    this.dashboard.reportFilters.forEach(reportFilter => {
+                        this.dashboardHelper.reportFiltersHelper.push({
+                            queryColumns: []
+                        })
+                    })
+                    this.dashboardHelper.reportssHelper = []
+                    for(let i = 0; i < this.dashboard.reportss.length; i++) {
+                        this.dashboardHelper.reportssHelper.push([]);
+                        this.dashboard.reportss[i].forEach(report => {
+                            this.dashboardHelper.reportssHelper[i].push({
+                                metrics: [],
+                                dimensions: []
+                            })
+                        })
+                    }
+                })
+            },
+
+            redirect2DashboardTable() {
+                this.$router.push("/dashboard_table")
+            },
         },
+
         created() {
+            let dashboardId = this.$route.query.id
+            if (undefined !== dashboardId) {
+                this.getDashboardInfo(dashboardId)
+            }
             this.getPrivileges()
             this.getDataSets()
             this.getChartTypes()

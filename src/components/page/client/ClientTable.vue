@@ -2,29 +2,28 @@
     <div class="table">
         <el-col class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-lx-punch"></i> 公司票据</el-breadcrumb-item>
-                <el-breadcrumb-item>票据列表</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-lx-profile"></i> 公司客户</el-breadcrumb-item>
+                <el-breadcrumb-item>客户列表</el-breadcrumb-item>
             </el-breadcrumb>
         </el-col>
         <el-col class="container">
             <el-col class="handle-box">
                 <el-button type="primary" icon="delete" class="handle-del mr10">批量删除</el-button>
                 <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10">
-                    <el-option v-for="voucherFilterField in voucherFilterFields"
-                               :key="voucherFilterField.columnName" :label="voucherFilterField.columnComment"
-                               :value="voucherFilterField.columnName">
+                    <el-option v-for="clientFilterField in clientFilterFields"
+                               :key="clientFilterField.columnName" :label="clientFilterField.columnComment"
+                               :value="clientFilterField.columnName">
                     </el-option>
                 </el-select>
                 <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
-                <el-button type="primary" icon="el-icon-search" @click="getVouchers">搜索</el-button>
+                <el-button type="primary" icon="el-icon-search" @click="getDevelopers">搜索</el-button>
             </el-col>
             <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="55" align="center"></el-table-column>
                 <el-table-column prop="id" label="id" sortable></el-table-column>
-                <el-table-column prop="name" label="名称"></el-table-column>
-                <el-table-column prop="status" label="票据状态"></el-table-column>
-                <el-table-column prop="type" label="票据类型"></el-table-column>
-                <el-table-column prop="createTime" label="创建时间" sortable></el-table-column>
+                <el-table-column prop="nameCn" label="中文名"></el-table-column>
+                <el-table-column prop="nameEn" label="英文名" sortable></el-table-column>
+                <el-table-column prop="email" label="邮箱"></el-table-column>
                 <el-table-column label="操作" width="180" align="center">
                     <template slot-scope="scope">
                         <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -71,10 +70,10 @@
 
 <script>
     export default {
-        name: 'DeveloperTable',
+        name: 'ClientTable',
         data: function () {
             return {
-                voucherFilterFields: [],
+                clientFilterFields: [],
                 tableData: [],
                 pageIndex: 1,
                 pageSize: 10,
@@ -83,7 +82,6 @@
                 queryCondition: [],
                 editVisible: false,
                 delVisible: false,
-                mapping: {},
                 form: {
                     name: '',
                     date: '',
@@ -93,52 +91,39 @@
             }
         },
         created() {
-            this.getFilterFields()
-            this.getVouchers()
+            this.getFilterFields();
+            this.getDevelopers()
         },
         computed: {
         },
         methods: {
             // 获取票据的过滤字段
             getFilterFields() {
-                this.$api.FINANCE_VOUCHER_API.get('GET_VOUCHER_FILTER_FIELDS').then(res => {
-                    this.voucherFilterFields = res.data;
+                this.$api.FINANCE_CLIENT_API.get('GET_CLIENT_FILTER_FIELDS').then(res => {
+                    this.clientFilterFields = res.data;
                 })
             },
 
-            // 获取固定资产列表
-            getVouchers() {
+            // 获取数据集列表
+            getClients() {
                 let queryParams = {
                     pageIndex: this.pageIndex,
                     pageSize: this.pageSize,
                     queryColumn: this.queryColumn,
                     queryCondition: this.queryCondition,
                 }
-                this.$api.FINANCE_VOUCHER_API.get('GET_VOUCHERS' ,queryParams).then(res => {
+                this.$api.FINANCE_CLIENT_API.get('GET_CLIENTS' ,queryParams).then(res => {
                     this.tableData = res.data.list
                     this.total = res.data.total
-                    this.mapping = res.data.mapping
-                    this.tableData.forEach(voucher => {
-                        this.mapping.status.forEach(voucherStatus => {
-                            if (voucher.status === voucherStatus.nameEn) {
-                                voucher.status = voucherStatus.nameCn
-                            }
-                        })
-                        this.mapping.type.forEach(voucherType => {
-                            if (voucher.type === voucherType.nameEn) {
-                                voucher.type = voucherType.nameCn
-                            }
-                        })
-                    })
                 })
             },
 
             handleEdit(index, row) {
-                let voucherId = this.tableData[index].id;
+                let clientId = this.tableData[index].id;
                 this.$router.push({
-                    path: '/voucher_form',
+                    path: '/client_form',
                     query: {
-                        id: voucherId
+                        id: clientId
                     }
                 })
             },
@@ -148,11 +133,11 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    let voucherId = this.tableData[index].id;
+                    let developerId = this.tableData[index].id;
                     let deleteParams = {
-                        id: voucherId
+                        id: developerId
                     }
-                    this.$api.FINANCE_VOUCHER_API.delete('DELETE_VOUCHER', deleteParams).then(res => {
+                    this.$api.FINANCE_CLIENT_API.delete('DELETE_CLIENT', deleteParams).then(res => {
                         this.tableData.splice(index, 1);
                         this.$message.success("删除成功")
                     })
@@ -174,7 +159,7 @@
             // 分页导航
             handleCurrentChange(pageIndex) {
                 this.pageIndex = pageIndex;
-                this.getDevelopers()
+                this.getClients()
             },
 
             // 保存编辑

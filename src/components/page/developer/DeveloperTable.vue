@@ -26,6 +26,7 @@
                 <el-table-column prop="email" label="邮箱"></el-table-column>
                 <el-table-column label="操作" width="180" align="center">
                     <template slot-scope="scope">
+                        <el-button type="text" icon="el-icon-info" @click="handleInfo(scope.$index, scope.row)">详情</el-button>
                         <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
                         <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
                     </template>
@@ -37,23 +38,48 @@
             </el-col>
         </el-col>
 
-        <!-- 编辑弹出框 -->
-        <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
-            <el-form ref="form" :model="form" label-width="50px">
-                <el-form-item label="日期">
-                    <el-date-picker type="date" placeholder="选择日期" v-model="form.date" value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
+        <!-- 详情弹出框 -->
+        <el-dialog title="详情" :visible.sync="infoVisible" width="70%">
+            <el-form ref="developer" :model="developer" label-width="10%">
+                <el-form-item label="id">
+                    {{developer.id}}
                 </el-form-item>
-                <el-form-item label="姓名">
-                    <el-input v-model="form.name"></el-input>
+                <el-form-item label="中文名">
+                    {{developer.nameCn}}
                 </el-form-item>
-                <el-form-item label="地址">
-                    <el-input v-model="form.address"></el-input>
+                <el-form-item label="英文名">
+                    {{developer.nameEn}}
                 </el-form-item>
-
+                <el-form-item label="性别">
+                    {{developer.sex}}
+                </el-form-item>
+                <el-form-item label="email">
+                    {{developer.email}}
+                </el-form-item>
+                <el-form-item label="权限">
+                    {{developer.privilege}}
+                </el-form-item>
+                <el-form-item label="电话号码">
+                    {{developer.phoneNumber}}
+                </el-form-item>
+                <el-form-item label="学历">
+                    {{developer.academicDegree}}
+                </el-form-item>
+                <el-form-item label="基础工资">
+                    {{developer.baseWages}}
+                </el-form-item>
+                <el-form-item label="职务工资">
+                    {{developer.dutyWages}}
+                </el-form-item>
+                <el-form-item label="房屋补贴">
+                    {{developer.housingWages}}
+                </el-form-item>
+                <el-form-item label="养老金">
+                    {{developer.pension}}
+                </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="editVisible = false">取 消</el-button>
-                <el-button type="primary" @click="saveEdit">确 定</el-button>
+                <el-button type="primary" @click="infoVisible = false">确 定</el-button>
             </span>
         </el-dialog>
 
@@ -82,10 +108,23 @@
                 queryCondition: [],
                 editVisible: false,
                 delVisible: false,
-                form: {
-                    name: '',
-                    date: '',
-                    address: ''
+                infoVisible: false,
+                developer: {
+                    id : 0,
+                    nameCn : '',
+                    nameEn : '',
+                    sex : 0,
+                    email : '',
+                    privilege : '',
+                    status : 1,
+                    password : '',
+                    group : '',
+                    academicDegree : '',
+                    baseWages : 0,
+                    dutyWages : 0,
+                    housingWages : 0,
+                    pension : 0,
+                    phoneNumber : ''
                 },
                 idx: -1
             }
@@ -118,6 +157,22 @@
                 })
             },
 
+            handleInfo(index, row) {
+                const item = this.tableData[index];
+                let id = item.id
+                this.getDeveloperInfo(id)
+                this.infoVisible = true;
+            },
+
+            getDeveloperInfo(developerId) {
+                let getParams = {
+                    id : developerId
+                }
+                this.$api.FINANCE_DEVELOPER_API.get("GET_DEVELOPER_INFO", getParams).then(res => {
+                    this.developer = res.data
+                })
+            },
+
             handleEdit(index, row) {
                 let developerId = this.tableData[index].id;
                 this.$router.push({
@@ -127,6 +182,7 @@
                     }
                 })
             },
+
             handleDelete(index, row) {
                 this.$confirm('删除不可恢复，是否确定删除？', '提示', {
                     confirmButtonText: '确定',
@@ -152,6 +208,7 @@
                     });
                 });
             },
+
             handleSelectionChange(val) {
                 this.multipleSelection = val;
             },

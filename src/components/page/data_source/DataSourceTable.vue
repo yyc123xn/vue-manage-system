@@ -59,35 +59,35 @@
             </span>
         </el-dialog>
 
-        <!-- 编辑弹出框 -->
+        <!-- 详情弹出框 -->
         <el-dialog title="详情" :visible.sync="infoVisible" width="70%">
-            <el-form ref="form" :model="handleInfoForm" label-width="10%">
+            <el-form ref="dataSource" :model="dataSource" label-width="10%">
                 <el-form-item label="id">
-                    {{handleInfoForm.id}}
+                    {{dataSource.id}}
                 </el-form-item>
                 <el-form-item label="url">
-                    {{handleInfoForm.url}}
+                    {{dataSource.url}}
                 </el-form-item>
                 <el-form-item label="id">
-                    {{handleInfoForm.id}}
+                    {{dataSource.id}}
                 </el-form-item>
                 <el-form-item label="username">
-                    {{handleInfoForm.username}}
+                    {{dataSource.username}}
                 </el-form-item>
                 <el-form-item label="password">
-                    {{handleInfoForm.password}}
+                    {{dataSource.password}}
                 </el-form-item>
                 <el-form-item label="负责人">
-                    {{handleInfoForm.developer}}
+                    {{dataSource.developer}}
                 </el-form-item>
                 <el-form-item label="数据源类型">
-                    {{handleInfoForm.dataSourceType}}
+                    {{dataSource.dataSourceType}}
                 </el-form-item>
                 <el-form-item label="数据库">
-                    {{handleInfoForm.database}}
+                    {{dataSource.database}}
                 </el-form-item>
                 <el-form-item label="权限">
-                    {{handleInfoForm.privilege}}
+                    {{dataSource.privilege}}
                 </el-form-item>
                 <el-form-item label="表">
                     <el-table
@@ -105,8 +105,7 @@
 
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="editVisible = false">取 消</el-button>
-                <el-button type="primary" @click="saveEdit">确 定</el-button>
+                <el-button type="primary" @click="infoVisible = false">确 定</el-button>
             </span>
         </el-dialog>
 
@@ -136,7 +135,7 @@
                 total : 0,
                 queryColumn: "",
                 queryCondition: [],
-                handleInfoForm : {
+                dataSource : {
                     id : 0,
                     url : '',
                     username : '',
@@ -194,7 +193,7 @@
                 }
                 await this.$api.REPORT_DATA_SOURCE_API.get('GET_DATA_SOURCE_INFO', queryParams).then(res => {
                     console.log(res)
-                    this.handleInfoForm =  res.data
+                    this.dataSource =  res.data
                 })
             },
 

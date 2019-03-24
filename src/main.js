@@ -25,6 +25,8 @@ import {validator} from './utils/validator'
 
 import Sidebar from './components/common/Sidebar.vue'
 
+import VDistpicker from 'v-distpicker'
+
 // 简单配置
 NProgress.inc(0.2)
 NProgress.configure({ easing: 'ease', speed: 500, showSpinner: false })
@@ -36,6 +38,7 @@ Vue.use(ElementUI, {
 
 Vue.use(VueCookies)
 Vue.use(VCharts)
+Vue.use(VDistpicker)
 
 Vue.prototype.$axios = axios
 Vue.prototype.$api = api

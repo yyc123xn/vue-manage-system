@@ -17,6 +17,8 @@ const VoucherForm = () => import("../components/page/voucher/VoucherForm")
 const VoucherTable = () => import("../components/page/voucher/VoucherTable")
 const DeveloperForm = () => import("../components/page/developer/DeveloperForm")
 const DeveloperTable = () => import("../components/page/developer/DeveloperTable")
+const ClientForm = () => import("../components/page/client/ClientForm")
+const ClientTable = () => import("../components/page/client/ClientTable")
 const ReportForm = () => import("../components/page/report/ReportForm")
 const ReportTable = () => import("../components/page/report/ReportTable")
 const DataSetForm = () => import("../components/page/data_set/DataSetForm")
@@ -47,6 +49,8 @@ export default {
     VoucherTable: VoucherTable,
     DeveloperForm: DeveloperForm,
     DeveloperTable: DeveloperTable,
+    ClientForm: ClientForm,
+    ClientTable: ClientTable,
     ReportForm: ReportForm,
     ReportTable: ReportTable,
     DataSetForm: DataSetForm,

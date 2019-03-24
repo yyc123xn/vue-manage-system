@@ -16,7 +16,7 @@
                     </el-option>
                 </el-select>
                 <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
-                <el-button type="primary" icon="el-icon-search" @click="getDevelopers">搜索</el-button>
+                <el-button type="primary" icon="el-icon-search" @click="getClients">搜索</el-button>
             </el-col>
             <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="55" align="center"></el-table-column>
@@ -24,8 +24,10 @@
                 <el-table-column prop="nameCn" label="中文名"></el-table-column>
                 <el-table-column prop="nameEn" label="英文名" sortable></el-table-column>
                 <el-table-column prop="email" label="邮箱"></el-table-column>
+                <el-table-column prop="phoneNumber" label="电话号码"></el-table-column>
                 <el-table-column label="操作" width="180" align="center">
                     <template slot-scope="scope">
+                        <el-button type="text" icon="el-icon-info" @click="handleInfo(scope.$index, scope.row)">详情</el-button>
                         <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
                         <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
                     </template>
@@ -37,23 +39,48 @@
             </el-col>
         </el-col>
 
-        <!-- 编辑弹出框 -->
-        <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
-            <el-form ref="form" :model="form" label-width="50px">
-                <el-form-item label="日期">
-                    <el-date-picker type="date" placeholder="选择日期" v-model="form.date" value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
+        <!-- 详情弹出框 -->
+        <el-dialog title="详情" :visible.sync="infoVisible" width="70%">
+            <el-form ref="client" :model="client" label-width="10%">
+                <el-form-item label="id">
+                    {{client.id}}
                 </el-form-item>
-                <el-form-item label="姓名">
-                    <el-input v-model="form.name"></el-input>
+                <el-form-item label="中文名">
+                    {{client.nameCn}}
+                </el-form-item>
+                <el-form-item label="英文名">
+                    {{client.nameEn}}
+                </el-form-item>
+                <el-form-item label="性别">
+                    {{client.sex}}
+                </el-form-item>
+                <el-form-item label="email">
+                    {{client.email}}
+                </el-form-item>
+                <el-form-item label="公司名称">
+                    {{client.company}}
+                </el-form-item>
+                <el-form-item label="电话号码">
+                    {{client.phoneNumber}}
+                </el-form-item>
+                <el-form-item label="仍欠款">
+                    {{client.debt}}
+                </el-form-item>
+                <el-form-item label="已回款">
+                    {{client.receivedPayments}}
                 </el-form-item>
                 <el-form-item label="地址">
-                    <el-input v-model="form.address"></el-input>
+                    {{client.address}}
                 </el-form-item>
-
+                <el-form-item label="行业">
+                    {{client.business}}
+                </el-form-item>
+                <el-form-item label="描述">
+                    {{client.description}}
+                </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="editVisible = false">取 消</el-button>
-                <el-button type="primary" @click="saveEdit">确 定</el-button>
+                <el-button type="primary" @click="infoVisible = false">确 定</el-button>
             </span>
         </el-dialog>
 
@@ -82,17 +109,33 @@
                 queryCondition: [],
                 editVisible: false,
                 delVisible: false,
+                infoVisible: false,
                 form: {
                     name: '',
                     date: '',
                     address: ''
+                },
+                client: {
+                    id : 0,
+                    nameCn : '',
+                    nameEn : '',
+                    sex : 0,
+                    email : '',
+                    status : 1,
+                    company : '',
+                    phoneNumber : '',
+                    debt: 0,
+                    receivedPayments: 0,
+                    address: [{}, {}, {}],
+                    business: '',
+                    description: ''
                 },
                 idx: -1
             }
         },
         created() {
             this.getFilterFields();
-            this.getDevelopers()
+            this.getClients()
         },
         computed: {
         },
@@ -127,15 +170,32 @@
                     }
                 })
             },
+
+            handleInfo(index, row) {
+                const item = this.tableData[index];
+                let id = item.id
+                this.getClientInfo(id)
+                this.infoVisible = true;
+            },
+
+            getClientInfo(clientId) {
+                let getParams = {
+                    id : clientId
+                }
+                this.$api.FINANCE_CLIENT_API.get("GET_CLIENT_INFO", getParams).then(res => {
+                    this.client = res.data
+                })
+            },
+
             handleDelete(index, row) {
                 this.$confirm('删除不可恢复，是否确定删除？', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    let developerId = this.tableData[index].id;
+                    let clientId = this.tableData[index].id;
                     let deleteParams = {
-                        id: developerId
+                        id: clientId
                     }
                     this.$api.FINANCE_CLIENT_API.delete('DELETE_CLIENT', deleteParams).then(res => {
                         this.tableData.splice(index, 1);
@@ -152,6 +212,7 @@
                     });
                 });
             },
+
             handleSelectionChange(val) {
                 this.multipleSelection = val;
             },

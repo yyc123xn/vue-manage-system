@@ -232,6 +232,34 @@ export default [
     {
         path: "/",
         component: "Home",
+        name: 'client',
+        meta: {
+            title: '公司客户',
+            icon: 'el-icon-lx-group',
+        },
+        children: [
+            {
+                path: 'client_table',
+                component: "ClientTable",
+                name: 'client_table',
+                meta: {
+                    icon: 'el-icon-lx-cascades',
+                    title: '客户列表'
+                }
+            },
+            {
+                path: 'client_form',
+                component: "ClientForm",
+                name: 'client_form',
+                meta: {
+                    title: '客户表单'
+                }
+            }
+        ]
+    },
+    {
+        path: "/",
+        component: "Home",
         name: 'data_source',
         meta: {
             title: '数据源',
@@ -283,14 +311,14 @@ export default [
                     title: '看板表单'
                 }
             },
-            // {
-            //     path: 'dashboard_info',
-            //     component: "DashboardInfo",
-            //     name: 'dashboard_info',
-            //     meta: {
-            //         title: '看板详情'
-            //     }
-            // }
+            {
+                path: 'dashboard_info',
+                component: "DashboardInfo",
+                name: 'dashboard_info',
+                meta: {
+                    title: '看板详情'
+                }
+            }
         ]
     },
     {

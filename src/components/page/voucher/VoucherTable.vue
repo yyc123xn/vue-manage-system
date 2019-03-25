@@ -56,6 +56,9 @@
                     </el-tab-pane>
                 </el-tabs>
             </el-col>
+            <el-col style="margin-top: 20px">
+                <el-button v-if="isMine === 'true'" type="primary" icon="el-icon-search" @click="commitVouchers">提交审核</el-button>
+            </el-col>
             <el-col class="pagination">
                 <el-pagination background @current-change="handleCurrentChange" layout="prev, pager, next" :page-size="pageSize" :total="total">
                 </el-pagination>
@@ -119,14 +122,24 @@
             </span>
         </el-dialog>
 
-        <!-- 删除提示框 -->
-        <el-dialog title="提示" :visible.sync="delVisible" width="300px" center>
-            <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
+        <!-- 提交弹出框 -->
+        <el-dialog title="提交审核" :visible.sync="commitVisible" width="30%">
+            <el-form label-width="50px" :model="commitForm" ref="commitForm" :rules="rules">
+                <el-form-item label="姓名" prop="auditor">
+                    <el-select v-model="commitForm.auditor" placeholder="筛选项" class="handle-select mr10" filterable>
+                        <el-option v-for="developer in constant.developers"
+                                   :key="developer.nameEn" :label="developer.nameCn"
+                                   :value="developer.nameEn">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+            </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="delVisible = false">取 消</el-button>
-                <el-button type="primary" @click="deleteRow">确 定</el-button>
+                <el-button @click="commitVisible = false">取 消</el-button>
+                <el-button type="primary" @click="saveCommit('commitForm')">确 定</el-button>
             </span>
         </el-dialog>
+
     </div>
 </template>
 
@@ -148,6 +161,11 @@
                 editVisible: false,
                 delVisible: false,
                 infoVisible: false,
+                commitVisible: false,
+                selectedVoucherIds: [],
+                commitForm: {
+                    auditor: ""
+                },
                 mapping: {},
                 isMine: "false",
                 voucher: {
@@ -164,19 +182,20 @@
                         sum: 0
                     }]
                 },
-                form: {
-                    name: '',
-                    date: '',
-                    address: ''
+                rules: {
+                    auditor: [
+                        { required: true, message: '请选择审核人', trigger: 'blur' }
+                    ]
                 },
-                idx: -1
+                constant: {
+                    developers: []
+                }
             }
         },
         created() {
             this.getFilterFields()
             this.getVouchers()
-        },
-        computed: {
+            this.getDevelopers()
         },
         watch: {
             isMine(val) {
@@ -189,6 +208,17 @@
             getFilterFields() {
                 this.$api.FINANCE_VOUCHER_API.get('GET_VOUCHER_FILTER_FIELDS').then(res => {
                     this.voucherFilterFields = res.data;
+                })
+            },
+
+            // 获取员工列表
+            getDevelopers() {
+                let queryParams = {
+                    pageIndex: 0,
+                    pageSize: 1000
+                }
+                this.$api.FINANCE_DEVELOPER_API.get('GET_DEVELOPERS' ,queryParams).then(res => {
+                    this.constant.developers = res.data.list
                 })
             },
 
@@ -218,6 +248,33 @@
                         })
                     })
                 })
+            },
+
+            saveCommit(commitForm) {
+                this.$refs[commitForm].validate((valid) => {
+                    if (valid) {
+                        let putParams = {
+                            voucherIds : this.selectedVoucherIds,
+                            auditor: this.commitForm.auditor
+                        }
+                        console.log(putParams)
+                        this.$api.FINANCE_VOUCHER_API.put("COMMIT_VOUCHERS", putParams).then(res => {
+                            this.$message.success("提交成功")
+                            this.$router.push("/voucher_table")
+                        })
+                    } else {
+                        this.$message.error("请选择审核人")
+                        return false;
+                    }
+                })
+            },
+
+            commitVouchers() {
+                if (0 === this.selectedVoucherIds.length) {
+                    this.$message.error("请选择至少一个票据")
+                } else {
+                    this.commitVisible = true;
+                }
             },
 
             handleEdit(index, row) {
@@ -276,27 +333,18 @@
                     });
                 });
             },
-            handleSelectionChange(val) {
-                this.multipleSelection = val;
+
+            handleSelectionChange(vouchers) {
+                this.selectedVoucherIds = [];
+                vouchers.forEach(voucher => {
+                    this.selectedVoucherIds.push(voucher.id)
+                })
             },
 
             // 分页导航
             handleCurrentChange(pageIndex) {
                 this.pageIndex = pageIndex;
                 this.getDevelopers()
-            },
-
-            // 保存编辑
-            saveEdit() {
-                this.$set(this.tableData, this.idx, this.form);
-                this.editVisible = false;
-                this.$message.success(`修改第 ${this.idx+1} 行成功`);
-            },
-            // 确定删除
-            deleteRow(){
-                this.tableData.splice(this.idx, 1);
-                this.$message.success('删除成功');
-                this.delVisible = false;
             }
         }
     }

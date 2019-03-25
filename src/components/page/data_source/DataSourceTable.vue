@@ -18,21 +18,44 @@
                 <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="getDataSources">搜索</el-button>
             </el-col>
-            <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange">
-                <el-table-column type="selection" width="55" align="center"></el-table-column>
-                <el-table-column prop="id" label="id" sortable></el-table-column>
-                <el-table-column prop="developer" label="负责人"></el-table-column>
-                <el-table-column prop="createTime" label="创建时间" sortable></el-table-column>
-                <el-table-column prop="dataSourceType" label="数据源类型"></el-table-column>
-                <el-table-column prop="database" label="数据库"></el-table-column>
-                <el-table-column label="操作" width="180" align="center">
-                    <template slot-scope="scope">
-                        <el-button type="text" icon="el-icon-info" @click="handleInfo(scope.$index, scope.row)">详情</el-button>
-                        <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-                        <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
+            <el-col>
+                <el-tabs type="card" v-model="isMine">
+                    <el-tab-pane name="false" label="全部">
+                        <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange" @cell-dblclick="dblhandleCurrentChange">
+                            <el-table-column type="selection" width="55" align="center"></el-table-column>
+                            <el-table-column prop="id" label="id" sortable></el-table-column>
+                            <el-table-column prop="createDeveloper" label="负责人"></el-table-column>
+                            <el-table-column prop="createTime" label="创建时间" sortable></el-table-column>
+                            <el-table-column prop="dataSourceType" label="数据源类型"></el-table-column>
+                            <el-table-column prop="database" label="数据库"></el-table-column>
+                            <el-table-column label="操作" width="180" align="center">
+                                <template slot-scope="scope">
+                                    <el-button type="text" icon="el-icon-info" @click="handleInfo(scope.$index, scope.row)">详情</el-button>
+                                    <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                                    <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </el-tab-pane>
+                    <el-tab-pane name="true" label="我的">
+                        <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange" @cell-dblclick="dblhandleCurrentChange">
+                            <el-table-column type="selection" width="55" align="center"></el-table-column>
+                            <el-table-column prop="id" label="id" sortable></el-table-column>
+                            <el-table-column prop="createDeveloper" label="负责人"></el-table-column>
+                            <el-table-column prop="createTime" label="创建时间" sortable></el-table-column>
+                            <el-table-column prop="dataSourceType" label="数据源类型"></el-table-column>
+                            <el-table-column prop="database" label="数据库"></el-table-column>
+                            <el-table-column label="操作" width="180" align="center">
+                                <template slot-scope="scope">
+                                    <el-button type="text" icon="el-icon-info" @click="handleInfo(scope.$index, scope.row)">详情</el-button>
+                                    <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                                    <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </el-tab-pane>
+                </el-tabs>
+            </el-col>
             <el-col class="pagination">
                 <el-pagination background @current-change="handleCurrentChange" layout="prev, pager, next" :page-size="pageSize" :total="total">
                 </el-pagination>
@@ -78,7 +101,7 @@
                     {{dataSource.password}}
                 </el-form-item>
                 <el-form-item label="负责人">
-                    {{dataSource.developer}}
+                    {{dataSource.createDeveloper}}
                 </el-form-item>
                 <el-form-item label="数据源类型">
                     {{dataSource.dataSourceType}}
@@ -140,7 +163,7 @@
                     url : '',
                     username : '',
                     password : '',
-                    developer : '',
+                    createDeveloper : '',
                     dataSourceType : '',
                     database : '',
                     weight : 0,
@@ -150,6 +173,7 @@
                 infoVisible: false,
                 editVisible: false,
                 delVisible: false,
+                isMine: "false",
                 form: {
                     name: '',
                     date: '',
@@ -161,6 +185,12 @@
         created() {
             this.getFilterFields();
             this.getDataSources()
+        },
+        watch: {
+            isMine(val) {
+                this.isMine = val;
+                this.getDataSources()
+            }
         },
         methods: {
             // 获取票据的过滤字段
@@ -178,6 +208,7 @@
                     pageSize: this.pageSize,
                     queryColumn: this.queryColumn,
                     queryCondition: this.queryCondition,
+                    isMine: this.isMine
                 }
                 this.$api.REPORT_DATA_SOURCE_API.get('GET_DATA_SOURCES' ,queryParams).then(res => {
                     console.log(res)
@@ -263,6 +294,12 @@
                 this.getDataSourceInfo(id)
                 let database = item.database
                 this.getDatabaseTables(database)
+                this.infoVisible = true;
+            },
+
+            dblhandleCurrentChange(row) {
+                this.getDataSourceInfo(row.id)
+                this.getDatabaseTables(row.database)
                 this.infoVisible = true;
             },
 

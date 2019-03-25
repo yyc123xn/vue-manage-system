@@ -18,24 +18,50 @@
                 <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="getDashboards">搜索</el-button>
             </el-col>
-            <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange">
-                <el-table-column type="selection" width="55" align="center"></el-table-column>
-                <el-table-column prop="id" label="id" sortable>
-                </el-table-column>
-                <el-table-column prop="name" label="名称">
-                </el-table-column>
-                <el-table-column prop="createDeveloper" label="负责人">
-                </el-table-column>
-                <el-table-column prop="createTime" label="创建时间" sortable>
-                </el-table-column>
-                <el-table-column label="操作" width="180" align="center">
-                    <template slot-scope="scope">
-                        <el-button type="text" icon="el-icon-info" @click="handleInfo(scope.$index, scope.row)">数据</el-button>
-                        <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-                        <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
+            <el-col>
+                <el-tabs type="card" v-model="isMine">
+                    <el-tab-pane name="false" label="全部">
+                        <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange">
+                            <el-table-column type="selection" width="55" align="center"></el-table-column>
+                            <el-table-column prop="id" label="id" sortable>
+                            </el-table-column>
+                            <el-table-column prop="name" label="名称">
+                            </el-table-column>
+                            <el-table-column prop="createDeveloper" label="负责人">
+                            </el-table-column>
+                            <el-table-column prop="createTime" label="创建时间" sortable>
+                            </el-table-column>
+                            <el-table-column label="操作" width="180" align="center">
+                                <template slot-scope="scope">
+                                    <el-button type="text" icon="el-icon-info" @click="handleInfo(scope.$index, scope.row)">数据</el-button>
+                                    <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                                    <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </el-tab-pane>
+                    <el-tab-pane name="true" label="我的">
+                        <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange">
+                            <el-table-column type="selection" width="55" align="center"></el-table-column>
+                            <el-table-column prop="id" label="id" sortable>
+                            </el-table-column>
+                            <el-table-column prop="name" label="名称">
+                            </el-table-column>
+                            <el-table-column prop="createDeveloper" label="负责人">
+                            </el-table-column>
+                            <el-table-column prop="createTime" label="创建时间" sortable>
+                            </el-table-column>
+                            <el-table-column label="操作" width="180" align="center">
+                                <template slot-scope="scope">
+                                    <el-button type="text" icon="el-icon-info" @click="handleInfo(scope.$index, scope.row)">数据</el-button>
+                                    <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                                    <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </el-tab-pane>
+                </el-tabs>
+            </el-col>
             <el-col class="pagination">
                 <el-pagination background @current-change="handleCurrentChange" layout="prev, pager, next" :page-size="pageSize" :total="total">
                 </el-pagination>
@@ -96,6 +122,7 @@
                 queryCondition: [],
                 editVisible: false,
                 delVisible: false,
+                isMine: "false",
                 form: {
                     name: '',
                     date: '',
@@ -108,6 +135,12 @@
             this.getDashboards();
         },
         computed: {
+        },
+        watch: {
+            isMine(val) {
+                this.isMine = val;
+                this.getDashboards()
+            }
         },
         methods: {
             // 获取看板的过滤字段
@@ -124,6 +157,7 @@
                     pageSize: this.pageSize,
                     queryColumn: this.queryColumn,
                     queryCondition: this.queryCondition,
+                    isMine: this.isMine
                 }
                 this.$api.REPORT_DASHBOARD_API.get('GET_DASHBOARD', getParams).then(res => {
                     this.tableData = res.data.list

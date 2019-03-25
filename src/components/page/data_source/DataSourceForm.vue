@@ -59,7 +59,7 @@
                     url : '',
                     username : '',
                     password : '',
-                    developer : '',
+                    createDeveloper : '',
                     dataSourceType : '',
                     database : '',
                     weight : 0,

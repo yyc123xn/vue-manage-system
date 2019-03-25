@@ -18,47 +18,131 @@
                 <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="getDataSets">搜索</el-button>
             </el-col>
-            <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange">
-                <el-table-column type="selection" width="55%" align="center"></el-table-column>
-                <el-table-column prop="id" label="id" sortable></el-table-column>
-                <el-table-column prop="name" label="名称"></el-table-column>
-                <el-table-column prop="createDeveloper" label="创建人"></el-table-column>
-                <el-table-column prop="createTime" label="创建时间" sortable></el-table-column>
-                <el-table-column prop="lastCalculateTime" label="上次运算时间" sortable></el-table-column>
-                <el-table-column prop="period" label="周期"></el-table-column>
-                <!--<el-table-column prop="address" label="地址" :formatter="formatter">-->
-                <!--</el-table-column>-->
-                <el-table-column label="操作" width="180" align="center" :formatter="formatter">
-                    <template slot-scope="scope">
-                        <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-                        <el-button type="text" icon="el-icon-circle-plus-outline" @click="handleBackfill(scope.$index, scope.row)">补数据</el-button>
-                        <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
+            <el-col>
+                <el-tabs type="card" v-model="isMine">
+                    <el-tab-pane name="false" label="全部">
+                        <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange" @cell-dblclick="dblhandleCurrentChange">
+                            <el-table-column type="selection" width="55%" align="center"></el-table-column>
+                            <el-table-column prop="id" label="id" sortable></el-table-column>
+                            <el-table-column prop="name" label="名称"></el-table-column>
+                            <el-table-column prop="createDeveloper" label="创建人"></el-table-column>
+                            <el-table-column prop="createTime" label="创建时间" sortable></el-table-column>
+                            <el-table-column prop="lastCalculateTime" label="上次运算时间" sortable></el-table-column>
+                            <el-table-column prop="period" label="周期"></el-table-column>
+                            <el-table-column label="操作" width="180" align="center">
+                                <template slot-scope="scope">
+                                    <el-button type="text" icon="el-icon-info" @click="handleInfo(scope.$index, scope.row)">详情</el-button>
+                                    <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                                    <el-button type="text" icon="el-icon-circle-plus-outline" @click="handleBackfill(scope.$index, scope.row)">补数据</el-button>
+                                    <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </el-tab-pane>
+                    <el-tab-pane name="true" label="我的">
+                        <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange" @cell-dblclick="dblhandleCurrentChange">
+                            <el-table-column type="selection" width="55%" align="center"></el-table-column>
+                            <el-table-column prop="id" label="id" sortable></el-table-column>
+                            <el-table-column prop="name" label="名称"></el-table-column>
+                            <el-table-column prop="createDeveloper" label="创建人"></el-table-column>
+                            <el-table-column prop="createTime" label="创建时间" sortable></el-table-column>
+                            <el-table-column prop="lastCalculateTime" label="上次运算时间" sortable></el-table-column>
+                            <el-table-column prop="period" label="周期"></el-table-column>
+                            <el-table-column label="操作" width="180" align="center">
+                                <template slot-scope="scope">
+                                    <el-button type="text" icon="el-icon-info" @click="handleInfo(scope.$index, scope.row)">详情</el-button>
+                                    <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                                    <el-button type="text" icon="el-icon-circle-plus-outline" @click="handleBackfill(scope.$index, scope.row)">补数据</el-button>
+                                    <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </el-tab-pane>
+                </el-tabs>
+            </el-col>
+
             <el-col class="pagination">
                 <el-pagination background @current-change="handleCurrentChange" layout="prev, pager, next" :page-size="pageSize" :total="total">
                 </el-pagination>
             </el-col>
         </el-col>
 
-        <!-- 编辑弹出框 -->
-        <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
-            <el-form ref="form" label-width="20%">
-                <el-form-item label="日期">
-                    <el-date-picker type="date" placeholder="选择日期" value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
+        <!-- 详情弹出框 -->
+        <el-dialog title="详情" :visible.sync="infoVisible" width="70%">
+            <el-form ref="dataSet" :model="dataSet" label-width="10%">
+                <el-form-item label="id">
+                    {{dataSet.id}}
                 </el-form-item>
-                <el-form-item label="姓名">
-                    <el-input></el-input>
+                <el-form-item label="名称">
+                    {{dataSet.name}}
                 </el-form-item>
-                <el-form-item label="地址">
-                    <el-input></el-input>
+                <el-form-item label="描述">
+                    {{dataSet.description}}
+                </el-form-item>
+                <el-form-item label="数据库">
+                    {{dataSet.database}}
+                </el-form-item>
+                <el-form-item label="源表">
+                    {{dataSet.sourceTable}}
+                </el-form-item>
+                <el-form-item label="数据源类型">
+                    {{dataSet.dataSourceType}}
+                </el-form-item>
+                <el-form-item label="周期">
+                    {{dataSet.period}}
+                </el-form-item>
+                <el-form-item label="额外运算条件">
+                    {{dataSet.extraExpression}}
+                </el-form-item>
+                <el-form-item label="字段详情">
+                    <el-table :data="dataSet.dataSetFields">
+                        <el-table-column type="expand">
+                            <template slot-scope="props">
+                                <el-form label-position="right" inline class="demo-table-expand">
+                                    <el-form-item label="表达式">{{props.row.expression}}
+                                    </el-form-item>
+                                    <el-form-item label="名称">{{props.row.showName}}
+                                    </el-form-item>
+                                    <el-form-item label="数据类型">{{props.row.dataType}}
+                                    </el-form-item>
+                                    <el-form-item label="字段类型">{{props.row.fieldType}}
+                                    </el-form-item>
+                                    <el-form-item label="计算方式">{{props.row.calculateType}}
+                                    </el-form-item>
+                                    <el-form-item label="周期日期">
+                                        {{props.row.isDate ? '是' : '否'}}
+                                    </el-form-item>
+                                </el-form>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                label="表达式"
+                                prop="expression">
+                        </el-table-column>
+                        <el-table-column
+                                label="名称"
+                                prop="showName">
+                        </el-table-column>
+                        <el-table-column
+                                label="数据类型"
+                                prop="dataType">
+                        </el-table-column>
+                        <el-table-column
+                                label="字段类型"
+                                prop="fieldType">
+                        </el-table-column>
+                        <el-table-column
+                                label="计算方式"
+                                prop="calculateType">
+                        </el-table-column>
+                        <el-table-column label="周期日期">
+                            <template slot-scope="scope">
+                                {{dataSet.dataSetFields[scope.$index].isDate ? '是' : '否'}}
+                            </template>
+                        </el-table-column>
+                    </el-table>
                 </el-form-item>
             </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="editVisible = false">取 消</el-button>
-                <el-button type="primary" @click="saveEdit">确 定</el-button>
-            </span>
         </el-dialog>
 
         <!-- 补数据弹出框 -->
@@ -112,6 +196,7 @@
                 queryCondition: [],
                 editVisible: false,
                 delVisible: false,
+                infoVisible: false,
                 backfillVisible: false,
                 backfillForm :{
                     id : 0,
@@ -120,6 +205,26 @@
                     endTime: '',
                     beginAndEndTime: []
                 },
+                dataSet: {
+                    id: 0,
+                    name: '',
+                    description: '',
+                    database: '',
+                    sourceTable: '',
+                    databaseTable: [],
+                    dataSourceType: "",
+                    dataSetFields: [{
+                        expression: 'expression1',
+                        dataType: '',
+                        showName: '名称1',
+                        calculateType: '',
+                        fieldType: '',
+                        isDate: false
+                    }],
+                    period: "",
+                    extraExpression: ''
+                },
+                isMine: "false",
                 handleDeleteIndex: -1,
                 idx: -1,
                 pickerOptions: {
@@ -155,7 +260,12 @@
             this.getFilterFields();
             this.getDataSets();
         },
-
+        watch: {
+            isMine(val) {
+                this.isMine = val;
+                this.getDataSets()
+            }
+        },
         methods: {
             // 获取数据集的过滤字段
             getFilterFields() {
@@ -171,6 +281,7 @@
                     pageSize: this.pageSize,
                     queryColumn: this.queryColumn,
                     queryCondition: this.queryCondition,
+                    isMine: this.isMine
                 }
                 this.$api.REPORT_DATA_SET_API.get('GET_DATA_SET', queryParams).then(res => {
                     this.tableData = res.data.list
@@ -222,6 +333,28 @@
                         id: dataSetId
                     }
                 })
+            },
+
+            handleInfo(index, row) {
+                let dataSetId = this.tableData[index].id;
+                this.getDataSetInfo(dataSetId)
+                this.infoVisible = true
+            },
+
+            // 获取数据集详情
+            getDataSetInfo(dataSetId) {
+                let queryParams = {
+                    id : dataSetId
+                }
+                this.$api.REPORT_DATA_SET_API.get('GET_DATA_SET_INFO', queryParams).then(res => {
+                    this.dataSet = res.data
+                    this.dataSet.databaseTable = [this.dataSet.database, this.dataSet.sourceTable]
+                })
+            },
+
+            dblhandleCurrentChange(row) {
+                this.getDataSetInfo(row.id)
+                this.infoVisible = true
             },
 
             handleDelete(index, row) {
@@ -308,5 +441,15 @@
     }
     .mr10{
         margin-right: 10px;
+    }
+    .demo-table-expand {
+    }
+    .demo-table-expand label {
+        width: 90px;
+        color: #99a9bf;
+    }
+    .demo-table-expand .el-form-item {
+        margin-right: 0;
+        width: 50%;
     }
 </style>

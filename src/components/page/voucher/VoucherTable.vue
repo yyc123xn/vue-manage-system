@@ -18,43 +18,104 @@
                 <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="getVouchers">搜索</el-button>
             </el-col>
-            <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange">
-                <el-table-column type="selection" width="55" align="center"></el-table-column>
-                <el-table-column prop="id" label="id" sortable></el-table-column>
-                <el-table-column prop="name" label="名称"></el-table-column>
-                <el-table-column prop="status" label="票据状态"></el-table-column>
-                <el-table-column prop="type" label="票据类型"></el-table-column>
-                <el-table-column prop="createTime" label="创建时间" sortable></el-table-column>
-                <el-table-column label="操作" width="180" align="center">
-                    <template slot-scope="scope">
-                        <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-                        <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
+            <el-col>
+                <el-tabs type="card" v-model="isMine">
+                    <el-tab-pane name="false" label="全部">
+                        <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange" @cell-dblclick="dblhandleCurrentChange">
+                            <el-table-column type="selection" width="55" align="center"></el-table-column>
+                            <el-table-column prop="id" label="id" sortable></el-table-column>
+                            <el-table-column prop="name" label="名称"></el-table-column>
+                            <el-table-column prop="status" label="票据状态"></el-table-column>
+                            <el-table-column prop="type" label="票据类型"></el-table-column>
+                            <el-table-column prop="createTime" label="创建时间" sortable></el-table-column>
+                            <el-table-column label="操作" width="180" align="center">
+                                <template slot-scope="scope">
+                                    <el-button type="text" icon="el-icon-info" @click="handleInfo(scope.$index, scope.row)">详情</el-button>
+                                    <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                                    <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </el-tab-pane>
+                    <el-tab-pane name="true" label="我的">
+                        <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange" @cell-dblclick="dblhandleCurrentChange">
+                            <el-table-column type="selection" width="55" align="center"></el-table-column>
+                            <el-table-column prop="id" label="id" sortable></el-table-column>
+                            <el-table-column prop="name" label="名称"></el-table-column>
+                            <el-table-column prop="status" label="票据状态"></el-table-column>
+                            <el-table-column prop="type" label="票据类型"></el-table-column>
+                            <el-table-column prop="createTime" label="创建时间" sortable></el-table-column>
+                            <el-table-column label="操作" width="180" align="center">
+                                <template slot-scope="scope">
+                                    <el-button type="text" icon="el-icon-info" @click="handleInfo(scope.$index, scope.row)">详情</el-button>
+                                    <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                                    <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </el-tab-pane>
+                </el-tabs>
+            </el-col>
             <el-col class="pagination">
                 <el-pagination background @current-change="handleCurrentChange" layout="prev, pager, next" :page-size="pageSize" :total="total">
                 </el-pagination>
             </el-col>
         </el-col>
 
-        <!-- 编辑弹出框 -->
-        <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
-            <el-form ref="form" :model="form" label-width="50px">
+        <!-- 详情弹出框 -->
+        <el-dialog title="详情" :visible.sync="infoVisible" width="70%">
+            <el-form ref="voucher" :model="voucher" label-width="10%">
+                <el-form-item label="id">
+                    {{voucher.id}}
+                </el-form-item>
+                <el-form-item label="名称">
+                    {{voucher.name}}
+                </el-form-item>
+                <el-form-item label="描述">
+                    {{voucher.description}}
+                </el-form-item>
                 <el-form-item label="日期">
-                    <el-date-picker type="date" placeholder="选择日期" v-model="form.date" value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
+                    {{voucher.date}}
                 </el-form-item>
-                <el-form-item label="姓名">
-                    <el-input v-model="form.name"></el-input>
+                <el-form-item label="状态">
+                    {{voucher.status}}
                 </el-form-item>
-                <el-form-item label="地址">
-                    <el-input v-model="form.address"></el-input>
+                <el-form-item label="类型">
+                    {{voucher.type}}
                 </el-form-item>
-
+                <el-form-item label="电话号码">
+                    {{voucher.phoneNumber}}
+                </el-form-item>
+                <el-form-item label="票据详情">
+                    <el-table
+                            :data="voucher.voucherDetails"
+                            style="width: 100%">
+                        <el-table-column type="expand">
+                            <template slot-scope="props">
+                                <el-form label-position="left" class="demo-table-expand">
+                                    <el-form-item label="名称">{{props.row.name}}</el-form-item>
+                                    <el-form-item label="描述" style="width: 100%" >{{props.row.description}}</el-form-item>
+                                    <el-form-item label="合计">{{props.row.sum}}</el-form-item>
+                                </el-form>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                label="名称"
+                                prop="name">
+                        </el-table-column>
+                        <el-table-column
+                                label="描述"
+                                prop="description">
+                        </el-table-column>
+                        <el-table-column
+                                label="合计"
+                                prop="sum">
+                        </el-table-column>
+                    </el-table>
+                </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="editVisible = false">取 消</el-button>
-                <el-button type="primary" @click="saveEdit">确 定</el-button>
+                <el-button type="primary" @click="infoVisible = false">确 定</el-button>
             </span>
         </el-dialog>
 
@@ -70,7 +131,10 @@
 </template>
 
 <script>
+    import ElCol from "element-ui/packages/col/src/col";
+
     export default {
+        components: {ElCol},
         name: 'DeveloperTable',
         data: function () {
             return {
@@ -83,7 +147,23 @@
                 queryCondition: [],
                 editVisible: false,
                 delVisible: false,
+                infoVisible: false,
                 mapping: {},
+                isMine: "false",
+                voucher: {
+                    id : 0,
+                    name : '',
+                    description : '',
+                    date: '',
+                    status: '',
+                    type: '',
+                    voucherDetails: [{
+                        id: 0,
+                        name: '票据详情1',
+                        description: '票据描述1',
+                        sum: 0
+                    }]
+                },
                 form: {
                     name: '',
                     date: '',
@@ -97,6 +177,12 @@
             this.getVouchers()
         },
         computed: {
+        },
+        watch: {
+            isMine(val) {
+                this.isMine = val;
+                this.getVouchers()
+            }
         },
         methods: {
             // 获取票据的过滤字段
@@ -113,6 +199,7 @@
                     pageSize: this.pageSize,
                     queryColumn: this.queryColumn,
                     queryCondition: this.queryCondition,
+                    isMine: this.isMine
                 }
                 this.$api.FINANCE_VOUCHER_API.get('GET_VOUCHERS' ,queryParams).then(res => {
                     this.tableData = res.data.list
@@ -142,6 +229,28 @@
                     }
                 })
             },
+
+            handleInfo(index, row) {
+                let voucherId = this.tableData[index].id;
+                this.getVoucherInfo(voucherId)
+                this.infoVisible = true
+            },
+
+            getVoucherInfo(voucherId) {
+                let getParams = {
+                    id : voucherId
+                }
+                this.$api.FINANCE_VOUCHER_API.get("GET_VOUCHER_INFO", getParams).then(res => {
+                    this.voucher = res.data
+                    this.voucher.date = new Date(this.voucher.date)
+                })
+            },
+
+            dblhandleCurrentChange(row) {
+                this.getVoucherInfo(row.id)
+                this.infoVisible = true
+            },
+
             handleDelete(index, row) {
                 this.$confirm('删除不可恢复，是否确定删除？', '提示', {
                     confirmButtonText: '确定',
@@ -220,5 +329,12 @@
     }
     .mr10{
         margin-right: 10px;
+    }
+    .demo-table-expand label {
+        width: 90px;
+        color: #99a9bf;
+    }
+    .demo-table-expand {
+        width: 100%;
     }
 </style>

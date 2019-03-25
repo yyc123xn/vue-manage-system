@@ -18,7 +18,7 @@
                 <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="getDevelopers">搜索</el-button>
             </el-col>
-            <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange">
+            <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange" @cell-dblclick="dblhandleCurrentChange">
                 <el-table-column type="selection" width="55" align="center"></el-table-column>
                 <el-table-column prop="id" label="id" sortable></el-table-column>
                 <el-table-column prop="nameCn" label="中文名"></el-table-column>
@@ -161,6 +161,11 @@
                 const item = this.tableData[index];
                 let id = item.id
                 this.getDeveloperInfo(id)
+                this.infoVisible = true;
+            },
+
+            dblhandleCurrentChange(row) {
+                this.getDeveloperInfo(row.id)
                 this.infoVisible = true;
             },
 

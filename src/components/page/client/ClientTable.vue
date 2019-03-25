@@ -18,21 +18,44 @@
                 <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="getClients">搜索</el-button>
             </el-col>
-            <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange">
-                <el-table-column type="selection" width="55" align="center"></el-table-column>
-                <el-table-column prop="id" label="id" sortable></el-table-column>
-                <el-table-column prop="nameCn" label="中文名"></el-table-column>
-                <el-table-column prop="nameEn" label="英文名" sortable></el-table-column>
-                <el-table-column prop="email" label="邮箱"></el-table-column>
-                <el-table-column prop="phoneNumber" label="电话号码"></el-table-column>
-                <el-table-column label="操作" width="180" align="center">
-                    <template slot-scope="scope">
-                        <el-button type="text" icon="el-icon-info" @click="handleInfo(scope.$index, scope.row)">详情</el-button>
-                        <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-                        <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
+            <el-col>
+                <el-tabs type="card" v-model="isMine">
+                    <el-tab-pane name="false" label="全部">
+                        <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange" @cell-dblclick="dblhandleCurrentChange">
+                            <el-table-column type="selection" width="55" align="center"></el-table-column>
+                            <el-table-column prop="id" label="id" sortable></el-table-column>
+                            <el-table-column prop="nameCn" label="中文名"></el-table-column>
+                            <el-table-column prop="nameEn" label="英文名" sortable></el-table-column>
+                            <el-table-column prop="email" label="邮箱"></el-table-column>
+                            <el-table-column prop="phoneNumber" label="电话号码"></el-table-column>
+                            <el-table-column label="操作" width="180" align="center">
+                                <template slot-scope="scope">
+                                    <el-button type="text" icon="el-icon-info" @click="handleInfo(scope.$index, scope.row)">详情</el-button>
+                                    <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                                    <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </el-tab-pane>
+                    <el-tab-pane name="true" label="我的">
+                        <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange" @cell-dblclick="dblhandleCurrentChange">
+                            <el-table-column type="selection" width="55" align="center"></el-table-column>
+                            <el-table-column prop="id" label="id" sortable></el-table-column>
+                            <el-table-column prop="nameCn" label="中文名"></el-table-column>
+                            <el-table-column prop="nameEn" label="英文名" sortable></el-table-column>
+                            <el-table-column prop="email" label="邮箱"></el-table-column>
+                            <el-table-column prop="phoneNumber" label="电话号码"></el-table-column>
+                            <el-table-column label="操作" width="180" align="center">
+                                <template slot-scope="scope">
+                                    <el-button type="text" icon="el-icon-info" @click="handleInfo(scope.$index, scope.row)">详情</el-button>
+                                    <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                                    <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </el-tab-pane>
+                </el-tabs>
+            </el-col>
             <el-col class="pagination">
                 <el-pagination background @current-change="handleCurrentChange" layout="prev, pager, next" :page-size="pageSize" :total="total">
                 </el-pagination>
@@ -110,11 +133,7 @@
                 editVisible: false,
                 delVisible: false,
                 infoVisible: false,
-                form: {
-                    name: '',
-                    date: '',
-                    address: ''
-                },
+                isMine: "false",
                 client: {
                     id : 0,
                     nameCn : '',
@@ -139,6 +158,12 @@
         },
         computed: {
         },
+        watch: {
+            isMine(val) {
+                this.isMine = val;
+                this.getClients()
+            }
+        },
         methods: {
             // 获取票据的过滤字段
             getFilterFields() {
@@ -154,6 +179,7 @@
                     pageSize: this.pageSize,
                     queryColumn: this.queryColumn,
                     queryCondition: this.queryCondition,
+                    isMine: this.isMine
                 }
                 this.$api.FINANCE_CLIENT_API.get('GET_CLIENTS' ,queryParams).then(res => {
                     this.tableData = res.data.list
@@ -169,6 +195,11 @@
                         id: clientId
                     }
                 })
+            },
+
+            dblhandleCurrentChange(row) {
+                this.getClientInfo(row.id)
+                this.infoVisible = true;
             },
 
             handleInfo(index, row) {

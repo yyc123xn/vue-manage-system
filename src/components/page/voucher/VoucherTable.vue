@@ -19,45 +19,38 @@
                 <el-button type="primary" icon="el-icon-search" @click="getVouchers">搜索</el-button>
             </el-col>
             <el-col>
-                <el-tabs type="card" v-model="isMine">
+                <el-tabs type="border-card" v-model="isMine">
                     <el-tab-pane name="false" label="全部">
-                        <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange" @cell-dblclick="dblhandleCurrentChange">
-                            <el-table-column type="selection" width="55" align="center"></el-table-column>
-                            <el-table-column prop="id" label="id" sortable></el-table-column>
-                            <el-table-column prop="name" label="名称"></el-table-column>
-                            <el-table-column prop="status" label="票据状态"></el-table-column>
-                            <el-table-column prop="type" label="票据类型"></el-table-column>
-                            <el-table-column prop="createTime" label="创建时间" sortable></el-table-column>
-                            <el-table-column label="操作" width="180" align="center">
-                                <template slot-scope="scope">
-                                    <el-button type="text" icon="el-icon-info" @click="handleInfo(scope.$index, scope.row)">详情</el-button>
-                                    <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-                                    <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-                                </template>
-                            </el-table-column>
-                        </el-table>
                     </el-tab-pane>
                     <el-tab-pane name="true" label="我的">
-                        <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange" @cell-dblclick="dblhandleCurrentChange">
-                            <el-table-column type="selection" width="55" align="center"></el-table-column>
-                            <el-table-column prop="id" label="id" sortable></el-table-column>
-                            <el-table-column prop="name" label="名称"></el-table-column>
-                            <el-table-column prop="status" label="票据状态"></el-table-column>
-                            <el-table-column prop="type" label="票据类型"></el-table-column>
-                            <el-table-column prop="createTime" label="创建时间" sortable></el-table-column>
-                            <el-table-column label="操作" width="180" align="center">
-                                <template slot-scope="scope">
-                                    <el-button type="text" icon="el-icon-info" @click="handleInfo(scope.$index, scope.row)">详情</el-button>
-                                    <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-                                    <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-                                </template>
-                            </el-table-column>
-                        </el-table>
+                        <el-tabs type="border-card" v-model="status">
+                            <el-tab-pane v-for="(status, index) in constant.voucherStatuses" :name="status.nameEn" :key="status.nameEn" :label="status.nameCn">
+                            </el-tab-pane>
+                        </el-tabs>
                     </el-tab-pane>
+                    <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange" @cell-dblclick="dblhandleCurrentChange">
+                        <el-table-column type="selection" :selectable="selectable" width="55" align="center"></el-table-column>
+                        <el-table-column prop="id" label="id" sortable></el-table-column>
+                        <el-table-column prop="name" label="名称"></el-table-column>
+                        <el-table-column prop="status" label="票据状态"></el-table-column>
+                        <el-table-column prop="type" label="票据类型"></el-table-column>
+                        <el-table-column prop="createTime" label="创建时间" sortable></el-table-column>
+                        <el-table-column label="操作" width="180" align="center">
+                            <template slot-scope="scope">
+                                <el-button type="text" icon="el-icon-info" @click="handleInfo(scope.$index, scope.row)">详情</el-button>
+                                <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                                <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
                 </el-tabs>
             </el-col>
-            <el-col style="margin-top: 20px">
-                <el-button v-if="isMine === 'true'" type="primary" icon="el-icon-search" @click="commitVouchers">提交审核</el-button>
+            <el-col style="margin-top: 20px" v-if="isMine === 'true' && -1 !== ['REJECTED', 'UNCOMMITTED'].indexOf(status)">
+                <el-button type="primary" @click="commitVouchers">提交</el-button>
+            </el-col>
+            <el-col style="margin-top: 20px" v-if="isMine === 'true' && status === 'UNAUDITED' ">
+                <el-button type="primary" @click="auditVouchers">通过</el-button>
+                <el-button type="warning" @click="rejectVouchers">回绝</el-button>
             </el-col>
             <el-col class="pagination">
                 <el-pagination background @current-change="handleCurrentChange" layout="prev, pager, next" :page-size="pageSize" :total="total">
@@ -88,6 +81,12 @@
                 </el-form-item>
                 <el-form-item label="电话号码">
                     {{voucher.phoneNumber}}
+                </el-form-item>
+                <el-form-item label="审核人">
+                    {{voucher.auditDeveloper}}
+                </el-form-item>
+                <el-form-item label="回绝理由">
+                    {{voucher.reason}}
                 </el-form-item>
                 <el-form-item label="票据详情">
                     <el-table
@@ -125,8 +124,8 @@
         <!-- 提交弹出框 -->
         <el-dialog title="提交审核" :visible.sync="commitVisible" width="30%">
             <el-form label-width="50px" :model="commitForm" ref="commitForm" :rules="rules">
-                <el-form-item label="姓名" prop="auditor">
-                    <el-select v-model="commitForm.auditor" placeholder="筛选项" class="handle-select mr10" filterable>
+                <el-form-item label="姓名" prop="auditDeveloper">
+                    <el-select v-model="commitForm.auditDeveloper" placeholder="筛选项" class="handle-select mr10" filterable>
                         <el-option v-for="developer in constant.developers"
                                    :key="developer.nameEn" :label="developer.nameCn"
                                    :value="developer.nameEn">
@@ -140,14 +139,29 @@
             </span>
         </el-dialog>
 
+        <!-- 回绝弹出框 -->
+        <el-dialog title="回绝票据" :visible.sync="rejectVisible" width="30%">
+            <el-form label-width="20%" :model="rejectForm" ref="rejectForm" :rules="rules">
+                <el-form-item label="回绝理由" prop="reason">
+                    <el-input type="textarea" rows="5" v-model="rejectForm.reason"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="rejectVisible = false">取 消</el-button>
+                <el-button type="primary" @click="saveReject('rejectForm')">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
 <script>
     import ElCol from "element-ui/packages/col/src/col";
+    import ElInput from "../../../../node_modules/element-ui/packages/input/src/input.vue";
 
     export default {
-        components: {ElCol},
+        components: {
+            ElInput,
+            ElCol},
         name: 'DeveloperTable',
         data: function () {
             return {
@@ -162,12 +176,17 @@
                 delVisible: false,
                 infoVisible: false,
                 commitVisible: false,
+                rejectVisible: false,
                 selectedVoucherIds: [],
                 commitForm: {
-                    auditor: ""
+                    auditDeveloper: ""
+                },
+                rejectForm: {
+                    reason: ""
                 },
                 mapping: {},
                 isMine: "false",
+                status: "UNCOMMITTED",
                 voucher: {
                     id : 0,
                     name : '',
@@ -183,12 +202,16 @@
                     }]
                 },
                 rules: {
-                    auditor: [
+                    auditDeveloper: [
                         { required: true, message: '请选择审核人', trigger: 'blur' }
+                    ],
+                    reason: [
+                        { required: true, message: '请填写回绝理由', trigger: 'blur' }
                     ]
                 },
                 constant: {
-                    developers: []
+                    developers: [],
+                    voucherStatuses: []
                 }
             }
         },
@@ -196,10 +219,16 @@
             this.getFilterFields()
             this.getVouchers()
             this.getDevelopers()
+            this.getVoucherStatuses()
         },
         watch: {
             isMine(val) {
                 this.isMine = val;
+                this.getVouchers()
+            },
+
+            status(val) {
+                this.status = val;
                 this.getVouchers()
             }
         },
@@ -208,6 +237,12 @@
             getFilterFields() {
                 this.$api.FINANCE_VOUCHER_API.get('GET_VOUCHER_FILTER_FIELDS').then(res => {
                     this.voucherFilterFields = res.data;
+                })
+            },
+
+            getVoucherStatuses() {
+                this.$api.FINANCE_VOUCHER_API.get('GET_VOUCHER_STATUSES').then(res => {
+                    this.constant.voucherStatuses = res.data
                 })
             },
 
@@ -222,6 +257,12 @@
                 })
             },
 
+            selectable(row) {
+                console.log(row.createDeveloper)
+                console.log(row.updateDeveloper)
+                return -1 !== ['', row.createDeveloper, row.updateDeveloper].indexOf(row.auditDeveloper)
+            },
+
             // 获取固定资产列表
             getVouchers() {
                 let queryParams = {
@@ -230,6 +271,9 @@
                     queryColumn: this.queryColumn,
                     queryCondition: this.queryCondition,
                     isMine: this.isMine
+                }
+                if ('true' === this.isMine) {
+                    queryParams.status = this.status
                 }
                 this.$api.FINANCE_VOUCHER_API.get('GET_VOUCHERS' ,queryParams).then(res => {
                     this.tableData = res.data.list
@@ -255,15 +299,36 @@
                     if (valid) {
                         let putParams = {
                             voucherIds : this.selectedVoucherIds,
-                            auditor: this.commitForm.auditor
+                            auditDeveloper: this.commitForm.auditDeveloper
                         }
-                        console.log(putParams)
                         this.$api.FINANCE_VOUCHER_API.put("COMMIT_VOUCHERS", putParams).then(res => {
                             this.$message.success("提交成功")
-                            this.$router.push("/voucher_table")
+                            this.getVouchers()
+                            this.$forceUpdate()
                         })
+                        this.commitVisible = false;
                     } else {
                         this.$message.error("请选择审核人")
+                        return false;
+                    }
+                })
+            },
+
+            saveReject(rejectForm) {
+                this.$refs[rejectForm].validate((valid) => {
+                    if (valid) {
+                        let putParams = {
+                            voucherIds : this.selectedVoucherIds,
+                            reason: this.rejectForm.reason
+                        }
+                        this.$api.FINANCE_VOUCHER_API.put("REJECT_VOUCHERS", putParams).then(res => {
+                            this.$message.success("提交成功")
+                            this.getVouchers()
+                            this.$forceUpdate()
+                        })
+                        this.rejectVisible = false;
+                    } else {
+                        this.$message.error("请填写回绝理由")
                         return false;
                     }
                 })
@@ -274,6 +339,29 @@
                     this.$message.error("请选择至少一个票据")
                 } else {
                     this.commitVisible = true;
+                }
+            },
+
+            auditVouchers() {
+                if (0 === this.selectedVoucherIds.length) {
+                    this.$message.error("请选择至少一个票据")
+                } else {
+                    let putParams = {
+                        voucherIds : this.selectedVoucherIds
+                    }
+                    this.$api.FINANCE_VOUCHER_API.put("AUDIT_VOUCHERS", putParams).then(res => {
+                        this.$message.success("提交成功")
+                        this.getVouchers()
+                        this.$forceUpdate()
+                    })
+                }
+            },
+
+            rejectVouchers() {
+                if (0 === this.selectedVoucherIds.length) {
+                    this.$message.error("请选择至少一个票据")
+                } else {
+                    this.rejectVisible = true;
                 }
             },
 

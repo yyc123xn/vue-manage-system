@@ -19,41 +19,26 @@
                 <el-button type="primary" icon="el-icon-search" @click="getClients">搜索</el-button>
             </el-col>
             <el-col>
-                <el-tabs type="card" v-model="isMine">
+                <el-tabs type="border-card" v-model="isMine">
                     <el-tab-pane name="false" label="全部">
-                        <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange" @cell-dblclick="dblhandleCurrentChange">
-                            <el-table-column type="selection" width="55" align="center"></el-table-column>
-                            <el-table-column prop="id" label="id" sortable></el-table-column>
-                            <el-table-column prop="nameCn" label="中文名"></el-table-column>
-                            <el-table-column prop="nameEn" label="英文名" sortable></el-table-column>
-                            <el-table-column prop="email" label="邮箱"></el-table-column>
-                            <el-table-column prop="phoneNumber" label="电话号码"></el-table-column>
-                            <el-table-column label="操作" width="180" align="center">
-                                <template slot-scope="scope">
-                                    <el-button type="text" icon="el-icon-info" @click="handleInfo(scope.$index, scope.row)">详情</el-button>
-                                    <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-                                    <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-                                </template>
-                            </el-table-column>
-                        </el-table>
                     </el-tab-pane>
                     <el-tab-pane name="true" label="我的">
-                        <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange" @cell-dblclick="dblhandleCurrentChange">
-                            <el-table-column type="selection" width="55" align="center"></el-table-column>
-                            <el-table-column prop="id" label="id" sortable></el-table-column>
-                            <el-table-column prop="nameCn" label="中文名"></el-table-column>
-                            <el-table-column prop="nameEn" label="英文名" sortable></el-table-column>
-                            <el-table-column prop="email" label="邮箱"></el-table-column>
-                            <el-table-column prop="phoneNumber" label="电话号码"></el-table-column>
-                            <el-table-column label="操作" width="180" align="center">
-                                <template slot-scope="scope">
-                                    <el-button type="text" icon="el-icon-info" @click="handleInfo(scope.$index, scope.row)">详情</el-button>
-                                    <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-                                    <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-                                </template>
-                            </el-table-column>
-                        </el-table>
                     </el-tab-pane>
+                    <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange" @cell-dblclick="dblhandleCurrentChange">
+                        <el-table-column type="selection" width="55" align="center"></el-table-column>
+                        <el-table-column prop="id" label="id" sortable></el-table-column>
+                        <el-table-column prop="nameCn" label="中文名"></el-table-column>
+                        <el-table-column prop="nameEn" label="英文名" sortable></el-table-column>
+                        <el-table-column prop="email" label="邮箱"></el-table-column>
+                        <el-table-column prop="phoneNumber" label="电话号码"></el-table-column>
+                        <el-table-column label="操作" width="180" align="center">
+                            <template slot-scope="scope">
+                                <el-button type="text" icon="el-icon-info" @click="handleInfo(scope.$index, scope.row)">详情</el-button>
+                                <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                                <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
                 </el-tabs>
             </el-col>
             <el-col class="pagination">

@@ -35,6 +35,10 @@ const financeVoucherApi = {
 
     COMMIT_VOUCHERS : '/finance/voucher/commitVouchers',
 
+    AUDIT_VOUCHERS: '/finance/voucher/auditVouchers',
+
+    REJECT_VOUCHERS: '/finance/voucher/rejectVouchers',
+
     put(urlName, putParams) {
         let url = this[urlName]
         return axios.put(url, putParams)

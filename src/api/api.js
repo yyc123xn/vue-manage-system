@@ -5,6 +5,7 @@ import financeFixedAssetsApi from './finance/fixed_assets'
 import financeVoucherApi from './finance/voucher'
 import financeWagesApi from './finance/wages'
 import financeClientApi from './finance/client'
+import financeDepartmentApi from './finance/department'
 import reportDataSetApi from './report/data_set'
 import reportDashboardApi from './report/dashboard'
 import reportDataSourceApi from './report/data_source'
@@ -23,6 +24,8 @@ const api = {
     FINANCE_WAGES_API : financeWagesApi,
 
     FINANCE_CLIENT_API: financeClientApi,
+
+    FINANCE_DEPARTMENT_API: financeDepartmentApi,
 
     REPORT_DATA_SET_API : reportDataSetApi,
 

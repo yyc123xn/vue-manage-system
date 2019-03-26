@@ -261,10 +261,6 @@
                         this.tableData.splice(index, 1);
                         this.$message.success("删除成功")
                     })
-                    this.$message({
-                        type: 'success',
-                        message: '删除成功!'
-                    });
                 }).catch(() => {
                     this.$message({
                         type: 'info',

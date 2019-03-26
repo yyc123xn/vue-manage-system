@@ -91,7 +91,6 @@
         components: {
             VDistpicker
         },
-        // todo 添加票据流程代码
         data: function(){
             return {
                 addBusinessVisible: false,

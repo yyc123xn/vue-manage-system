@@ -349,6 +349,62 @@ export default [
             }
         ]
     },
+    {
+        path: "/",
+        component: "Home",
+        name: 'department',
+        meta: {
+            title: '部门管理',
+            icon: 'el-icon-lx-text',
+        },
+        children: [
+            {
+                path: 'department',
+                component: "Department",
+                name: 'department',
+                meta: {
+                    icon: 'el-icon-lx-cascades',
+                    title: '部门管理'
+                }
+            },
+            {
+                path: 'privilege',
+                component: "Privilege",
+                name: 'privilege',
+                meta: {
+                    title: '权限管理'
+                }
+            }
+        ]
+    },
+    {
+        path: "/",
+        component: "Home",
+        name: 'home',
+        meta: {
+            title: 'Home',
+            icon: 'el-icon-lx-text',
+        },
+        children: [
+            {
+                path: 'dashboard',
+                component: "Dashboard",
+                name: 'dashboard',
+                meta: {
+                    icon: 'el-icon-lx-cascades',
+                    title: '主页'
+                }
+            },
+            {
+                path: 'message',
+                component: "Message",
+                name: 'message',
+                meta: {
+                    title: '消息提醒'
+                }
+            }
+        ]
+    },
     // {
     //     path: "/",
     //     component: "Home",

@@ -1,4 +1,6 @@
 const Home = () => import("../components/common/Home")
+const Department = () => import("../components/page/department/Department")
+const Privilege = () => import("../components/page/department/Privilege")
 const Dashboard = () => import("../components/page/Dashboard")
 const Icon = () => import("../components/page/Icon")
 const BaseTable = () => import("../components/page/BaseTable")
@@ -31,6 +33,8 @@ const DataSourceTable = () => import("../components/page/data_source/DataSourceT
 
 export default {
     Home: Home,
+    Department: Department,
+    Privilege: Privilege,
     Dashboard: Dashboard,
     Icon: Icon,
     BaseTable: BaseTable,

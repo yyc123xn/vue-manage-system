@@ -158,6 +158,14 @@
     import ElCol from "element-ui/packages/col/src/col";
     import ElInput from "../../../../node_modules/element-ui/packages/input/src/input.vue";
 
+    /**
+     * todo
+     * REJECTED和UNCOMMITTED状态可以编辑删除
+     * AUDITED状态不能编辑删除
+     * UNAUDITED状态不能编辑
+     * 不是自己提交的不能编辑删除
+     */
+
     export default {
         components: {
             ElInput,
@@ -410,10 +418,6 @@
                         this.tableData.splice(index, 1);
                         this.$message.success("删除成功")
                     })
-                    this.$message({
-                        type: 'success',
-                        message: '删除成功!'
-                    });
                 }).catch(() => {
                     this.$message({
                         type: 'info',

@@ -6,8 +6,17 @@
                     :loading="loading"
                     :height="isTop10Table ? noPaginationHeight : paginationHeight"
                     border
-                    style="width: 100%">
-                <el-table-column v-for="column in chartColumns" :prop="column.prop" :label="column.label">
+                    style="width: 100%"
+                    @cell-dblclick="dblhandleCurrentChange">
+                <el-table-column min-width="100" v-for="column in chartColumns" :prop="column.prop" :label="column.label">
+                </el-table-column>
+                <el-table-column
+                        fixed="right"
+                        label="操作"
+                        width="100">
+                    <template slot-scope="scope">
+                        <el-button @click="dblhandleCurrentChange(scope.row)" type="text" size="small">查看</el-button>
+                    </template>
                 </el-table-column>
             </el-table>
         </el-col>
@@ -17,6 +26,17 @@
                 </el-pagination>
             </el-col>
         </el-col>
+
+        <el-dialog title="详情" :visible.sync="infoVisible" width="50%">
+            <el-form label-width="20%">
+                <el-form-item v-for="(value, key) in infoForm" :label="key">
+                    {{value}}
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="infoVisible = false">确 定</el-button>
+            </span>
+        </el-dialog>
     </el-col>
 </template>
 
@@ -31,95 +51,104 @@
                 loading: true,
                 pageSize: 10,
                 total: 0,
+                infoVisible: false,
+
+                infoForm: {},
 
                 chartColumns: [
                     {
-                        prop : "date"
+                        prop : "日期"
                     }
                 ],
 
                 chartData: [
                     {
-                        date: '2016-05-03',
-                        name: '王小虎',
-                        address: '上海市普陀区金沙江路 1518 弄'
+                        '日期': '2016-05-03',
+                        '姓名': '王小虎',
+                        '地址': '上海市普陀区金沙江路 1518 弄'
                     }, {
-                        date: '2016-05-02',
-                        name: '王小虎',
-                        address: '上海市普陀区金沙江路 1518 弄'
+                        '日期': '2016-05-02',
+                        '姓名': '王小虎',
+                        '地址': '上海市普陀区金沙江路 1518 弄'
                     }, {
-                        date: '2016-05-04',
-                        name: '王小虎',
-                        address: '上海市普陀区金沙江路 1518 弄'
+                        '日期': '2016-05-04',
+                        '姓名': '王小虎',
+                        '地址': '上海市普陀区金沙江路 1518 弄'
                     }, {
-                        date: '2016-05-01',
-                        name: '王小虎',
-                        address: '上海市普陀区金沙江路 1518 弄'
+                        '日期': '2016-05-01',
+                        '姓名': '王小虎',
+                        '地址': '上海市普陀区金沙江路 1518 弄'
                     }, {
-                        date: '2016-05-08',
-                        name: '王小虎',
-                        address: '上海市普陀区金沙江路 1518 弄'
+                        '日期': '2016-05-08',
+                        '姓名': '王小虎',
+                        '地址': '上海市普陀区金沙江路 1518 弄'
                     }, {
-                        date: '2016-05-06',
-                        name: '王小虎',
-                        address: '上海市普陀区金沙江路 1518 弄'
+                        '日期': '2016-05-06',
+                        '姓名': '王小虎',
+                        '地址': '上海市普陀区金沙江路 1518 弄'
                     }, {
-                        date: '2016-05-07',
-                        name: '王小虎',
-                        address: '上海市普陀区金沙江路 1518 弄'
+                        '日期': '2016-05-07',
+                        '姓名': '王小虎',
+                        '地址': '上海市普陀区金沙江路 1518 弄'
                     }
                 ],
 
                 defaultChartColumns: [
                     {
-                        prop : "date",
+                        prop : "日期",
                         label: "日期"
                     },
                     {
-                        prop : "name",
+                        prop : "姓名",
                         label: "姓名"
                     },
                     {
-                        prop : "address",
+                        prop : "地址",
                         label: "地址"
                     },
                 ],
 
                 defaultChartData: [
                     {
-                        date: '2016-05-03',
-                        name: '王小虎',
-                        address: '上海市普陀区金沙江路 1518 弄'
+                        '日期': '2016-05-03',
+                        '姓名': '王小虎',
+                        '地址': '上海市普陀区金沙江路 1518 弄'
                     }, {
-                        date: '2016-05-02',
-                        name: '王小虎',
-                        address: '上海市普陀区金沙江路 1518 弄'
+                        '日期': '2016-05-02',
+                        '姓名': '王小虎',
+                        '地址': '上海市普陀区金沙江路 1518 弄'
                     }, {
-                        date: '2016-05-04',
-                        name: '王小虎',
-                        address: '上海市普陀区金沙江路 1518 弄'
+                        '日期': '2016-05-04',
+                        '姓名': '王小虎',
+                        '地址': '上海市普陀区金沙江路 1518 弄'
                     }, {
-                        date: '2016-05-01',
-                        name: '王小虎',
-                        address: '上海市普陀区金沙江路 1518 弄'
+                        '日期': '2016-05-01',
+                        '姓名': '王小虎',
+                        '地址': '上海市普陀区金沙江路 1518 弄'
                     }, {
-                        date: '2016-05-08',
-                        name: '王小虎',
-                        address: '上海市普陀区金沙江路 1518 弄'
+                        '日期': '2016-05-08',
+                        '姓名': '王小虎',
+                        '地址': '上海市普陀区金沙江路 1518 弄'
                     }, {
-                        date: '2016-05-06',
-                        name: '王小虎',
-                        address: '上海市普陀区金沙江路 1518 弄'
+                        '日期': '2016-05-06',
+                        '姓名': '王小虎',
+                        '地址': '上海市普陀区金沙江路 1518 弄'
                     }, {
-                        date: '2016-05-07',
-                        name: '王小虎',
-                        address: '上海市普陀区金沙江路 1518 弄'
+                        '日期': '2016-05-07',
+                        '姓名': '王小虎',
+                        '地址': '上海市普陀区金沙江路 1518 弄'
                     }
                 ]
             }
         },
 
         methods: {
+
+            dblhandleCurrentChange(row) {
+                this.infoForm = row
+//                this.getDataSetInfo(row.id)
+                this.infoVisible = true
+            },
 
             handleCurrentChange(pageIndex) {
                 this.pageIndex = pageIndex;

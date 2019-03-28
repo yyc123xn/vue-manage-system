@@ -26,16 +26,6 @@
                     <el-form-item label="数据看板描述" prop="description">
                         <el-input type="textarea" rows="5" v-model="dashboard.description"></el-input>
                     </el-form-item>
-                    <el-form-item label="权限" prop="privilege">
-                        <el-select v-model="dashboard.privilege" placeholder="请选择">
-                            <template v-for="(privilege, index) in dashboardConstant.privileges">
-                                <el-option :key="privilege.nameEn" :label="privilege.nameCn" :value="privilege.nameEn">
-                                    <span style="float: left">{{ privilege.nameCn }}</span>
-                                    <span style="float: right; color: #8492a6; font-size: 13px">{{ privilege.nameEn }}</span>
-                                </el-option>
-                            </template>
-                        </el-select>
-                    </el-form-item>
                 </el-form>
             </el-col>
 
@@ -1161,7 +1151,7 @@
             if (undefined !== dashboardId) {
                 this.getDashboardInfo(dashboardId)
             }
-            this.getPrivileges()
+//            this.getPrivileges()
             this.getDataSets()
             this.getChartTypes()
             this.getFilterTypes()

@@ -151,7 +151,7 @@
             if (undefined !== dataSourceId) {
                 this.getDataSourceInfo(dataSourceId)
             }
-            this.getPrivileges()
+//            this.getPrivileges()
             this.getDataSourceTypes()
         }
     }

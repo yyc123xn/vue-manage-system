@@ -1,51 +1,50 @@
 <template>
-    <ve-line
+    <ve-map
             :data="chartData"
-            :settings="report.config.chartSettings"
-            :toolbox="toolbox"
+            :settings="chartSettings"
             :loading="loading"
             :data-empty="dataEmpty"
-            :data-zoom="dataZoom"
-            :extend="report.config.extend.line">
-    </ve-line>
+            :events="chartEvents">
+    </ve-map>
 </template>
 
 <script>
-    // 使用前需先引入对应模块
-    import 'echarts/lib/component/toolbox'
-    import 'v-charts/lib/style.css'
-    import 'echarts/lib/component/dataZoom'
+    import ElCol from "element-ui/packages/col/src/col";
+
     export default {
-        name: 'LineDup',
+        components: {ElCol},
+        name: "Map",
         props: {report: Object, reportFilters: Array},
         data () {
-            this.toolbox = {
-                feature: {
-                    saveAsImage: {}
+            this.chartSettings = {
+                position: 'china',
+                selectData: true,
+                selectedMode: 'multiple'
+            }
+            this.chartEvents = {
+                click: (v) => {
                 }
             }
-            this.dataZoom = [
-                {
-                    type: 'slider'
-                }
-            ]
             return {
-                chartData: {},
-                loading: false,
+                loading: true,
                 dataEmpty: false,
-                queryReportFilter: {
-                    queryColumns: [],
-                    queryConditions: [],
-                },
+                info: '当前无选中数据或选中数据为空',
                 defaultChartData: {
-                    columns: ['日期', '成本', '利润'],
+                    columns: ['位置', '税收', '人口', '面积'],
                     rows: [
-                        { '日期': '1月1日', '成本': 15, '利润': 12 },
-                        { '日期': '1月2日', '成本': 12, '利润': 25 },
-                        { '日期': '1月3日', '成本': 21, '利润': 10 },
-                        { '日期': '1月4日', '成本': 41, '利润': 32 },
-                        { '日期': '1月5日', '成本': 31, '利润': 30 },
-                        { '日期': '1月6日', '成本': 71, '利润': 55 }
+                        { '位置': '吉林', '税收': 123, '人口': 123, '面积': 92134 },
+                        { '位置': '北京', '税收': 1223, '人口': 2123, '面积': 29234 },
+                        { '位置': '上海', '税收': 2123, '人口': 1243, '面积': 94234 },
+                        { '位置': '浙江', '税收': 4123, '人口': 5123, '面积': 29234 }
+                    ]
+                },
+                chartData: {
+                    columns: ['位置', '税收', '人口', '面积'],
+                    rows: [
+                        { '位置': '吉林', '税收': 123, '人口': 123, '面积': 92134 },
+                        { '位置': '北京', '税收': 1223, '人口': 2123, '面积': 29234 },
+                        { '位置': '上海', '税收': 2123, '人口': 1243, '面积': 94234 },
+                        { '位置': '浙江', '税收': 4123, '人口': 5123, '面积': 29234 }
                     ]
                 }
             }

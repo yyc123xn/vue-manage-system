@@ -451,11 +451,14 @@
                                 </span>
                                 </div>
                                 <div>
-                                    <histogram :report="report" v-if="'HISTOGRAM' === report.chartType"></histogram>
-                                    <line-dup :report="report" v-if="'LINE' === report.chartType"></line-dup>
-                                    <pie :report="report" v-if="'PIE' === report.chartType"></pie>
+                                    <Histogram :report="report" v-if="'HISTOGRAM' === report.chartType"></Histogram>
+                                    <LineDup :report="report" v-if="'LINE' === report.chartType"></LineDup>
+                                    <Pie :report="report" v-if="'PIE' === report.chartType"></Pie>
                                     <!--<MonitorCard v-if="'MONITOR_CARD' === report.chartType"></MonitorCard>-->
-                                    <guage :report="report" v-if="'GUAGE' === report.chartType"></guage>
+                                    <Guage :report="report" v-if="'GUAGE' === report.chartType"></Guage>
+                                    <Map :report="report" v-if="'MAP' === report.chartType"></Map>
+                                    <Table :report="report" v-if="'TABLE' === report.chartType"></Table>
+                                    <Table style="margin-bottom: 20px" :report="report" :isTop10Table="true" v-if="'TOP_10_TABLE' === report.chartType"></Table>
                                 </div>
                             </el-card>
                         </el-col>
@@ -485,6 +488,8 @@
     import Pie from '../../common/charts/Pie.vue'
     import MonitorCard from '../../common/charts/MonitorCard.vue'
     import Guage from '../../common/charts/Guage.vue'
+    import Map from '../../common/charts/Map.vue'
+    import Table from '../../common/charts/Table.vue'
     import 'echarts/lib/component/toolbox'
     import ElFormItem from "../../../../node_modules/element-ui/packages/form/src/form-item.vue";
     export default {
@@ -496,7 +501,9 @@
             LineDup,
             Pie,
             MonitorCard,
-            Guage
+            Guage,
+            Map,
+            Table
         },
         data: function(){
             return {

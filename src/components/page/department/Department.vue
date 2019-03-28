@@ -26,12 +26,12 @@
                               <span>
                                   <el-button
                                           type="text"
-                                          @click="editDepartment(data)">
+                                          @click="editDepartment(node, data)">
                                     编辑
                                   </el-button>
                                   <el-button
                                           type="text"
-                                          @click="addDepartment(data)">
+                                          @click="addDepartment(node, data)">
                                     添加子部门
                                   </el-button>
                                   <el-button v-if="node.label !== '部门'"
@@ -51,8 +51,8 @@
         <!-- 编辑弹出框 -->
         <el-dialog title="部门" :visible.sync="editVisible" width="50%">
             <el-form label-width="9%" :model="department" ref="department" :rules="rules">
-                <el-form-item label="名称" prop="name">
-                    <el-input v-model="department.name"></el-input>
+                <el-form-item label="名称" prop="label">
+                    <el-input v-model="department.label"></el-input>
                 </el-form-item>
                 <el-form-item label="描述" prop="description">
                     <el-input type="textarea" rows="5" v-model="department.description"></el-input>
@@ -60,7 +60,6 @@
                 <el-form-item label="负责人" prop="leader">
                     <el-select
                             v-model="department.leader"
-                            multiple
                             filterable
                             remote
                             reserve-keyword
@@ -101,11 +100,12 @@
                     description : '',
                     parentId: 0,
                     label: '',
-                    leader: ''
+                    leader: '',
+                    data: '',
                 },
                 loading: false,
                 rules: {
-                    name: [
+                    label: [
                         { required: true, message: '请输入部门名称', trigger: 'blur' }
                     ],
                     description: [
@@ -133,34 +133,37 @@
                     })
                     setTimeout(() => {
                         this.loading = false;
-                    }, 200);
+                    }, 1000);
                 } else {
                     this.developers = [];
                 }
             },
 
-            editDepartment(data) {
+            editDepartment(node, data) {
                 let getParams = {
                     id : data.id
                 }
                 this.$api.FINANCE_DEPARTMENT_API.get("GET_DEPARTMENT_INFO", getParams).then(res => {
                     this.department = res.data
+                    this.department.data = data
+                    this.editVisible = true
                 })
-                this.editVisible = true
             },
 
             addDepartment(node, data) {
                 const newDepartment = {
-                    id: this.id++,
+                    name: '新部门',
                     label: '新部门',
                     children: [],
-                    parentId: node.id
+                    parentId: data.id
                 };
                 this.$api.FINANCE_DEPARTMENT_API.post("ADD_DEPARTMENT", newDepartment).then(res => {
+                    newDepartment.id = res.data
                     if (!data.children) {
                         this.$set(data, 'children', []);
                     }
                     data.children.push(newDepartment);
+                    this.$message.success("添加新部门成功")
                 })
             },
 
@@ -172,13 +175,14 @@
                 }).then(() => {
                     const parent = node.parent;
                     let deleteParams = {
-                        id : node.id
+                        id : data.id,
+                        parentId: parent.data.id
                     }
                     this.$api.FINANCE_DEPARTMENT_API.delete("DELETE_DEPARTMENT", deleteParams).then(res => {
                         const children = parent.data.children || parent.data;
                         const index = children.findIndex(d => d.id === data.id);
                         children.splice(index, 1);
-                        this.$message.success("删除成功！")
+                        this.$message.success("删除部门成功")
                     })
                 }).catch(() => {
                     this.$message({
@@ -191,10 +195,12 @@
             saveEdit(department) {
                 this.$refs[department].validate((valid) => {
                     if (valid) {
-                        this.$api.FINANCE_DEPARTMENT_API.get("EDIT_DEPARTMENT", this.department).then(res => {
-
+                        this.department.name = this.department.label
+                        this.$api.FINANCE_DEPARTMENT_API.put("EDIT_DEPARTMENT", this.department).then(res => {
+                            this.department.data.label = this.department.label
+                            this.$message.success("编辑部门信息成功")
+                            this.editVisible = false
                         })
-                        this.editVisible = false
                     } else {
                         this.$message.error("请将信息填写完整")
                         return false;
@@ -215,6 +221,7 @@
                 })
             }
         },
+
         created() {
             this.getDepartments()
         },

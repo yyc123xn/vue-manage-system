@@ -368,7 +368,6 @@
 
             handleCurrentChange(pageIndex) {
                 this.pageIndex = pageIndex;
-                this.$message.success(`页面下标 ${pageIndex}`);
                 this.getDataSets()
             },
 

@@ -10,18 +10,33 @@
                 vue-schart：vue.js封装sChart.js的图表组件。
                 访问地址：<a href="https://github.com/lin-xin/vue-schart" target="_blank">vue-schart</a>
             </div>
+            <!--<el-col>-->
+                <!--<histogram></histogram>-->
+            <!--</el-col>-->
+            <!--<el-col>-->
+                <!--<LineDup></LineDup>-->
+            <!--</el-col>-->
+            <!--<el-col>-->
+                <!--<el-col span=12><Pie></Pie></el-col>-->
+                <!--<el-col span=12><Pie></Pie></el-col>-->
+            <!--</el-col>-->
+            <!--<el-col>-->
+                <!--<MonitorCard></MonitorCard>-->
+            <!--</el-col>-->
             <el-col>
-                <histogram></histogram>
+            <LineDup></LineDup>
             </el-col>
-            <el-col>
-                <LineDup></LineDup>
+            <el-col span="12">
+                <Map></Map>
             </el-col>
-            <el-col>
-                <el-col span=12><Pie></Pie></el-col>
-                <el-col span=12><Pie></Pie></el-col>
+            <el-col span="12">
+                <Table></Table>
             </el-col>
-            <el-col>
-                <MonitorCard></MonitorCard>
+            <el-col span="12">
+                <Table></Table>
+            </el-col>
+            <el-col span="12">
+                <Map></Map>
             </el-col>
         </el-col>
     </el-col>
@@ -34,6 +49,8 @@
     import LineDup from '../common/charts/Line.vue'
     import Pie from '../common/charts/Pie.vue'
     import MonitorCard from '../common/charts/MonitorCard.vue'
+    import Map from '../common/charts/Map.vue'
+    import Table from '../common/charts/Table.vue'
     import 'echarts/lib/component/toolbox'
     import ElCol from "element-ui/packages/col/src/col";
     export default {
@@ -44,6 +61,8 @@
             Histogram,
             LineDup,
             Pie,
+            Map,
+            Table,
             MonitorCard
         },
 

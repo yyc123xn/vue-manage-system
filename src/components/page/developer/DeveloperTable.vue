@@ -57,7 +57,10 @@
                     {{developer.email}}
                 </el-form-item>
                 <el-form-item label="权限">
-                    {{developer.privilege}}
+                    {{developer.privilegeName}}
+                </el-form-item>
+                <el-form-item label="部门">
+                    {{developer.departmentId}}
                 </el-form-item>
                 <el-form-item label="电话号码">
                     {{developer.phoneNumber}}
@@ -80,15 +83,6 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="infoVisible = false">确 定</el-button>
-            </span>
-        </el-dialog>
-
-        <!-- 删除提示框 -->
-        <el-dialog title="提示" :visible.sync="delVisible" width="300px" center>
-            <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="delVisible = false">取 消</el-button>
-                <el-button type="primary" @click="deleteRow">确 定</el-button>
             </span>
         </el-dialog>
     </div>
@@ -118,15 +112,19 @@
                     privilege : '',
                     status : 1,
                     password : '',
-                    group : '',
+                    department : '',
                     academicDegree : '',
                     baseWages : 0,
                     dutyWages : 0,
                     housingWages : 0,
                     pension : 0,
-                    phoneNumber : ''
+                    phoneNumber : '',
+                    privilegeName: []
                 },
-                idx: -1
+
+                developerConstant: {
+                    departments : []
+                }
             }
         },
         created() {
@@ -175,7 +173,23 @@
                 }
                 this.$api.FINANCE_DEVELOPER_API.get("GET_DEVELOPER_INFO", getParams).then(res => {
                     this.developer = res.data
+                    this.developer.privilegeName = this.translateDepartmentsFromIds(this.developerConstant.departments);
                 })
+            },
+
+            translateDepartmentsFromIds(departments) {
+                let res = []
+                departments.forEach(department => {
+                    if (-1 !== this.developer.privilege.indexOf(department.value)) {
+                        res.push(department.label)
+                    }
+                    if (0 !== department.children.length) {
+                        this.translateDepartmentsFromIds(department.children).forEach(inner => {
+                            res.push(inner)
+                        })
+                    }
+                })
+                return res
             },
 
             handleEdit(index, row) {
@@ -185,6 +199,12 @@
                     query: {
                         id: developerId
                     }
+                })
+            },
+
+            getDepartments() {
+                this.$api.FINANCE_DEPARTMENT_API.get("GET_DEPARTMENTS").then(res => {
+                    this.developerConstant.departments = res.data
                 })
             },
 
@@ -218,19 +238,7 @@
             handleCurrentChange(pageIndex) {
                 this.pageIndex = pageIndex;
                 this.getDevelopers()
-            },
-
-            // 保存编辑
-            saveEdit() {
-                this.$set(this.tableData, this.idx, this.form);
-                this.editVisible = false;
-                this.$message.success(`修改第 ${this.idx+1} 行成功`);
-            },
-            // 确定删除
-            deleteRow(){
-                this.tableData.splice(this.idx, 1);
-                this.$message.success('删除成功');
-                this.delVisible = false;
+                this.getDepartments()
             }
         }
     }

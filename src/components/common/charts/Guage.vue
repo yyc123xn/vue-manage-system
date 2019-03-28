@@ -112,12 +112,17 @@
 
         mounted() {
             let _this = this
-            let reportId = _this._props.report.id
-            if (0 === reportId) {
+            if (undefined !== _this._props.report) {
+                let reportId = _this._props.report.id
+                if (0 === reportId) {
+                    this.chartData = this.defaultChartData
+                    this.loading = false;
+                } else {
+                    this.updateReportData(reportId)
+                }
+            } else {
                 this.chartData = this.defaultChartData
                 this.loading = false;
-            } else {
-                this.updateReportData(reportId)
             }
         }
     }

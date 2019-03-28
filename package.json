@@ -13,6 +13,7 @@
     "echarts": "^4.1.0",
     "element-ui": "^2.4.11",
     "mavon-editor": "^2.6.17",
+    "multi-cascader": "^1.1.0",
     "nprogress": "^0.2.0",
     "v-charts": "^1.19.0",
     "v-distpicker": "^1.1.0",

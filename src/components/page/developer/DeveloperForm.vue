@@ -8,7 +8,7 @@
         </el-col>
         <el-col class="container">
             <el-col class="form-box">
-                <el-form ref="developer" :rules="rules" :model="developer" label-width="6%">
+                <el-form ref="developer" :rules="rules" :model="developer" label-width="7%">
                     <el-form-item label="中文名" prop="nameCn">
                         <el-input v-model="developer.nameCn"></el-input>
                     </el-form-item>
@@ -27,18 +27,16 @@
                     <el-form-item label="电话号码" prop="phoneNumber">
                         <el-input v-model="developer.phoneNumber"></el-input>
                     </el-form-item>
-                    <el-form-item label="权限" prop="privilege">
-                        <el-select v-model="developer.privilege" placeholder="请选择">
-                            <template v-for="(privilege, index) in developerConstant.privileges">
-                                <el-option :key="privilege.nameEn" :label="privilege.nameCn" :value="privilege.nameEn">
-                                    <span style="float: left">{{ privilege.nameCn }}</span>
-                                    <span style="float: right; color: #8492a6; font-size: 13px">{{ privilege.nameEn }}</span>
-                                </el-option>
-                            </template>
-                        </el-select>
+                    <el-form-item labelWidth="35%" style="width: 20%" label="权限" prop="privilege">
+                        <multiCascader placeholder="请选择" :options="configOptions" @on-selected="getSelected" :inputValue="configTips"></multiCascader>
                     </el-form-item>
-                    <el-form-item label="部门" prop="group">
-                        <el-cascader :options="developerConstant.groups" v-model="developerHelper.group" change-on-select filterable></el-cascader>
+                    <el-form-item label="部门">
+                        <el-cascader
+                                v-model="developerHelper.department"
+                                placeholder="请选择"
+                                :options="developerConstant.departments"
+                                filterable
+                        ></el-cascader>
                     </el-form-item>
                     <el-form-item label="学历" prop="academicDegree">
                         <el-select v-model="developer.academicDegree" placeholder="请选择">
@@ -74,7 +72,10 @@
 </template>
 
 <script>
+    import ElFormItem from "../../../../node_modules/element-ui/packages/form/src/form-item.vue";
+    import multiCascader from "multi-cascader"
     export default {
+        components: {ElFormItem, multiCascader},
         name: 'DeveloperForm',
         data: function(){
             return {
@@ -84,10 +85,10 @@
                     nameEn : '',
                     sex : 0,
                     email : '',
-                    privilege : '',
+                    privilege : [],
                     status : 1,
                     password : '',
-                    group : '',
+                    departmentId : 0,
                     academicDegree : '',
                     baseWages : 0,
                     dutyWages : 0,
@@ -97,41 +98,14 @@
                 },
 
                 developerConstant: {
-                    privileges : [
-                        {
-                            nameEn : "privilege1",
-                            nameCn : "权限1"
-                        },
-                        {
-                            nameEn : "privilege2",
-                            nameCn : "权限2"
-                        }
-                    ],
-                    groups : [
-                        {
-                            value : "group1",
-                            label : "部门1"
-                        },
-                        {
-                            value : "group2",
-                            label : "部门2"
-                        }
-                    ],
-                    academicDegrees : [
-                        {
-                            nameEn : "academicDegree1",
-                            nameCn : "学历1"
-                        },
-                        {
-                            nameEn : "academicDegree2",
-                            nameCn : "学历2"
-                        }
-                    ]
+                    privileges : [],
+                    departments : [],
+                    academicDegrees : []
                 },
 
                 developerHelper: {
                     sex: '男',
-                    group : []
+                    department : []
                 },
                 rules: {
                     nameCn: [
@@ -152,13 +126,13 @@
                         { validator : this.$validator.phoneNumber, trigger: 'blur'}
                     ],
                     privilege : [
-                        { required: true, message: '请选择员工权限', trigger: 'blur' },
+                        { required: true, message: '请选择员工权限', trigger: 'change' },
                     ],
-                    group : [
-                        { required: true, message: '请选择员工部门', trigger: 'blur' },
+                    department : [
+                        { required: true, message: '请选择员工部门', trigger: 'change' },
                     ],
                     academicDegree : [
-                        { required: true, message: '请输入员工学历', trigger: 'blur' },
+                        { required: true, message: '请选择员工学历', trigger: 'change' },
                     ],
                     region: [
                         { required: true, message: '请选择活动区域', trigger: 'change' }
@@ -178,15 +152,40 @@
                     desc: [
                         { required: true, message: '请填写活动形式', trigger: 'blur' }
                     ]
-                }
+                },
+
+                configTips: "请选择权限",
+
+                configOptions: [
+                    {
+                        value: 2,
+                        checked: false,
+                        label: "一级菜单（2）"
+                    },
+                    {
+                        value: 3,
+                        checked: false,
+                        label: "一级菜单（3）"
+                    }
+                ]
             }
         },
         methods: {
+
+            getSelected() {
+                this.developer.privilege = this.checkTreeData(this.configOptions)
+                if (0 !== this.developer.privilege.length) {
+                    this.configTips = `已选择${this.developer.privilege.length}个分组`;
+                } else {
+                    this.configTips = `请选择权限`;
+                }
+            },
+
             addDeveloper(developer) {
                 this.$refs[developer].validate((valid) => {
                     if (valid) {
                         this.developer.sex = '男' === this.developerHelper.sex ? 1 : 0;
-                        this.developer.group = this.developerHelper.group[0]
+                        this.developer.departmentId = this.developerHelper.department[0]
                         let developerId = this.$route.query.id
                         if (undefined !== developerId) {
                             // 编辑
@@ -204,6 +203,16 @@
                         this.$message.error("请将员工信息填写完整")
                         return false;
                     }
+                })
+            },
+
+            getDepartments() {
+                this.$api.FINANCE_DEPARTMENT_API.get("GET_DEPARTMENTS").then(res => {
+                    this.developerConstant.departments = this.getTreeData(res.data, this.developer.privilege)
+                    this.configOptions = this.developerConstant.departments
+                    this.getSelected()
+                    console.log(this.developer)
+                    console.log(this.configOptions)
                 })
             },
 
@@ -225,17 +234,50 @@
                 }
                 this.$api.FINANCE_DEVELOPER_API.get("GET_DEVELOPER_INFO", getParams).then(res => {
                     this.developer = res.data
+                    this.getDepartments()
                 })
             },
 
             redirect2DeveloperTable() {
                 this.$router.push("/developer_table")
+            },
+
+            getTreeData(data, privilege){
+                // 循环遍历json数据
+                for(var i = 0;i < data.length; i++){
+                    data[i].checked = -1 !== privilege.indexOf(data[i].value);
+                    if(data[i].children.length < 1){
+                        // children若为空数组，则将children设为undefined
+                        data[i].children = undefined;
+                    }else {
+                        // children若不为空数组，则继续 递归调用 本方法
+                        this.getTreeData(data[i].children, privilege);
+                    }
+                }
+                return data;
+            },
+
+            checkTreeData(configOptions) {
+                let counter = [];
+                configOptions.forEach(option => {
+                    if (option.checked) {
+                        counter.push(option.value)
+                        if (option.children !== undefined) {
+                            this.checkTreeData(option.children).forEach(innerData => {
+                                counter.push(innerData)
+                            })
+                        }
+                    }
+                })
+                return counter;
             }
         },
         created() {
             let developerId = this.$route.query.id
             if (undefined !== developerId) {
                 this.getDeveloperInfo(developerId)
+            } else {
+                this.getDepartments()
             }
             this.getPrivileges()
             this.getAcademicDegrees()

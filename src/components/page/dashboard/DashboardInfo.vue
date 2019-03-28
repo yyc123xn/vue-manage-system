@@ -75,11 +75,14 @@
                                 </span>
                             </div>
                             <div>
-                                <histogram :report="report" :reportFilters="dashboard.reportFilters" v-if="'HISTOGRAM' === report.chartType"></histogram>
-                                <line-dup :report="report" :reportFilters="dashboard.reportFilters" v-if="'LINE' === report.chartType"></line-dup>
-                                <pie :report="report" :reportFilters="dashboard.reportFilters"  v-if="'PIE' === report.chartType"></pie>
+                                <Histogram :report="report" :reportFilters="dashboard.reportFilters" v-if="'HISTOGRAM' === report.chartType"></Histogram>
+                                <LineDup :report="report" :reportFilters="dashboard.reportFilters" v-if="'LINE' === report.chartType"></LineDup>
+                                <Pie :report="report" :reportFilters="dashboard.reportFilters" v-if="'PIE' === report.chartType"></Pie>
                                 <!--<MonitorCard v-if="'MONITOR_CARD' === report.chartType"></MonitorCard>-->
-                                <guage :report="report" :reportFilters="dashboard.reportFilters"  v-if="'GUAGE' === report.chartType"></guage>
+                                <Guage :report="report" :reportFilters="dashboard.reportFilters" v-if="'GUAGE' === report.chartType"></Guage>
+                                <Map :report="report" :reportFilters="dashboard.reportFilters" v-if="'MAP' === report.chartType"></Map>
+                                <Table :report="report" :reportFilters="dashboard.reportFilters" v-if="'TABLE' === report.chartType"></Table>
+                                <Table style="margin-bottom: 20px" :report="report" :reportFilters="dashboard.reportFilters" :isTop10Table="true" v-if="'TOP_10_TABLE' === report.chartType"></Table>
                             </div>
                         </el-card>
                     </el-col>
@@ -100,6 +103,8 @@
     import Pie from '../../common/charts/Pie.vue'
     import MonitorCard from '../../common/charts/MonitorCard.vue'
     import Guage from '../../common/charts/Guage.vue'
+    import Map from '../../common/charts/Map.vue'
+    import Table from '../../common/charts/Table.vue'
     import 'echarts/lib/component/toolbox'
     import ElCol from "element-ui/packages/col/src/col";
     export default {
@@ -110,7 +115,9 @@
             LineDup,
             Pie,
             MonitorCard,
-            Guage
+            Map,
+            Guage,
+            Table
         },
 
         data: () => ({

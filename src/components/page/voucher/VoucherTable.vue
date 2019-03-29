@@ -158,14 +158,6 @@
     import ElCol from "element-ui/packages/col/src/col";
     import ElInput from "../../../../node_modules/element-ui/packages/input/src/input.vue";
 
-    /**
-     * todo
-     * REJECTED和UNCOMMITTED状态可以编辑删除
-     * AUDITED状态不能编辑删除
-     * UNAUDITED状态不能编辑
-     * 不是自己提交的不能编辑删除
-     */
-
     export default {
         components: {
             ElInput,

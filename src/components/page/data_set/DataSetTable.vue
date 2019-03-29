@@ -77,6 +77,9 @@
                 <el-form-item label="额外运算条件">
                     {{dataSet.extraExpression}}
                 </el-form-item>
+                <el-form-item label="已有数据">
+                    {{dataSet.beginDate}} 至 {{dataSet.endDate}}
+                </el-form-item>
                 <el-form-item label="字段详情">
                     <el-table :data="dataSet.dataSetFields">
                         <el-table-column type="expand">
@@ -129,12 +132,15 @@
         </el-dialog>
 
         <!-- 补数据弹出框 -->
-        <el-dialog title="补数据" :visible.sync="backfillVisible" width="35%">
-            <el-form ref="form" :model="backfillForm" label-width="10%">
+        <el-dialog title="补数据" :visible.sync="backfillVisible" width="45%">
+            <el-form ref="backfillForm" :model="backfillForm" :rules="rules" label-width="20%">
                 <el-form-item label="名称">
-                    <el-col> {{backfillForm.name}} </el-col>
+                    {{backfillForm.name}}
                 </el-form-item>
-                <el-form-item label="日期">
+                <el-form-item label="已有数据">
+                    {{backfillForm.beginDate}} 至 {{backfillForm.endDate}}
+                </el-form-item>
+                <el-form-item label="日期" prop="beginAndEndTime">
                     <el-date-picker
                             v-model="backfillForm.beginAndEndTime"
                             type="datetimerange"
@@ -149,7 +155,7 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="editVisible = false">取 消</el-button>
-                <el-button type="primary" @click="saveBackfill">确 定</el-button>
+                <el-button type="primary" @click="saveBackfill('backfillForm')">确 定</el-button>
             </span>
         </el-dialog>
 
@@ -169,6 +175,11 @@
         name: 'DataSetTable',
         data: function () {
             return {
+                rules: {
+                    beginAndEndTime: [
+                        {required: true, message: '请选择开始和结束时间', trigger: 'blur'}
+                    ]
+                },
                 dataSetFilterField: "",
                 dataSetFilterFields: [],
                 tableData: [],
@@ -186,7 +197,12 @@
                     name : "",
                     beginTime : '',
                     endTime: '',
-                    beginAndEndTime: []
+                    beginAndEndTime: [],
+                    /**
+                     * 已有数据日期范围
+                     */
+                    beginDate: '',
+                    endDate: ''
                 },
                 dataSet: {
                     id: 0,
@@ -205,7 +221,9 @@
                         isDate: false
                     }],
                     period: "",
-                    extraExpression: ''
+                    extraExpression: '',
+                    beginDate: '',
+                    endDate: ''
                 },
                 isMine: "false",
                 handleDeleteIndex: -1,
@@ -283,28 +301,10 @@
                 this.multipleSelection = [];
             },
 
-            // 获取数据集详情
-            getDataSetInfo(dataSetId) {
-                let queryParams = {
-                    id : dataSetId
-                }
-                this.$api.REPORT_DATA_SET_API.get('GET_DATA_SET_INFO', queryParams).then(res => {
-//                    console.log(res.data)
-                })
-            },
-
-
             handleBackfill(index, row) {
                 let dataSet = this.tableData[index];
                 let id = dataSet.id
                 this.getDataSetInfo(id)
-                this.backfillForm = {
-                    id : dataSet.id,
-                    name : dataSet.name,
-                    beginTime : '',
-                    endTime: '',
-                    beginAndEndTime: []
-                }
                 this.backfillVisible = true;
             },
 
@@ -332,6 +332,15 @@
                 this.$api.REPORT_DATA_SET_API.get('GET_DATA_SET_INFO', queryParams).then(res => {
                     this.dataSet = res.data
                     this.dataSet.databaseTable = [this.dataSet.database, this.dataSet.sourceTable]
+                    this.backfillForm = {
+                        id : this.dataSet.id,
+                        name : this.dataSet.name,
+                        beginTime : '',
+                        endTime: '',
+                        beginAndEndTime: [],
+                        beginDate: this.dataSet.beginDate,
+                        endDate: this.dataSet.endDate
+                    }
                 })
             },
 
@@ -378,14 +387,67 @@
                 this.$message.success(`修改第 ${this.idx+1} 行成功`);
             },
 
+            /**
+             * yyyy-MM-dd HH
+             * @param string
+             * @returns {Date}
+             */
+            string2Date1(string) {
+                let arr = string.split(" ")
+                let arr1 = arr[0].split("-")
+                return new Date(arr1[0], arr1[1], arr1[2], arr[1])
+            },
+
+            /**
+             * yyyyMMddHH
+             * @param string
+             * @returns {Date}
+             */
+            string2Date2(string) {
+                return new Date(string.substring(0, 4), string.substring(4, 6), string.substring(6, 8), string.substring(8, 10))
+            },
+
             // 保存补数据
-            saveBackfill() {
-                console.log(this.backfillForm)
-                this.backfillForm.beginTime = this.backfillForm.beginAndEndTime[0]
-                this.backfillForm.endTime = this.backfillForm.beginAndEndTime[1]
-                this.$api.REPORT_DATA_SET_API.get('BACKFILL', this.backfillForm).then(res => {
-                    this.$message.success(`成功开始补数据`);
-                    this.backfillVisible = false;
+            saveBackfill(backfillForm) {
+                this.$refs[backfillForm].validate((valid) => {
+                    if (valid) {
+                        this.backfillForm.beginTime = this.backfillForm.beginAndEndTime[0]
+                        this.backfillForm.endTime = this.backfillForm.beginAndEndTime[1]
+                        /**
+                         * 用户选择的开始和结束时间
+                         * @type {Date}
+                         */
+                        let beginTime = this.string2Date2(this.backfillForm.beginTime)
+                        let endTime = this.string2Date2(this.backfillForm.endTime)
+                        /**
+                         * 已有数据的开始和结束时间
+                         * @type {Date}
+                         */
+                        let beginDate = this.string2Date1(this.backfillForm.beginDate)
+                        let endDate = this.string2Date1(this.backfillForm.endDate)
+                        if (beginTime >= beginDate && endTime <= endDate) {
+                            this.$confirm('已选时间在已有数据的时间范围内，可能会导致重复补数据，是否继续？', '提示', {
+                                confirmButtonText: '确定',
+                                cancelButtonText: '取消',
+                                type: 'warning'
+                            }).then(() => {
+                                this.$api.REPORT_DATA_SET_API.get('BACKFILL', this.backfillForm).then(res => {
+                                    this.$message.success(`成功开始补数据`);
+                                    this.backfillVisible = false;
+                                })
+                            }).catch(() => {
+                                this.$message.error('已取消补数据')
+                            })
+                        } else {
+                            this.$api.REPORT_DATA_SET_API.get('BACKFILL', this.backfillForm).then(res => {
+                                this.$message.success(`成功开始补数据`);
+                                this.backfillVisible = false;
+                            })
+                        }
+                    } else {
+                        this.$message.error("请选择正确的开始和结束时间")
+                        return false;
+                    }
                 })
             }
         }

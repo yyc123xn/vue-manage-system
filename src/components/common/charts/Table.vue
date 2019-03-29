@@ -50,6 +50,7 @@
                 noPaginationHeight: 400,
                 loading: true,
                 pageSize: 10,
+                pageIndex: 1,
                 total: 0,
                 infoVisible: false,
 
@@ -159,6 +160,10 @@
                 let reportData
                 let postParams = {
                     id : reportId
+                }
+                if (!this.isTop10Table) {
+                    postParams.pageSize = this.pageSize
+                    postParams.pageIndex = this.pageIndex
                 }
                 let queryReportFilter = this.initQueryReportFilter()
                 if (undefined === newV

@@ -57,16 +57,16 @@
                     {{developer.email}}
                 </el-form-item>
                 <el-form-item label="权限">
-                    {{developer.privilegeName}}
+                    {{developerHelper.privilege}}
                 </el-form-item>
                 <el-form-item label="部门">
-                    {{developer.departmentId}}
+                    {{developerHelper.departmentId}}
                 </el-form-item>
                 <el-form-item label="电话号码">
                     {{developer.phoneNumber}}
                 </el-form-item>
                 <el-form-item label="学历">
-                    {{developer.academicDegree}}
+                    {{developerHelper.academicDegree}}
                 </el-form-item>
                 <el-form-item label="基础工资">
                     {{developer.baseWages}}
@@ -109,31 +109,46 @@
                     nameEn : '',
                     sex : 0,
                     email : '',
-                    privilege : '',
+                    privilege : [],
                     status : 1,
                     password : '',
-                    department : '',
+                    departmentId : '',
                     academicDegree : '',
                     baseWages : 0,
                     dutyWages : 0,
                     housingWages : 0,
                     pension : 0,
-                    phoneNumber : '',
-                    privilegeName: []
+                    phoneNumber : ''
+                },
+
+                developerHelper : {
+                    privilege: [],
+                    academicDegree : '',
+                    departmentId : '',
                 },
 
                 developerConstant: {
-                    departments : []
+                    departments : [],
+                    academicDegrees: []
                 }
             }
         },
         created() {
             this.getFilterFields();
             this.getDevelopers()
+            this.getAcademicDegrees()
+            this.getDepartments()
         },
         computed: {
         },
         methods: {
+
+            getAcademicDegrees() {
+                this.$api.FINANCE_DEVELOPER_API.get('GET_ACADEMIC_DEGREES').then(res => {
+                    this.developerConstant.academicDegrees = res.data
+                })
+            },
+
             // 获取票据的过滤字段
             getFilterFields() {
                 this.$api.FINANCE_DEVELOPER_API.get('GET_DEVELOPER_FILTER_FIELDS').then(res => {
@@ -173,18 +188,46 @@
                 }
                 this.$api.FINANCE_DEVELOPER_API.get("GET_DEVELOPER_INFO", getParams).then(res => {
                     this.developer = res.data
-                    this.developer.privilegeName = this.translateDepartmentsFromIds(this.developerConstant.departments);
+                    this.developerHelper.departmentId = this.translateDepartmentFromId(this.developerConstant.departments, this.developer.departmentId)
+                    this.developerHelper.privilege = this.translateDepartmentsFromIds(this.developerConstant.departments, this.developer.privilege);
+                    this.developerHelper.academicDegree = this.translateAcademicDegree(this.developer.academicDegree)
                 })
             },
 
-            translateDepartmentsFromIds(departments) {
+            translateAcademicDegree(academicDegree) {
+                let nameCn
+                this.developerConstant.academicDegrees.forEach(ad => {
+                    if (ad.nameEn === academicDegree) {
+                        nameCn = ad.nameCn
+                    }
+                })
+                return nameCn
+            },
+
+            translateDepartmentFromId(departments, id) {
+                let res = ''
+                departments.forEach(department => {
+                    if (department.value === id) {
+                        res = department.label
+                    }
+                    if (0 !== department.children.length) {
+                        let inner = this.translateDepartmentFromId(department.children, id)
+                        if('' !== inner) {
+                            res = inner
+                        }
+                    }
+                })
+                return res
+            },
+
+            translateDepartmentsFromIds(departments, ids) {
                 let res = []
                 departments.forEach(department => {
-                    if (-1 !== this.developer.privilege.indexOf(department.value)) {
+                    if (-1 !== ids.indexOf(department.value)) {
                         res.push(department.label)
                     }
                     if (0 !== department.children.length) {
-                        this.translateDepartmentsFromIds(department.children).forEach(inner => {
+                        this.translateDepartmentsFromIds(department.children, ids).forEach(inner => {
                             res.push(inner)
                         })
                     }
@@ -238,7 +281,6 @@
             handleCurrentChange(pageIndex) {
                 this.pageIndex = pageIndex;
                 this.getDevelopers()
-                this.getDepartments()
             }
         }
     }

@@ -36,9 +36,9 @@
                         </el-table-column>
                         <el-table-column label="操作" width="180" align="center">
                             <template slot-scope="scope">
-                                <el-button type="text" icon="el-icon-info" @click="handleInfo(scope.$index, scope.row)">数据</el-button>
-                                <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-                                <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                                <el-button v-if="tableData[scope.$index].dataVisible" type="text" icon="el-icon-info" @click="handleData(scope.$index, scope.row)">数据</el-button>
+                                <el-button v-if="tableData[scope.$index].editVisible" type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                                <el-button v-if="tableData[scope.$index].deleteVisible" type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -186,9 +186,8 @@
                 });
             },
 
-            handleInfo(index, row) {
+            handleData(index, row) {
                 let dashboardId = this.tableData[index].id
-                console.log(dashboardId)
                 this.$router.replace({
                     path: '/dashboard_info',
                     query: {

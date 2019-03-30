@@ -28,16 +28,6 @@
                     <el-form-item label="数据库名" prop="database">
                         <el-input v-model="dataSource.database"></el-input>
                     </el-form-item>
-                    <el-form-item label="权限" prop="privilege">
-                        <el-select v-model="dataSource.privilege" placeholder="请选择">
-                            <template v-for="(privilege, index) in dataSourceConstant.privileges">
-                                <el-option :key="privilege.nameEn" :label="privilege.nameCn" :value="privilege.nameEn">
-                                    <span style="float: left">{{ privilege.nameCn }}</span>
-                                    <span style="float: right; color: #8492a6; font-size: 13px">{{ privilege.nameEn }}</span>
-                                </el-option>
-                            </template>
-                        </el-select>
-                    </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="addDataSource('dataSource')">表单提交</el-button>
                         <el-button @click="redirect2DataSourceTable">取消</el-button>
@@ -69,7 +59,6 @@
                     privilege : ''
                 },
                 dataSourceConstant: {
-                    privileges : [],
                     dataSourceTypes: []
                 },
                 rules: {
@@ -119,12 +108,6 @@
                 })
             },
 
-            getPrivileges() {
-                this.$api.FINANCE_DEVELOPER_API.get('GET_PRIVILEGES').then(res => {
-                    this.dataSourceConstant.privileges = res.data
-                })
-            },
-
             getDataSourceTypes() {
                 this.$api.REPORT_DATA_SOURCE_API.get('GET_DATA_SOURCE_TYPES').then(res => {
                     this.dataSourceConstant.dataSourceTypes = res.data;
@@ -151,7 +134,6 @@
             if (undefined !== dataSourceId) {
                 this.getDataSourceInfo(dataSourceId)
             }
-//            this.getPrivileges()
             this.getDataSourceTypes()
         }
     }

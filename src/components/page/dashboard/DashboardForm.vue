@@ -76,14 +76,20 @@
                     <el-form-item label="数据集指标" prop="dataSetMetricFieldIds">
                         <el-select v-model="handleEditForm.dataSetMetricFieldIds" placeholder="请选择" filterable multiple>
                             <template v-for="(metric, index) in dashboardHelper.reportssHelper[handleEditForm.reportXAxis][handleEditForm.reportYAxis].metrics">
-                                <el-option :key="metric.id" :label="metric.showName" :value="metric.id"></el-option>
+                                <el-option :key="metric.id" :label="metric.showName" :value="metric.id">
+                                    <span style="float: left">{{ metric.showName }}</span>
+                                    <span style="float: right; color: #8492a6; font-size: 13px; margin-left: 20px">{{ metric.expression }}</span>
+                                </el-option>
                             </template>
                         </el-select>
                     </el-form-item>
                     <el-form-item label="数据集维度" prop="dataSetDimensionFieldId">
                         <el-select v-model="handleEditForm.dataSetDimensionFieldId" placeholder="请选择" filterable>
                             <template v-for="(dimension, index) in dashboardHelper.reportssHelper[handleEditForm.reportXAxis][handleEditForm.reportYAxis].dimensions">
-                                <el-option :key="dimension.id" :label="dimension.showName" :value="dimension.id"></el-option>
+                                <el-option :key="dimension.id" :label="dimension.showName" :value="dimension.id">
+                                    <span style="float: left">{{ dimension.showName }}</span>
+                                    <span style="float: right; color: #8492a6; font-size: 13px; margin-left: 20px">{{ dimension.expression }}</span>
+                                </el-option>
                             </template>
                         </el-select>
                     </el-form-item>

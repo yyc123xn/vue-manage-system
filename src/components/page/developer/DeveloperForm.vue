@@ -167,21 +167,20 @@
                 this.$refs[developer].validate((valid) => {
                     if (valid) {
                         this.developer.sex = '男' === this.developerHelper.sex ? 1 : 0;
-                        this.developer.departmentId = this.developerHelper.departmentId[0]
-                        console.log(this.developer)
-//                        let developerId = this.$route.query.id
-//                        if (undefined !== developerId) {
-//                            // 编辑
-//                            this.$api.FINANCE_DEVELOPER_API.put('EDIT_DEVELOPER', this.developer).then(res => {
-//                                this.$message.success("成功编辑员工信息")
-//                            })
-//                        } else {
-//                            // 添加
-//                            this.$api.FINANCE_DEVELOPER_API.post('ADD_DEVELOPER', this.developer).then(res => {
-//                                this.$message.success("成功添加员工信息")
-//                            })
-//                        }
-//                        this.$router.replace('/developer_table')
+                        this.developer.departmentId = this.developerHelper.departmentId[this.developerHelper.departmentId.length - 1]
+                        let developerId = this.$route.query.id
+                        if (undefined !== developerId) {
+                            // 编辑
+                            this.$api.FINANCE_DEVELOPER_API.put('EDIT_DEVELOPER', this.developer).then(res => {
+                                this.$message.success("成功编辑员工信息")
+                            })
+                        } else {
+                            // 添加
+                            this.$api.FINANCE_DEVELOPER_API.post('ADD_DEVELOPER', this.developer).then(res => {
+                                this.$message.success("成功添加员工信息")
+                            })
+                        }
+                        this.$router.replace('/developer_table')
                     } else {
                         this.$message.error("请将员工信息填写完整")
                         return false;
@@ -194,7 +193,29 @@
                     this.developerConstant.departments = this.getTreeData(res.data, this.developer.privilege)
                     this.configOptions = this.developerConstant.departments
                     this.getSelected()
+                    this.developerHelper.departmentId = this.getDeveloperHelperDepartmentId(
+                        this.developerConstant.departments, this.developer.departmentId)
                 })
+            },
+
+            getDeveloperHelperDepartmentId(departments, departmentId) {
+                let res = []
+                departments.forEach(department => {
+                    if (department.value === departmentId) {
+                        res.push(department.value)
+                    } else {
+                        if (undefined !== department.children && department.children.length > 0) {
+                            let inners = this.getDeveloperHelperDepartmentId(department.children, departmentId)
+                            if (0 !== inners.length) {
+                                res.push(department.value)
+                                inners.forEach(inner => {
+                                    res.push(inner)
+                                })
+                            }
+                        }
+                    }
+                })
+                return res
             },
 
             getPrivileges() {
@@ -215,6 +236,7 @@
                 }
                 this.$api.FINANCE_DEVELOPER_API.get("GET_DEVELOPER_INFO", getParams).then(res => {
                     this.developer = res.data
+                    this.developerHelper.sex = 1 === this.developerHelper.sex ? '男' : '女';
                     this.getDepartments()
                 })
             },

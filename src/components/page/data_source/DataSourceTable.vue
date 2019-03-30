@@ -215,23 +215,8 @@
                 }
                 await this.$api.REPORT_DATA_SOURCE_API.get('GET_DATA_SOURCE_INFO', queryParams).then(res => {
                     this.dataSource =  res.data
-                    this.dataSourceHelper.privilege = this.translateDepartmentsFromIds(this.dataSourceConstant.departments, this.dataSource.privilege)
+                    this.dataSourceHelper.privilege = this.$common.translateDepartmentsFromIds(this.dataSourceConstant.departments, this.dataSource.privilege)
                 })
-            },
-
-            translateDepartmentsFromIds(departments, ids) {
-                let res = []
-                departments.forEach(department => {
-                    if (-1 !== ids.indexOf(department.value)) {
-                        res.push(department.label)
-                    }
-                    if (0 !== department.children.length) {
-                        this.translateDepartmentsFromIds(department.children, ids).forEach(inner => {
-                            res.push(inner)
-                        })
-                    }
-                })
-                return res
             },
 
             getDepartments() {

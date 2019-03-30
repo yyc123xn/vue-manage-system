@@ -88,6 +88,14 @@
                             </template>
                         </el-select>
                     </el-form-item>
+                    <el-form-item label="所属部门">
+                        <el-cascader
+                                v-model="voucherHelper.departmentId"
+                                placeholder="请选择"
+                                :options="voucherConstant.departments"
+                                filterable
+                        ></el-cascader>
+                    </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="addVoucher('voucher')">表单提交</el-button>
                         <el-button @click="redirect2VoucherTable">取消</el-button>
@@ -119,12 +127,18 @@
                         name: '票据详情1',
                         description: '票据描述1',
                         sum: 0
-                    }]
+                    }],
+                    departmentId: 0
+                },
+
+                voucherHelper: {
+                    departmentId: []
                 },
 
                 voucherConstant: {
                     types: [],
-                    statuses: []
+                    statuses: [],
+                    departments: []
                 },
 
                 rules: {
@@ -174,7 +188,7 @@
                 this.$refs[voucher].validate((valid) => {
                     if (valid) {
                         let voucherId = this.$route.query.id
-                        console.log(voucherId)
+                        this.voucher.departmentId = this.voucherHelper.departmentId[this.voucherHelper.departmentId.length - 1]
                         if (undefined === voucherId) {
                             // 添加
                             this.$api.FINANCE_VOUCHER_API.post('ADD_VOUCHER', this.voucher).then(res => {
@@ -223,6 +237,48 @@
                 })
             },
 
+            getDepartments() {
+                this.$api.FINANCE_DEPARTMENT_API.get("GET_DEPARTMENTS").then(res => {
+                    this.voucherConstant.departments = this.getTreeData(res.data)
+                    this.voucherHelper.departmentId = this.getVoucherHelperDepartmentId(
+                        this.voucherConstant.departments, this.voucher.departmentId)
+                })
+            },
+
+            getVoucherHelperDepartmentId(departments, departmentId) {
+                let res = []
+                departments.forEach(department => {
+                    if (department.value === departmentId) {
+                        res.push(department.value)
+                    } else {
+                        if (undefined !== department.children && department.children.length > 0) {
+                            let inners = this.getVoucherHelperDepartmentId(department.children, departmentId)
+                            if (0 !== inners.length) {
+                                res.push(department.value)
+                                inners.forEach(inner => {
+                                    res.push(inner)
+                                })
+                            }
+                        }
+                    }
+                })
+                return res
+            },
+
+            getTreeData(data){
+                // 循环遍历json数据
+                for(var i = 0;i < data.length; i++){
+                    if(data[i].children.length < 1){
+                        // children若为空数组，则将children设为undefined
+                        data[i].children = undefined;
+                    } else {
+                        // children若不为空数组，则继续 递归调用 本方法
+                        this.getTreeData(data[i].children);
+                    }
+                }
+                return data;
+            },
+
             getVoucherInfo(voucherId) {
                 let getParams = {
                     id : voucherId
@@ -230,6 +286,7 @@
                 this.$api.FINANCE_VOUCHER_API.get("GET_VOUCHER_INFO", getParams).then(res => {
                     this.voucher = res.data
                     this.voucher.date = new Date(this.voucher.date)
+                    this.getDepartments()
                 })
             },
 
@@ -241,6 +298,8 @@
             let voucherId = this.$route.query.id
             if (undefined !== voucherId) {
                 this.getVoucherInfo(voucherId)
+            } else {
+                this.getDepartments()
             }
             this.getVoucherTypes()
             this.getVoucherStatuses()

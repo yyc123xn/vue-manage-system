@@ -22,6 +22,7 @@ import NProgress from 'nprogress'
 import 'nprogress/nprogress.css' //这个样式必须引入
 
 import {validator} from './utils/validator'
+import {common} from './utils/common'
 
 import Sidebar from './components/common/Sidebar.vue'
 
@@ -46,6 +47,7 @@ Vue.use(multiCascader);
 Vue.prototype.$axios = axios
 Vue.prototype.$api = api
 Vue.prototype.$validator = validator
+Vue.prototype.$common = common
 
 if (localStorage.getItem('username')) {
     let routes = JSON.parse(localStorage.getItem('routes'))

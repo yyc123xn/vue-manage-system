@@ -64,7 +64,7 @@
                             remote
                             reserve-keyword
                             placeholder="请输入关键词"
-                            :remote-method="getDeveloper"
+                            :remote-method="queryDevelopers"
                             :loading="loading">
                         <el-option
                                 v-for="developer in developers"
@@ -122,7 +122,7 @@
         },
         methods: {
 
-            getDeveloper(query) {
+            queryDevelopers(query) {
                 if (query !== '') {
                     this.loading = true;
                     let getParams = {
@@ -130,6 +130,7 @@
                     }
                     this.$api.FINANCE_DEVELOPER_API.get("QUERY_DEVELOPERS", getParams).then(res => {
                         this.developers = res.data
+                        this.loading = false;
                     })
                     setTimeout(() => {
                         this.loading = false;

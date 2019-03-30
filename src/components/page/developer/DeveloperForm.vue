@@ -32,7 +32,7 @@
                     </el-form-item>
                     <el-form-item label="部门">
                         <el-cascader
-                                v-model="developerHelper.department"
+                                v-model="developerHelper.departmentId"
                                 placeholder="请选择"
                                 :options="developerConstant.departments"
                                 filterable
@@ -105,7 +105,7 @@
 
                 developerHelper: {
                     sex: '男',
-                    department : []
+                    departmentId: []
                 },
                 rules: {
                     nameCn: [
@@ -133,24 +133,6 @@
                     ],
                     academicDegree : [
                         { required: true, message: '请选择员工学历', trigger: 'change' },
-                    ],
-                    region: [
-                        { required: true, message: '请选择活动区域', trigger: 'change' }
-                    ],
-                    date1: [
-                        { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
-                    ],
-                    date2: [
-                        { type: 'date', required: true, message: '请选择时间', trigger: 'change' }
-                    ],
-                    type: [
-                        { type: 'array', required: true, message: '请至少选择一个活动性质', trigger: 'change' }
-                    ],
-                    resource: [
-                        { required: true, message: '请选择活动资源', trigger: 'change' }
-                    ],
-                    desc: [
-                        { required: true, message: '请填写活动形式', trigger: 'blur' }
                     ]
                 },
 
@@ -185,20 +167,21 @@
                 this.$refs[developer].validate((valid) => {
                     if (valid) {
                         this.developer.sex = '男' === this.developerHelper.sex ? 1 : 0;
-                        this.developer.departmentId = this.developerHelper.department[0]
-                        let developerId = this.$route.query.id
-                        if (undefined !== developerId) {
-                            // 编辑
-                            this.$api.FINANCE_DEVELOPER_API.put('EDIT_DEVELOPER', this.developer).then(res => {
-                                this.$message.success("成功编辑员工信息")
-                            })
-                        } else {
-                            // 添加
-                            this.$api.FINANCE_DEVELOPER_API.post('ADD_DEVELOPER', this.developer).then(res => {
-                                this.$message.success("成功添加员工信息")
-                            })
-                        }
-                        this.$router.replace('/developer_table')
+                        this.developer.departmentId = this.developerHelper.departmentId[0]
+                        console.log(this.developer)
+//                        let developerId = this.$route.query.id
+//                        if (undefined !== developerId) {
+//                            // 编辑
+//                            this.$api.FINANCE_DEVELOPER_API.put('EDIT_DEVELOPER', this.developer).then(res => {
+//                                this.$message.success("成功编辑员工信息")
+//                            })
+//                        } else {
+//                            // 添加
+//                            this.$api.FINANCE_DEVELOPER_API.post('ADD_DEVELOPER', this.developer).then(res => {
+//                                this.$message.success("成功添加员工信息")
+//                            })
+//                        }
+//                        this.$router.replace('/developer_table')
                     } else {
                         this.$message.error("请将员工信息填写完整")
                         return false;
@@ -211,8 +194,6 @@
                     this.developerConstant.departments = this.getTreeData(res.data, this.developer.privilege)
                     this.configOptions = this.developerConstant.departments
                     this.getSelected()
-                    console.log(this.developer)
-                    console.log(this.configOptions)
                 })
             },
 

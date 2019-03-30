@@ -103,6 +103,7 @@
                 editVisible: false,
                 delVisible: false,
                 infoVisible: false,
+                loading: false,
                 developer: {
                     id : 0,
                     nameCn : '',
@@ -134,13 +135,12 @@
             }
         },
         created() {
-            this.getFilterFields();
+            this.getFilterFields()
             this.getDevelopers()
             this.getAcademicDegrees()
             this.getDepartments()
         },
-        computed: {
-        },
+
         methods: {
 
             getAcademicDegrees() {
@@ -189,19 +189,9 @@
                 this.$api.FINANCE_DEVELOPER_API.get("GET_DEVELOPER_INFO", getParams).then(res => {
                     this.developer = res.data
                     this.developerHelper.departmentId = this.translateDepartmentFromId(this.developerConstant.departments, this.developer.departmentId)
-                    this.developerHelper.privilege = this.translateDepartmentsFromIds(this.developerConstant.departments, this.developer.privilege);
-                    this.developerHelper.academicDegree = this.translateAcademicDegree(this.developer.academicDegree)
+                    this.developerHelper.privilege = this.$common.translateDepartmentsFromIds(this.developerConstant.departments, this.developer.privilege);
+                    this.developerHelper.academicDegree = this.$common.translateNameEn(this.developerConstant.academicDegrees, this.developer.academicDegree)
                 })
-            },
-
-            translateAcademicDegree(academicDegree) {
-                let nameCn
-                this.developerConstant.academicDegrees.forEach(ad => {
-                    if (ad.nameEn === academicDegree) {
-                        nameCn = ad.nameCn
-                    }
-                })
-                return nameCn
             },
 
             translateDepartmentFromId(departments, id) {
@@ -215,21 +205,6 @@
                         if('' !== inner) {
                             res = inner
                         }
-                    }
-                })
-                return res
-            },
-
-            translateDepartmentsFromIds(departments, ids) {
-                let res = []
-                departments.forEach(department => {
-                    if (-1 !== ids.indexOf(department.value)) {
-                        res.push(department.label)
-                    }
-                    if (0 !== department.children.length) {
-                        this.translateDepartmentsFromIds(department.children, ids).forEach(inner => {
-                            res.push(inner)
-                        })
                     }
                 })
                 return res

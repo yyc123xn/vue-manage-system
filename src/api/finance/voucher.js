@@ -33,11 +33,13 @@ const financeVoucherApi = {
 
     EDIT_VOUCHER: '/finance/voucher',
 
-    COMMIT_VOUCHERS : '/finance/voucher/commitVouchers',
+    COMMIT_VOUCHERS : '/finance/voucher/commit_vouchers',
 
-    AUDIT_VOUCHERS: '/finance/voucher/auditVouchers',
+    AUDIT_VOUCHERS: '/finance/voucher/audit_vouchers',
 
-    REJECT_VOUCHERS: '/finance/voucher/rejectVouchers',
+    REJECT_VOUCHERS: '/finance/voucher/reject_vouchers',
+
+    TRANSFER_VOUCHERS: '/finance/voucher/transfer_vouchers',
 
     put(urlName, putParams) {
         let url = this[urlName]

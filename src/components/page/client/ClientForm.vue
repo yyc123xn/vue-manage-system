@@ -31,7 +31,7 @@
                         <el-input v-model="client.phoneNumber"></el-input>
                     </el-form-item>
                     <el-form-item label="地址" prop="address">
-                        <v-distpicker @province="onChangeProvince" @city="onChangeCity" @area="onChangeArea"></v-distpicker>
+                        <v-distpicker v-model="client.address" @province="onChangeProvince" @city="onChangeCity" @area="onChangeArea"></v-distpicker>
                     </el-form-item>
                     <el-form-item label="已回款">
                         <el-input-number v-model="client.receivedPayments" :precision="2" :min="0" :step="0.1"></el-input-number>
@@ -43,7 +43,7 @@
                         <el-input type="textarea" rows="5" v-model="client.description"></el-input>
                     </el-form-item>
                     <el-form-item label="行业" prop="business">
-                        <el-select v-model="client.business" placeholder="请选择" filterable>
+                        <el-select v-model="client.businessId" placeholder="请选择" filterable>
                             <template v-for="(business, index) in clientConstant.businesses">
                                 <el-option :key="business.nameEn" :label="business.nameCn" :value="business.id">
                                     <span style="float: left">{{ business.nameCn }}</span>
@@ -106,7 +106,7 @@
                     debt: 0,
                     receivedPayments: 0,
                     address: [{}, {}, {}],
-                    business: '',
+                    businessId: '',
                     description: ''
                 },
 
@@ -182,9 +182,9 @@
                         } else {
                             // 添加
                             console.log(this.client)
-//                            this.$api.FINANCE_CLIENT_API.post('ADD_CLIENT', this.developer).then(res => {
-//                                this.$message.success("成功添加客户信息")
-//                            })
+                            this.$api.FINANCE_CLIENT_API.post('ADD_CLIENT', this.client).then(res => {
+                                this.$message.success("成功添加客户信息")
+                            })
                         }
                         this.$router.replace('/client_table')
                     } else {
@@ -218,6 +218,7 @@
                 }
                 this.$api.FINANCE_CLIENT_API.get("GET_CLIENT_INFO", getParams).then(res => {
                     this.client = res.data
+                    this.clientHelper.sex = 1 === this.clientHelper.sex ? '男' : '女';
                 })
             },
 

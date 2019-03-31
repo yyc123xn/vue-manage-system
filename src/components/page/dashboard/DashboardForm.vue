@@ -438,9 +438,9 @@
                                 <div slot="header">
                                 <span>
                                     <span>{{report.name}} (模拟数据)</span>
-                                    <span v-for="(value, key) in chartTypeToolTips" style="float: right" :key="key">
-                                        <el-tooltip v-if="report.chartType === key" placement="top">
-                                            <div slot="content" v-html="value"></div>
+                                    <span v-for="(chartTypeToolTip, index) in chartTypeToolTips" style="float: right" :key="chartTypeToolTip.chartType">
+                                        <el-tooltip v-if="report.chartType === chartTypeToolTip.chartType" placement="top">
+                                            <div slot="content" v-html="chartTypeToolTip.toolTip"></div>
                                             <el-button type="primary" icon="el-icon-search" circle plain></el-button>
                                         </el-tooltip>
                                     </span>
@@ -718,12 +718,7 @@
                     }]
                 },
 
-                chartTypeToolTips: {
-                    GUAGE: "仪表盘统计规则：<br/>展示数据为所选维度<br/>之下所有指标[之和]",
-                    HISTOGRAM: "柱状图统计规则：<br/>展示数据为所选维度<br/>之下的指标",
-                    LINE: "折线图统计规则：<br/>展示数据为所选维度<br/>之下的指标",
-                    PIE: "饼图统计规则：<br/>展示数据为所选维度<br/>之下的指标"
-                }
+                chartTypeToolTips: []
             }
         },
         methods: {
@@ -1147,6 +1142,12 @@
                 })
             },
 
+            getChartTypeToolTips() {
+                this.$api.REPORT_COMMON_API.get("GET_CHART_TYPE_TOOL_TIPS").then(res => {
+                    this.chartTypeToolTips = res.data
+                })
+            },
+
             redirect2DashboardTable() {
                 this.$router.push("/dashboard_table")
             },
@@ -1162,6 +1163,7 @@
             this.getChartTypes()
             this.getFilterTypes()
             this.getDataSetsFields()
+            this.getChartTypeToolTips()
         }
     }
 </script>

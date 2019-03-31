@@ -78,7 +78,7 @@
                     {{client.receivedPayments}}
                 </el-form-item>
                 <el-form-item label="地址">
-                    {{client.address}}
+                    {{clientHelper.address}}
                 </el-form-item>
                 <el-form-item label="行业">
                     {{client.business}}
@@ -89,15 +89,6 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="infoVisible = false">确 定</el-button>
-            </span>
-        </el-dialog>
-
-        <!-- 删除提示框 -->
-        <el-dialog title="提示" :visible.sync="delVisible" width="300px" center>
-            <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="delVisible = false">取 消</el-button>
-                <el-button type="primary" @click="deleteRow">确 定</el-button>
             </span>
         </el-dialog>
     </div>
@@ -134,7 +125,10 @@
                     business: '',
                     description: ''
                 },
-                idx: -1
+
+                clientHelper: {
+                    address: []
+                }
             }
         },
         created() {
@@ -200,6 +194,9 @@
                 }
                 this.$api.FINANCE_CLIENT_API.get("GET_CLIENT_INFO", getParams).then(res => {
                     this.client = res.data
+                    this.client.address.forEach(inner => {
+                        this.clientHelper.address.push(inner.value)
+                    })
                 })
             },
 
@@ -234,19 +231,6 @@
                 this.pageIndex = pageIndex;
                 this.getClients()
             },
-
-            // 保存编辑
-            saveEdit() {
-                this.$set(this.tableData, this.idx, this.form);
-                this.editVisible = false;
-                this.$message.success(`修改第 ${this.idx+1} 行成功`);
-            },
-            // 确定删除
-            deleteRow(){
-                this.tableData.splice(this.idx, 1);
-                this.$message.success('删除成功');
-                this.delVisible = false;
-            }
         }
     }
 

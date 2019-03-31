@@ -155,14 +155,24 @@
                     sourceTable: '',
                     databaseTable: [],
                     dataSourceType: "",
-                    dataSetFields: [{
-                        expression: 'expression1',
-                        dataType: '',
-                        showName: '名称1',
-                        calculateType: '',
-                        fieldType: '',
-                        isDate: false
-                    }],
+                    dataSetFields: [
+                        {
+                            expression: 'expression1',
+                            dataType: '',
+                            showName: '名称1',
+                            calculateType: 'CUSTOM',
+                            fieldType: 'METRIC',
+                            isDate: false
+                        },
+                        {
+                            expression: 'expression2',
+                            dataType: '',
+                            showName: '名称2',
+                            calculateType: 'CUSTOM',
+                            fieldType: 'DIMENSION',
+                            isDate: false
+                        },
+                    ],
                     period: "",
                     extraExpression: ''
                 },
@@ -247,15 +257,11 @@
                 })
             },
 
-            resetForm(formName) {
-                this.$refs[formName].resetFields();
-            },
-
             removeDataSetField(index) {
-                if (this.dataSet.dataSetFields.length > 1) {
+                if (this.dataSet.dataSetFields.length > 2) {
                     this.dataSet.dataSetFields.splice(index, 1)
                 } else {
-                    this.$message.error("数据集至少有一个字段")
+                    this.$message.error("数据集至少有一个维度字段和一个指标字段")
                 }
             },
 

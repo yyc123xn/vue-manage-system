@@ -164,7 +164,6 @@
             // 获取票据的过滤字段
             getFilterFields() {
                 this.$api.REPORT_DATA_SOURCE_API.get('GET_DATA_SOURCE_FILTER_FIELDS').then(res => {
-                    console.log(res.data)
                     this.dataSourceFilterFields = res.data;
                 })
             },
@@ -208,7 +207,6 @@
                     database : database
                 }
                 await this.$api.REPORT_DATA_SOURCE_API.get('GET_DATABASE_TABLES', queryParams).then(res => {
-                    console.log(res)
                     this.tables = res.data
                 })
             },

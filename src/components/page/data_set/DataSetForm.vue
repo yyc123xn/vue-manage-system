@@ -195,7 +195,6 @@
                     if (valid) {
                         this.dataSet.database = this.dataSet.databaseTable[0]
                         this.dataSet.sourceTable = this.dataSet.databaseTable[1]
-                        console.log(this.dataSet)
                         let dataSetId = this.$route.query.id
                         if (undefined !== dataSetId) {
                             // 编辑

@@ -1032,7 +1032,6 @@
             },
 
             addDashboard() {
-                console.log(this.dashboard)
                 let dashboardId = this.$route.query.id
                 if (undefined !== dashboardId) {
                     // 编辑
@@ -1138,7 +1137,6 @@
                             })
                         }
                     })
-                    console.log(this.dashboard)
                 })
             },
 

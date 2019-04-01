@@ -120,7 +120,6 @@
                     id : id
                 }
                 this.$api.REPORT_DATA_SOURCE_API.get('GET_DATA_SOURCE_INFO', queryParams).then(res => {
-                    console.log(res)
                     this.dataSource =  res.data
                 })
             },

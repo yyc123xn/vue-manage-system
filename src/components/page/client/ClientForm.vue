@@ -181,7 +181,6 @@
                             })
                         } else {
                             // 添加
-                            console.log(this.client)
                             this.$api.FINANCE_CLIENT_API.post('ADD_CLIENT', this.client).then(res => {
                                 this.$message.success("成功添加客户信息")
                             })

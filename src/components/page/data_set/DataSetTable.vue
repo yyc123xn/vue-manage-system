@@ -26,12 +26,8 @@
                     </el-tab-pane>
                     <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange" @cell-dblclick="dblhandleCurrentChange">
                         <el-table-column type="selection" width="55%" align="center"></el-table-column>
-                        <el-table-column prop="id" label="id" sortable></el-table-column>
-                        <el-table-column prop="name" label="名称"></el-table-column>
-                        <el-table-column prop="createDeveloper" label="创建人"></el-table-column>
-                        <el-table-column prop="createTime" label="创建时间" sortable></el-table-column>
-                        <el-table-column prop="lastCalculateTime" label="上次运算时间" sortable></el-table-column>
-                        <el-table-column prop="period" label="周期"></el-table-column>
+                        <el-table-column v-for="tableHeader in tableHeader.tableHeaders" :prop="tableHeader.prop" :label="tableHeader.label" :sortable="tableHeader.sortable">
+                        </el-table-column>
                         <el-table-column label="操作" width="180" align="center">
                             <template slot-scope="scope">
                                 <el-button v-if="tableData[scope.$index].infoVisible" type="text" icon="el-icon-info" @click="handleInfo(scope.$index, scope.row)">详情</el-button>
@@ -182,6 +178,7 @@
                 },
                 dataSetFilterField: "",
                 dataSetFilterFields: [],
+                tableHeader: {},
                 tableData: [],
                 pageIndex: 1,
                 pageSize: 10,
@@ -227,7 +224,6 @@
                 },
                 isMine: "false",
                 handleDeleteIndex: -1,
-                idx: -1,
                 pickerOptions: {
                     shortcuts: [{
                         text: '最近一周',
@@ -268,6 +264,18 @@
             }
         },
         methods: {
+
+            // 获取tableHeaders
+            getTableHeader() {
+                let getParams = {
+                    tableName: "data_set_table",
+                    isMine: this.isMine
+                }
+                this.$api.REPORT_COMMON_API.get("GET_TABLE_HEADER" ,getParams).then(res => {
+                    this.tableHeader = res.data
+                })
+            },
+
             // 获取数据集的过滤字段
             getFilterFields() {
                 this.$api.REPORT_DATA_SET_API.get('GET_DATA_SET_FILTER_FIELDS').then(res => {
@@ -277,6 +285,7 @@
 
             // 获取数据集列表
             getDataSets() {
+                this.getTableHeader()
                 let queryParams = {
                     pageIndex: this.pageIndex,
                     pageSize: this.pageSize,
@@ -378,13 +387,6 @@
             handleCurrentChange(pageIndex) {
                 this.pageIndex = pageIndex;
                 this.getDataSets()
-            },
-
-            // 保存编辑
-            saveEdit() {
-                this.$set(this.tableData, this.idx, this.form);
-                this.editVisible = false;
-                this.$message.success(`修改第 ${this.idx+1} 行成功`);
             },
 
             /**

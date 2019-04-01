@@ -6,6 +6,8 @@ const financeCommonApi = {
 
     GET_BUSINESSES: '/finance/common/businesses',
 
+    GET_TABLE_HEADER: '/finance/common/table_header',
+
     get(urlName, getParams) {
         let url = this[urlName]
         return axios.get(url, {params : getParams})

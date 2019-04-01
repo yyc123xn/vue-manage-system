@@ -20,10 +20,8 @@
             </el-col>
             <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange" @cell-dblclick="dblhandleCurrentChange">
                 <el-table-column type="selection" width="55" align="center"></el-table-column>
-                <el-table-column prop="id" label="id" sortable></el-table-column>
-                <el-table-column prop="nameCn" label="中文名"></el-table-column>
-                <el-table-column prop="nameEn" label="英文名" sortable></el-table-column>
-                <el-table-column prop="email" label="邮箱"></el-table-column>
+                <el-table-column v-for="tableHeader in tableHeader.tableHeaders" :prop="tableHeader.prop" :label="tableHeader.label" :sortable="tableHeader.sortable">
+                </el-table-column>
                 <el-table-column label="操作" width="180" align="center">
                     <template slot-scope="scope">
                         <el-button v-if="tableData[scope.$index].infoVisible" type="text" icon="el-icon-info" @click="handleInfo(scope.$index, scope.row)">详情</el-button>
@@ -94,6 +92,7 @@
         data: function () {
             return {
                 developerFilterFields: [],
+                tableHeader: {},
                 tableData: [],
                 pageIndex: 1,
                 pageSize: 10,
@@ -156,8 +155,20 @@
                 })
             },
 
+            // 获取tableHeaders
+            getTableHeader() {
+                let getParams = {
+                    tableName: "developer_table",
+                    isMine: 0
+                }
+                this.$api.FINANCE_COMMON_API.get("GET_TABLE_HEADER" ,getParams).then(res => {
+                    this.tableHeader = res.data
+                })
+            },
+
             // 获取员工列表
             getDevelopers() {
+                this.getTableHeader()
                 let queryParams = {
                     pageIndex: this.pageIndex,
                     pageSize: this.pageSize,

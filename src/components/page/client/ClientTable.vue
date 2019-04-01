@@ -26,11 +26,8 @@
                     </el-tab-pane>
                     <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange" @cell-dblclick="dblhandleCurrentChange">
                         <el-table-column type="selection" width="55" align="center"></el-table-column>
-                        <el-table-column prop="id" label="id" sortable></el-table-column>
-                        <el-table-column prop="nameCn" label="中文名"></el-table-column>
-                        <el-table-column prop="nameEn" label="英文名" sortable></el-table-column>
-                        <el-table-column prop="email" label="邮箱"></el-table-column>
-                        <el-table-column prop="phoneNumber" label="电话号码"></el-table-column>
+                        <el-table-column v-for="tableHeader in tableHeader.tableHeaders" :prop="tableHeader.prop" :label="tableHeader.label" :sortable="tableHeader.sortable">
+                        </el-table-column>
                         <el-table-column label="操作" width="180" align="center">
                             <template slot-scope="scope">
                                 <el-button type="text" icon="el-icon-info" @click="handleInfo(scope.$index, scope.row)">详情</el-button>
@@ -100,6 +97,7 @@
         data: function () {
             return {
                 clientFilterFields: [],
+                tableHeader: {},
                 tableData: [],
                 pageIndex: 1,
                 pageSize: 10,
@@ -153,6 +151,7 @@
 
             // 获取数据集列表
             getClients() {
+                this.getTableHeader()
                 let queryParams = {
                     pageIndex: this.pageIndex,
                     pageSize: this.pageSize,
@@ -163,6 +162,17 @@
                 this.$api.FINANCE_CLIENT_API.get('GET_CLIENTS' ,queryParams).then(res => {
                     this.tableData = res.data.list
                     this.total = res.data.total
+                })
+            },
+
+            // 获取tableHeaders
+            getTableHeader() {
+                let getParams = {
+                    tableName: "client_table",
+                    isMine: this.isMine
+                }
+                this.$api.FINANCE_COMMON_API.get("GET_TABLE_HEADER" ,getParams).then(res => {
+                    this.tableHeader = res.data
                 })
             },
 

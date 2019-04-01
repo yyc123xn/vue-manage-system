@@ -1158,7 +1158,6 @@
             if (undefined !== dashboardId) {
                 this.getDashboardInfo(dashboardId)
             }
-//            this.getPrivileges()
             this.getDataSets()
             this.getChartTypes()
             this.getFilterTypes()

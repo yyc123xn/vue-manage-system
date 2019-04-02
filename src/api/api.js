@@ -11,6 +11,7 @@ import reportDashboardApi from './report/dashboard'
 import reportDataSourceApi from './report/data_source'
 import reportReportApi from './report/report'
 import reportCommonApi from './report/common'
+import reportReportFilterApi from './report/report_filter'
 
 const api = {
 
@@ -36,7 +37,9 @@ const api = {
 
     REPORT_DASHBOARD_API : reportDashboardApi,
 
-    REPORT_COMMON_API: reportCommonApi
+    REPORT_COMMON_API: reportCommonApi,
+
+    REPORT_REPORT_FILTER_API: reportReportFilterApi
 }
 
 export default api

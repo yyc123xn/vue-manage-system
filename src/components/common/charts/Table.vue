@@ -47,20 +47,14 @@
         data() {
             return {
                 paginationHeight: 353,
-                noPaginationHeight: 400,
+                noPaginationHeight: 402,
                 loading: true,
                 pageSize: 10,
                 pageIndex: 1,
                 total: 0,
                 infoVisible: false,
-
                 infoForm: {},
-
-                chartColumns: [],
-
-                chartData: [],
-
-                defaultChartColumns: [
+                chartColumns: [
                     {
                         prop : "日期",
                         label: "日期"
@@ -74,8 +68,7 @@
                         label: "地址"
                     },
                 ],
-
-                defaultChartData: [
+                chartData: [
                     {
                         '日期': '2016-05-03',
                         '姓名': '王小虎',
@@ -113,13 +106,12 @@
 
             dblhandleCurrentChange(row) {
                 this.infoForm = row
-//                this.getDataSetInfo(row.id)
                 this.infoVisible = true
             },
 
             handleCurrentChange(pageIndex) {
                 this.pageIndex = pageIndex;
-                this.updateReportData()
+                this.updateReportData(this.report.id)
             },
 
             async getReportData(reportId, newV, oldV) {
@@ -142,6 +134,11 @@
                     }
                     await this.$api.REPORT_REPORT_API.post('GET_REPORT_DATA', postParams).then(res => {
                         reportData = res.data
+                        if (!this.isTop10Table) {
+                            this.pageSize = reportData.pagination.pageSize
+                            this.pageIndex = reportData.pagination.pageIndex
+                            this.total = reportData.pagination.total
+                        }
                     })
                     return reportData
                     // 查数据
@@ -205,15 +202,11 @@
             if (undefined !== _this._props.report) {
                 let reportId = _this._props.report.id
                 if (0 === reportId) {
-                    this.chartData = this.defaultChartData
-                    this.chartColumns = this.defaultChartColumns
                     this.loading = false;
                 } else {
                     this.updateReportData(reportId)
                 }
             } else {
-                this.chartData = this.defaultChartData
-                this.chartColumns = this.defaultChartColumns
                 this.loading = false;
             }
         }

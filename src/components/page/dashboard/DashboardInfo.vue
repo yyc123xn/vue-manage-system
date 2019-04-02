@@ -172,12 +172,26 @@
                 }
                 await this.$api.REPORT_DASHBOARD_API.get('GET_DASHBOARD_INFO', getParams).then(res => {
                     this.dashboard = res.data
+                    this.dashboard.reportFilters.forEach(reportFilter => {
+                        if ('DATE' !== reportFilter.filterType) {
+                            this.getReportFilterValues(reportFilter)
+                        }
+                    })
                 })
             },
 
             getChartTypeToolTips() {
                 this.$api.REPORT_COMMON_API.get("GET_CHART_TYPE_TOOL_TIPS").then(res => {
                     this.chartTypeToolTips = res.data
+                })
+            },
+
+            getReportFilterValues(reportFilter) {
+                let getParams = {
+                    id : reportFilter.id
+                }
+                this.$api.REPORT_REPORT_FILTER_API.get("GET_REPORT_REPORT_FILTER_VALUES", getParams).then(res => {
+                    reportFilter.values = res.data
                 })
             }
         }

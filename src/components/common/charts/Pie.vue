@@ -23,14 +23,7 @@
                 }
             }
             return {
-                chartData: {},
-                loading: true,
-                dataEmpty: false,
-                queryReportFilter: {
-                    queryColumns: [],
-                    queryConditions: [],
-                },
-                defaultChartData: {
+                chartData: {
                     columns: ['日期', '访问用户'],
                     rows: [
                         { '日期': '1/1', '访问用户': 1393 },
@@ -40,6 +33,12 @@
                         { '日期': '1/5', '访问用户': 3792 },
                         { '日期': '1/6', '访问用户': 4593 }
                     ]
+                },
+                loading: true,
+                dataEmpty: false,
+                queryReportFilter: {
+                    queryColumns: [],
+                    queryConditions: [],
                 }
             }
         },
@@ -125,13 +124,11 @@
             if (undefined !== _this._props.report) {
                 let reportId = _this._props.report.id
                 if (0 === reportId) {
-                    this.chartData = this.defaultChartData
                     this.loading = false;
                 } else {
                     this.updateReportData(reportId)
                 }
             } else {
-                this.chartData = this.defaultChartData
                 this.loading = false;
             }
         }

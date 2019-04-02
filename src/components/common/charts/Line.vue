@@ -31,22 +31,34 @@
             ]
             return {
                 chartData: {},
+                defaultTimeChartData: {
+                    columns: ['日期', '访问用户', '下单用户', '下单率'],
+                    rows: [
+                        { '日期': '2018-3-21', '访问用户': 1393, '下单用户': 1093, '下单率': 0.32 },
+                        { '日期': '2018-3-22', '访问用户': 3530, '下单用户': 3230, '下单率': 0.26 },
+                        { '日期': '2018-3-23', '访问用户': 2923, '下单用户': 2623, '下单率': 0.76 },
+                        { '日期': '2018-3-24', '访问用户': 1723, '下单用户': 1423, '下单率': 0.49 },
+                        { '日期': '2018-3-25', '访问用户': 3792, '下单用户': 3492, '下单率': 0.323 },
+                        { '日期': '2018-3-26', '访问用户': 4593, '下单用户': 4293, '下单率': 0.78 }
+                    ]
+                },
+                defaultValueChartData: {
+                    columns: ['日期', '访问用户', '下单用户', '下单率'],
+                    rows: [
+                        { '日期': '0', '访问用户': 1393, '下单用户': 1093, '下单率': 0.32 },
+                        { '日期': '1', '访问用户': 1393, '下单用户': 1093, '下单率': 0.32 },
+                        { '日期': '2', '访问用户': 3530, '下单用户': 3230, '下单率': 0.26 },
+                        { '日期': '3', '访问用户': 2923, '下单用户': 2623, '下单率': 0.76 },
+                        { '日期': '4', '访问用户': 1723, '下单用户': 1423, '下单率': 0.49 },
+                        { '日期': '5', '访问用户': 3792, '下单用户': 3492, '下单率': 0.323 },
+                        { '日期': '6', '访问用户': 4593, '下单用户': 4293, '下单率': 0.78 }
+                    ]
+                },
                 loading: false,
                 dataEmpty: false,
                 queryReportFilter: {
                     queryColumns: [],
                     queryConditions: [],
-                },
-                defaultChartData: {
-                    columns: ['日期', '成本', '利润'],
-                    rows: [
-                        { '日期': '1月1日', '成本': 15, '利润': 12 },
-                        { '日期': '1月2日', '成本': 12, '利润': 25 },
-                        { '日期': '1月3日', '成本': 21, '利润': 10 },
-                        { '日期': '1月4日', '成本': 41, '利润': 32 },
-                        { '日期': '1月5日', '成本': 31, '利润': 30 },
-                        { '日期': '1月6日', '成本': 71, '利润': 55 }
-                    ]
                 }
             }
         },
@@ -110,6 +122,15 @@
                     }
                 })
                 return queryReportFilter
+            },
+
+            setDefaultChartData(xAxisType) {
+                if ('value' === xAxisType) {
+                    this.chartData = this.defaultValueChartData
+                } else {
+                    this.chartData = this.defaultTimeChartData
+                }
+                this.loading = false;
             }
         },
 
@@ -129,15 +150,16 @@
             let _this = this
             if (undefined !== _this._props.report) {
                 let reportId = _this._props.report.id
+                let xAxisType = _this._props.report.config.chartSettings.xAxisType
                 if (0 === reportId) {
-                    this.chartData = this.defaultChartData
+                    this.setDefaultChartData(xAxisType)
                     this.loading = false;
                 } else {
                     this.updateReportData(reportId)
                 }
             } else {
-                this.chartData = this.defaultChartData
-                this.loading = false;
+                this.setDefaultChartData('time')
+                this.loading = false
             }
         }
     }

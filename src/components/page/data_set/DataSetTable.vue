@@ -425,9 +425,14 @@
                          * 已有数据的开始和结束时间
                          * @type {Date}
                          */
-                        let beginDate = this.string2Date1(this.backfillForm.beginDate)
-                        let endDate = this.string2Date1(this.backfillForm.endDate)
-                        if (beginTime >= beginDate && endTime <= endDate) {
+                        let beginDate = undefined
+                        let endDate = undefined
+                        if (undefined !== this.backfillForm.beginDate && undefined !== this.backfillForm.endDate) {
+                            beginDate = this.string2Date1(this.backfillForm.beginDate)
+                            endDate = this.string2Date1(this.backfillForm.endDate)
+                        }
+                        if (undefined !== beginDate && undefined !== endDate
+                            && beginTime >= beginDate && endTime <= endDate) {
                             this.$confirm('已选时间在已有数据的时间范围内，您的操作可能会导致重复补数据，是否继续？', '提示', {
                                 confirmButtonText: '确定',
                                 cancelButtonText: '取消',

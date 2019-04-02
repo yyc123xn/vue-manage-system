@@ -20,18 +20,17 @@
                 }
             }
             return {
-                chartData: {},
+                chartData: {
+                    columns: ['type', 'value'],
+                    rows: [
+                        { type: '占比', value: 0.8 }
+                    ]
+                },
                 loading: true,
                 dataEmpty: false,
                 queryReportFilter: {
                     queryColumns: [],
                     queryConditions: [],
-                },
-                defaultChartData: {
-                    columns: ['type', 'value'],
-                    rows: [
-                        { type: '占比', value: 0.8 }
-                    ]
                 }
             }
         },
@@ -115,13 +114,11 @@
             if (undefined !== _this._props.report) {
                 let reportId = _this._props.report.id
                 if (0 === reportId) {
-                    this.chartData = this.defaultChartData
                     this.loading = false;
                 } else {
                     this.updateReportData(reportId)
                 }
             } else {
-                this.chartData = this.defaultChartData
                 this.loading = false;
             }
         }

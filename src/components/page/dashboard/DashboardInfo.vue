@@ -68,7 +68,7 @@
                                     <span>{{report.name}}</span>
                                     <span v-for="(chartTypeToolTip, index) in chartTypeToolTips" style="float: right" :key="chartTypeToolTip.chartType">
                                         <el-tooltip v-if="report.chartType === chartTypeToolTip.chartType" placement="top">
-                                            <div slot="content" v-html="chartTypeToolTip.toolTip"></div>
+                                            <div slot="content" v-html="chartTypeToolTip.toolTip + '<br>' + report.description.replace('\n', '<br>')"></div>
                                             <el-button type="primary" icon="el-icon-search" circle plain></el-button>
                                         </el-tooltip>
                                     </span>

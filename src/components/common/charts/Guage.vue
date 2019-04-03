@@ -63,6 +63,25 @@
                     if (undefined !== res) {
                         this.loading = true;
                         this.dataEmpty = 0 === res.rows.length;
+                        if (!this.dataEmpty) {
+                            let metricKey = res.columns[1]
+                            let metricValue = res.rows[0][metricKey]
+                            let dimensionKey = res.columns[0]
+                            let dimensionValue = res.rows[0][dimensionKey]
+                            if (metricValue > 0) {
+                                this.report.config.chartSettings.seriesMap[dimensionValue] =
+                                {
+                                    min: 0,
+                                    max: parseInt(metricValue / 0.6)
+                                }
+                            } else {
+                                this.report.config.chartSettings.seriesMap[dimensionValue] =
+                                {
+                                    min: parseInt(metricValue / 0.6),
+                                    max: 0
+                                }
+                            }
+                        }
                         this.chartData = res
                         this.loading = false;
                     }

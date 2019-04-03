@@ -569,6 +569,8 @@
                                 name : "新报表",
                                 description: "",
                                 dataSetId: "",
+                                reportXAxis: 0,
+                                reportYAxis: 0,
                                 isHandleEditFormMetricMultiple: true,
                                 isHandleEditFormDimensionMultiple: false,
                                 dataSetMetricFieldId: '',
@@ -589,7 +591,8 @@
                                         roseTypeHelper: false,
                                         roseType: '',
                                         dataType: 'percent',
-                                        selectedMode: false
+                                        selectedMode: false,
+                                        seriesMap : {}
                                     },
                                     extend: {
                                         // 折线图显示指标数据
@@ -694,7 +697,8 @@
                             roseTypeHelper: false,
                             roseType: '',
                             dataType: 'percent',
-                            selectedMode: false
+                            selectedMode: false,
+                            seriesMap : {}
                         },
                         extend: {
                             // 折线图显示指标数据
@@ -755,7 +759,6 @@
 
         watch: {
             'handleEditForm.chartType'(val) {
-                console.log(val)
                 this.handleEditForm.isHandleEditFormMetricMultiple = true
                 setTimeout(() => {
                     this.handleEditForm.isHandleEditFormMetricMultiple = 'GUAGE' !== val
@@ -772,11 +775,9 @@
         methods: {
 
             changeDataSetDimension() {
-                console.log(this.handleEditForm)
                 let xAxis = this.handleEditForm.reportXAxis
                 let yAxis = this.handleEditForm.reportYAxis
                 let dimensions = this.dashboardHelper.reportssHelper[xAxis][yAxis].dimensions
-                console.log(dimensions)
                 dimensions.forEach(dimension => {
                     if (dimension.id === this.handleEditForm.dataSetDimensionFieldId && dimension.isDate) {
                         this.handleEditForm.config.chartSettings.xAxisType = 'time'
@@ -887,7 +888,8 @@
                             roseTypeHelper: false,
                             roseType: '',
                             dataType: 'percent',
-                            selectedMode: false
+                            selectedMode: false,
+                            seriesMap : {}
                         },
                         extend: {
                             // 折线图显示指标数据
@@ -923,6 +925,7 @@
 
             // 添加一列
             addReportColumn() {
+                let reportYXAis = this.dashboard.reportss.length
                 let reports =  [{
                     id: 0,
                     name : "新报表",
@@ -933,7 +936,7 @@
                     dataSetMetricFieldIds: [],
                     dataSetDimensionFieldIds: [],
                     reportXAxis: 0,
-                    reportYAxis: 0,
+                    reportYAxis: reportYXAis,
                     config: {
                         chartSettings: {
                             // 折线图和柱状图
@@ -948,7 +951,8 @@
                             roseTypeHelper: false,
                             roseType: '',
                             dataType: 'percent',
-                            selectedMode: false
+                            selectedMode: false,
+                            seriesMap : {}
                         },
                         extend: {
                             // 折线图显示指标数据
@@ -1054,7 +1058,8 @@
                             roseTypeHelper: false,
                             roseType: '',
                             dataType: 'percent',
-                            selectedMode: false
+                            selectedMode: false,
+                            seriesMap : {}
                         },
                         extend: {
                             // 折线图显示指标数据
@@ -1123,6 +1128,15 @@
             },
 
             removeHandle(event){
+                let fromXAis = event.from.id.toString().substring(1, 2) - 1
+                let fromYAis = event.oldIndex
+                let toXAis = event.to.id.toString().substring(1, 2) - 1
+                let toYAis = event.newIndex
+                let fromReportHelper = this.dashboardHelper.reportssHelper[fromXAis][fromYAis]
+                this.dashboardHelper.reportssHelper[toXAis].splice(toYAis, 1, fromReportHelper)
+                this.dashboardHelper.reportssHelper[fromXAis].splice(fromYAis, 1)
+                this.dashboard.reportss[toXAis][toYAis].reportXAxis = toXAis
+                this.dashboard.reportss[toXAis][toYAis].reportYAxis = toYAis
                 this.$message.success(`从 ${event.from.id} 移动到 ${event.to.id} `);
             },
 
@@ -1170,7 +1184,6 @@
                         }
                     })
                 })
-                console.log(this.dashboard)
                 if (undefined !== dashboardId) {
                     // 编辑
                     this.$api.REPORT_DASHBOARD_API.put('EDIT_DASHBOARD', this.dashboard).then(res => {

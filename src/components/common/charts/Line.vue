@@ -6,7 +6,7 @@
             :loading="loading"
             :data-empty="dataEmpty"
             :data-zoom="dataZoom"
-            :extend="report.config.extend.line">
+            :extend="report.config.extend">
     </ve-line>
 </template>
 

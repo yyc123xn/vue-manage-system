@@ -1,7 +1,7 @@
 <template>
     <ve-map
             :data="chartData"
-            :settings="chartSettings"
+            :settings="report.config.chartSettings"
             :loading="loading"
             :data-empty="dataEmpty"
             :events="chartEvents">
@@ -10,7 +10,6 @@
 
 <script>
     import ElCol from "element-ui/packages/col/src/col";
-
     export default {
         components: {ElCol},
         name: "Map",
@@ -116,6 +115,7 @@
         },
 
         mounted() {
+            console.log(this.report)
             let _this = this
             if (undefined !== _this._props.report) {
                 let reportId = _this._props.report.id

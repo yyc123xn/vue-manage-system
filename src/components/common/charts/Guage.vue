@@ -23,7 +23,7 @@
                 chartData: {
                     columns: ['type', 'value'],
                     rows: [
-                        { type: '占比', value: 0.8 }
+                        { type: 'range', value: 0.8 }
                     ]
                 },
                 loading: true,
@@ -63,25 +63,7 @@
                     if (undefined !== res) {
                         this.loading = true;
                         this.dataEmpty = 0 === res.rows.length;
-                        if (!this.dataEmpty) {
-                            let metricKey = res.columns[1]
-                            let metricValue = res.rows[0][metricKey]
-                            let dimensionKey = res.columns[0]
-                            let dimensionValue = res.rows[0][dimensionKey]
-                            if (metricValue > 0) {
-                                this.report.config.chartSettings.seriesMap[dimensionValue] =
-                                {
-                                    min: 0,
-                                    max: parseInt(metricValue / 0.6)
-                                }
-                            } else {
-                                this.report.config.chartSettings.seriesMap[dimensionValue] =
-                                {
-                                    min: parseInt(metricValue / 0.6),
-                                    max: 0
-                                }
-                            }
-                        }
+                        this.setGaugeRange(res)
                         this.chartData = res
                         this.loading = false;
                     }
@@ -90,6 +72,34 @@
                     this.dataEmpty = (this.chartData.rows === undefined || 0 === this.chartData.rows.length);
                     this.loading = false
                 }, 5000)
+            },
+
+            setGaugeRange(res) {
+                if (!this.dataEmpty) {
+                    let range = this.report.config.chartSettings.seriesMap.range
+                    let dimensionKey = res.columns[0]
+                    let dimensionValue = res.rows[0][dimensionKey]
+                    if (range.max === range.min) {
+                        let metricKey = res.columns[1]
+                        let metricValue = res.rows[0][metricKey]
+                        if (metricValue > 0) {
+                            this.report.config.chartSettings.seriesMap[dimensionValue] = {
+                                min: 0,
+                                max: parseInt(metricValue / 0.6)
+                            }
+                        } else {
+                            this.report.config.chartSettings.seriesMap[dimensionValue] = {
+                                min: parseInt(metricValue / 0.6),
+                                max: 0
+                            }
+                        }
+                    } else {
+                        this.report.config.chartSettings.seriesMap[dimensionValue] = {
+                            min: range.min,
+                            max: range.max
+                        }
+                    }
+                }
             },
 
             /**

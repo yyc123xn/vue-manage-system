@@ -191,7 +191,7 @@
                                             </el-select>
                                         </el-form-item>
                                         <el-form-item label="展示指标数值">
-                                            <el-switch v-model="handleEditForm.config.extend.line.series.label.normal.show"></el-switch>
+                                            <el-switch v-model="handleEditForm.config.extend.series.label.normal.show"></el-switch>
                                         </el-form-item>
                                     </el-form>
 
@@ -270,7 +270,7 @@
                                             </el-select>
                                         </el-form-item>
                                         <el-form-item label="展示指标数值">
-                                            <el-switch v-model="handleEditForm.config.extend.histogram.series.label.show"></el-switch>
+                                            <el-switch v-model="handleEditForm.config.extend.series.label.show"></el-switch>
                                         </el-form-item>
                                     </el-form>
                                     <div>备注1. axisSite(设置右轴key)：例如输入‘占比’， 即将占比的数据置于右轴上。</div>
@@ -284,6 +284,16 @@
                                 <el-col v-if="'TABLE' === handleEditForm.chartType">
                                     <div></div>
                                     <div></div>
+                                </el-col>
+                                <el-col v-if="'MAP' === handleEditForm.chartType">
+                                    <el-form ref="handleEditForm.chartSettings" :rules="rules" :model="handleEditForm.chartSettings" label-width="20%">
+                                        <el-form-item label="设置省份">
+                                            <el-select v-model="handleEditForm.config.chartSettings.position" placeholder="请选择">
+                                                <el-option v-for="(province, index) in provinces" :key="index" :label="province.hanzi" :value="province.pinyin"></el-option>
+                                            </el-select>
+                                        </el-form-item>
+                                    </el-form>
+                                    <div>备注1. 默认为中国地图，如果选择了省份或直辖市，则地图展示为选择的省份或者直辖市。</div>
                                 </el-col>
                                 <el-col v-if="'PIE' === handleEditForm.chartType">
                                     <el-form ref="handleEditForm.chartSettings" :rules="rules" :model="handleEditForm.chartSettings" label-width="20%">
@@ -314,8 +324,16 @@
                                                 <el-option :key="'percent'" :label="'percent'" :value="'percent'"></el-option>
                                             </el-select>
                                         </el-form-item>
+                                        <el-form-item label="最大值（可选）">
+                                            <el-input-number v-model="handleEditForm.config.chartSettings.seriesMap.range.max" :precision="2" :step="0.1"></el-input-number>
+                                        </el-form-item>
+                                        <el-form-item label="最小值（可选）">
+                                            <el-input-number v-model="handleEditForm.config.chartSettings.seriesMap.range.min" :precision="2" :step="0.1"></el-input-number>
+                                        </el-form-item>
                                     </el-form>
                                     <div>备注1. 数据类型：展示指标的数据，KMB单位为k(数据值为5000时，显示5k)，percent单位为%(数据为0.6时，显示60%)。</div>
+                                    <div>备注2. 最大值（可选）：仪表盘刻度展示的最大值。</div>
+                                    <div>备注3. 最小值（可选）：仪表盘刻度展示的最小值。</div>
                                 </el-col>
                             </el-collapse-item>
                         </el-collapse>
@@ -578,45 +596,7 @@
                                 dataSetMetricFieldIds: [],
                                 dataSetDimensionFieldIds: [],
                                 chartType: '',
-                                config: {
-                                    chartSettings: {
-                                        axisSite: { right: [] },
-                                        yAxisType: [],
-                                        yAxisName: [],
-                                        xAxisType: 'value',
-                                        stack: { 'key': [] },
-                                        showLine: [],
-                                        area: false,
-                                        // 饼图
-                                        roseTypeHelper: false,
-                                        roseType: '',
-                                        dataType: 'percent',
-                                        selectedMode: false,
-                                        seriesMap : {}
-                                    },
-                                    extend: {
-                                        // 折线图显示指标数据
-                                        line: {
-                                            series: {
-                                                label: {
-                                                    normal: {
-                                                        show: false
-                                                    }
-                                                }
-                                            }
-                                        },
-
-                                        // 柱状图显示指标数据
-                                        histogram: {
-                                            series: {
-                                                label: {
-                                                    show: false,
-                                                    position: "top"
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
+                                config: {}
                             }
                         ]
                     ]
@@ -684,45 +664,7 @@
                     name: "",
                     dataSetId: "",
                     chartType: '',
-                    config: {
-                        chartSettings: {
-                            axisSite: { right: [] },
-                            yAxisType: [],
-                            yAxisName: [],
-                            xAxisType: 'value',
-                            stack: { 'key': [] },
-                            showLine: [],
-                            area: false,
-                            // 饼图
-                            roseTypeHelper: false,
-                            roseType: '',
-                            dataType: 'percent',
-                            selectedMode: false,
-                            seriesMap : {}
-                        },
-                        extend: {
-                            // 折线图显示指标数据
-                            line: {
-                                series: {
-                                    label: {
-                                        normal: {
-                                            show: false
-                                        }
-                                    }
-                                }
-                            },
-
-                            // 柱状图显示指标数据
-                            histogram: {
-                                series: {
-                                    label: {
-                                        show: false,
-                                        position: "top"
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    config: {}
                 },
 
                 pickerOptions: {
@@ -753,7 +695,110 @@
                     }]
                 },
 
-                chartTypeToolTips: []
+                chartTypeToolTips: [],
+
+                provinces: [
+                    {
+                        hanzi: "中国",
+                        pinyin: "china"
+                    },
+                    {
+                        hanzi: "河北"
+                    },
+                    {
+                        hanzi: "山西",
+                    },
+                    {
+                        hanzi: "内蒙古"
+                    },
+                    {
+                        hanzi: "辽宁"
+                    },
+                    {
+                        hanzi: "吉林"
+                    },
+                    {
+                        hanzi: "黑龙江"
+                    },
+                    {
+                        hanzi: "江苏"
+                    },
+                    {
+                        hanzi: "浙江"
+                    },
+                    {
+                        hanzi: "安徽"
+                    },
+                    {
+                        hanzi: "福建"
+                    },
+                    {
+                        hanzi: "江西"
+                    },
+                    {
+                        hanzi: "山东"
+                    },
+                    {
+                        hanzi: "河南"
+                    },
+                    {
+                        hanzi: "湖北"
+                    },
+                    {
+                        hanzi: "湖南"
+                    },
+                    {
+                        hanzi: "广东"
+                    },
+                    {
+                        hanzi: "广西"
+                    },
+                    {
+                        hanzi: "海南"
+                    },
+                    {
+                        hanzi: "四川"
+                    },
+                    {
+                        hanzi: "贵州"
+                    },
+                    {
+                        hanzi: "云南"
+                    },
+                    {
+                        hanzi: "西藏"
+                    },
+                    {
+                        hanzi: "甘肃"
+                    },
+                    {
+                        hanzi: "青海"
+                    },
+                    {
+                        hanzi: "宁夏"
+                    },
+                    {
+                        hanzi: "新疆"
+                    },
+                    {
+                        hanzi: "北京"
+                    },
+                    {
+                        hanzi: "天津"
+                    },
+                    {
+                        hanzi: "上海"
+                    },
+                    {
+                        hanzi: "重庆"
+                    },
+                    {
+                        hanzi: "香港"
+                    },
+                    {
+                        hanzi: "澳门"
+                    }
+                ]
             }
         },
 
@@ -761,13 +806,14 @@
             'handleEditForm.chartType'(val) {
                 this.handleEditForm.isHandleEditFormMetricMultiple = true
                 setTimeout(() => {
-                    this.handleEditForm.isHandleEditFormMetricMultiple = 'GUAGE' !== val
-                        && 'TOP_10_TABLE' !== val
+                    this.handleEditForm.isHandleEditFormMetricMultiple =
+                        'GUAGE' !== val && 'TOP_10_TABLE' !== val
                 })
 
                 this.handleEditForm.isHandleEditFormDimensionMultiple = false
                 setTimeout(() => {
-                    this.handleEditForm.isHandleEditFormDimensionMultiple = 'TABLE' === val
+                    this.handleEditForm.isHandleEditFormDimensionMultiple =
+                        'GUAGE' === val || 'TABLE' === val
                 })
             }
         },
@@ -786,12 +832,103 @@
             },
 
             changeChartType() {
+                console.log(this.handleEditForm.chartType)
                 this.handleEditForm.dataSetMetricFieldId = ''
                 this.handleEditForm.dataSetDimensionFieldId = ''
                 this.handleEditForm.dataSetMetricFieldIds = []
                 this.handleEditForm.dataSetDimensionFieldIds = []
-                if ('HISTOGRAM' === this.handleEditForm.chartType) {
-                    this.handleEditForm.config.chartSettings.xAxisType = 'time'
+                this.handleEditForm.config = this.getChartTypeConfig(this.handleEditForm.chartType)
+            },
+
+            getChartTypeConfig(chartType) {
+                if ("LINE" === chartType) {
+                    return this.getLineConfig()
+                } else if ("HISTOGRAM" === chartType) {
+                    return this.getHistogramConfig()
+                } else if ("MAP" === chartType) {
+                    return this.getMapConfig()
+                } else if ("PIE" === chartType) {
+                    return this.getPieConfig()
+                } else if ("GUAGE" === chartType) {
+                    return this.getGuageConfig()
+                } else {
+                    return {}
+                }
+            },
+
+            getLineConfig() {
+                return {
+                    chartSettings: {
+                        axisSite: {right: []},
+                        yAxisType: [],
+                        yAxisName: [],
+                        xAxisType: 'value',
+                        stack: { key: [] },
+                        area: false
+                    },
+                    extend: {
+                        series: {
+                            label: {
+                                normal: {
+                                    show: false
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+
+            getHistogramConfig() {
+                return {
+                    chartSettings: {
+                        axisSite: {right: []},
+                        yAxisType: [],
+                        yAxisName: [],
+                        xAxisType: 'value',
+                        stack: { key: [] },
+                        area: false,
+                        showLine: [],
+                    },
+                    extend: {
+                        series: {
+                            label: {
+                                show: false,
+                                position: "top"
+                            }
+                        }
+                    }
+                }
+            },
+
+            getMapConfig() {
+                return {
+                    chartSettings: {
+                        position: "china"
+                    }
+                }
+            },
+
+            getPieConfig() {
+                return {
+                    chartSettings: {
+                        roseTypeHelper: false,
+                            roseType: '',
+                            selectedMode: false,
+                    }
+                }
+            },
+
+            getGuageConfig() {
+                return {
+                    chartSettings: {
+                        dataType: 'percent',
+                        seriesMap: {
+                            range: {
+                                min: 0,
+                                max: 0
+                            }
+                        }
+                    }
                 }
             },
 
@@ -874,46 +1011,7 @@
                     dataSetDimensionFieldIds: [],
                     reportXAxis: reportXAxis,
                     reportYAxis: 0,
-                    config: {
-                        chartSettings: {
-                            // 折线图和柱状图
-                            axisSite: { right: [] },
-                            yAxisType: [],
-                            yAxisName: [],
-                            xAxisType: 'value',
-                            stack: { 'key': [] },
-                            showLine: [],
-                            area: false,
-                            // 饼图
-                            roseTypeHelper: false,
-                            roseType: '',
-                            dataType: 'percent',
-                            selectedMode: false,
-                            seriesMap : {}
-                        },
-                        extend: {
-                            // 折线图显示指标数据
-                            line: {
-                                series: {
-                                    label: {
-                                        normal: {
-                                            show: false
-                                        }
-                                    }
-                                }
-                            },
-
-                            // 柱状图显示指标数据
-                            histogram: {
-                                series: {
-                                    label: {
-                                        show: false,
-                                        position: "top"
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    config: {}
                 }
                 let reportHelper = {
                     metrics : [],
@@ -937,46 +1035,7 @@
                     dataSetDimensionFieldIds: [],
                     reportXAxis: 0,
                     reportYAxis: reportYXAis,
-                    config: {
-                        chartSettings: {
-                            // 折线图和柱状图
-                            axisSite: { right: [] },
-                            yAxisType: [],
-                            yAxisName: [],
-                            xAxisType: 'value',
-                            stack: { 'key': [] },
-                            showLine: [],
-                            area: false,
-                            // 饼图
-                            roseTypeHelper: false,
-                            roseType: '',
-                            dataType: 'percent',
-                            selectedMode: false,
-                            seriesMap : {}
-                        },
-                        extend: {
-                            // 折线图显示指标数据
-                            line: {
-                                series: {
-                                    label: {
-                                        normal: {
-                                            show: false
-                                        }
-                                    }
-                                }
-                            },
-
-                            // 柱状图显示指标数据
-                            histogram: {
-                                series: {
-                                    label: {
-                                        show: false,
-                                        position: "top"
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    config: {}
                 }]
                 let reportsHelper = [{
                     metrics : [],
@@ -1045,45 +1104,7 @@
                     name: "",
                     dataSetId: "",
                     chartType: '',
-                    config: {
-                        chartSettings: {
-                            axisSite: { right: [] },
-                            yAxisType: [],
-                            yAxisName: [],
-                            xAxisType: 'value',
-                            stack: { 'key': [] },
-                            showLine: [],
-                            area: false,
-                            // 饼图
-                            roseTypeHelper: false,
-                            roseType: '',
-                            dataType: 'percent',
-                            selectedMode: false,
-                            seriesMap : {}
-                        },
-                        extend: {
-                            // 折线图显示指标数据
-                            line: {
-                                series: {
-                                    label: {
-                                        normal: {
-                                            show: false
-                                        }
-                                    }
-                                }
-                            },
-
-                            // 柱状图显示指标数据
-                            histogram: {
-                                series: {
-                                    label: {
-                                        show: false,
-                                        position: "top"
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    config: {}
                 }
             },
 
@@ -1300,9 +1321,18 @@
             redirect2DashboardTable() {
                 this.$router.push("/dashboard_table")
             },
+
+            setProvincesPinyin() {
+                this.provinces.forEach(province => {
+                    if ("china" !== province.pinyin) {
+                        province.pinyin = "province/" + this.$hanzi2Pinyin.hanzi2Pinyin(province.hanzi)
+                    }
+                })
+            }
         },
 
         created() {
+            this.setProvincesPinyin()
             let dashboardId = this.$route.query.id
             if (undefined !== dashboardId) {
                 this.getDashboardInfo(dashboardId)

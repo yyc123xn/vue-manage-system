@@ -12,6 +12,7 @@ import reportDataSourceApi from './report/data_source'
 import reportReportApi from './report/report'
 import reportCommonApi from './report/common'
 import reportReportFilterApi from './report/report_filter'
+import echartsCommon from './echarts/common'
 
 const api = {
 
@@ -39,7 +40,9 @@ const api = {
 
     REPORT_COMMON_API: reportCommonApi,
 
-    REPORT_REPORT_FILTER_API: reportReportFilterApi
+    REPORT_REPORT_FILTER_API: reportReportFilterApi,
+
+    ECHARTS_COMMON_API : echartsCommon
 }
 
 export default api

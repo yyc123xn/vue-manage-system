@@ -67,7 +67,7 @@
                         <el-input type="textarea" rows="5" v-model="handleEditForm.description"></el-input>
                     </el-form-item>
                     <el-form-item label="数据集列表" prop="dataSetId">
-                        <el-select v-model="handleEditForm.dataSetId" placeholder="请选择" filterable @change="getDataSetMetricsAndDimensions" @click="getDataSetMetricsAndDimensions">
+                        <el-select v-model="handleEditForm.dataSetId" placeholder="请选择" filterable @change="changeDataSet">
                             <template v-for="(dataSet, index) in dashboardConstant.reportConstant.dataSets">
                                 <el-option :key="dataSet.id" :label="dataSet.name" :value="dataSet.id"></el-option>
                             </template>
@@ -84,9 +84,9 @@
                         </el-select>
                     </el-form-item>
                     <el-form-item v-if="!handleEditForm.isHandleEditFormMetricMultiple" label="数据集指标" prop="dataSetMetricFieldId">
-                        <el-select v-model="handleEditForm.dataSetMetricFieldId" placeholder="请选择" filterable>
+                        <el-select v-model="handleEditForm.dataSetMetricFieldId" placeholder="请选择" filterable @change="changeMetrics" @click="changeMetrics">
                             <template v-for="(metric, index) in dashboardHelper.reportssHelper[handleEditForm.reportXAxis][handleEditForm.reportYAxis].metrics">
-                                <el-option :key="metric.id" :label="metric.showName" :value="metric.id">
+                                <el-option :key="index" :label="metric.showName" :value="metric.id">
                                     <span style="float: left">{{ metric.showName }}</span>
                                     <span style="float: right; color: #8492a6; font-size: 13px; margin-left: 20px">{{ metric.expression }}</span>
                                 </el-option>
@@ -94,9 +94,9 @@
                         </el-select>
                     </el-form-item>
                     <el-form-item v-if="handleEditForm.isHandleEditFormMetricMultiple" label="数据集指标" prop="dataSetMetricFieldIds">
-                        <el-select v-model="handleEditForm.dataSetMetricFieldIds" placeholder="请选择" filterable multiple>
+                        <el-select v-model="handleEditForm.dataSetMetricFieldIds" placeholder="请选择" filterable multiple @change="changeMetrics"  @click="changeMetrics">
                             <template v-for="(metric, index) in dashboardHelper.reportssHelper[handleEditForm.reportXAxis][handleEditForm.reportYAxis].metrics">
-                                <el-option :key="metric.id" :label="metric.showName" :value="metric.id">
+                                <el-option :key="index" :label="metric.showName" :value="metric.id">
                                     <span style="float: left">{{ metric.showName }}</span>
                                     <span style="float: right; color: #8492a6; font-size: 13px; margin-left: 20px">{{ metric.expression }}</span>
                                 </el-option>
@@ -104,9 +104,9 @@
                         </el-select>
                     </el-form-item>
                     <el-form-item v-if="handleEditForm.isHandleEditFormDimensionMultiple" label="数据集维度" prop="dataSetDimensionFieldIds">
-                        <el-select v-model="handleEditForm.dataSetDimensionFieldIds" placeholder="请选择" filterable multiple>
-                            <template v-for="(dimension, index) in dashboardHelper.reportssHelper[handleEditForm.reportXAxis][handleEditForm.reportYAxis].dimensions">
-                                <el-option :key="dimension.id" :label="dimension.showName" :value="dimension.id">
+                        <el-select v-model="handleEditForm.dataSetDimensionFieldIds" placeholder="请选择" filterable multiple @change="changeDimensions"  @click="changeDimensions">
+                            <template>
+                                <el-option v-for="(dimension, index) in dashboardHelper.reportssHelper[handleEditForm.reportXAxis][handleEditForm.reportYAxis].dimensions" :key="index" :label="dimension.showName" :value="dimension.id">
                                     <span style="float: left">{{ dimension.showName }}</span>
                                     <span style="float: right; color: #8492a6; font-size: 13px; margin-left: 20px">{{ dimension.expression }}</span>
                                 </el-option>
@@ -114,9 +114,9 @@
                         </el-select>
                     </el-form-item>
                     <el-form-item v-if="!handleEditForm.isHandleEditFormDimensionMultiple" label="数据集维度" prop="dataSetDimensionFieldId">
-                        <el-select v-model="handleEditForm.dataSetDimensionFieldId" placeholder="请选择" filterable @change="changeDataSetDimension">
-                            <template v-for="(dimension, index) in dashboardHelper.reportssHelper[handleEditForm.reportXAxis][handleEditForm.reportYAxis].dimensions">
-                                <el-option :key="dimension.id" :label="dimension.showName" :value="dimension.id">
+                        <el-select v-model="handleEditForm.dataSetDimensionFieldId" placeholder="请选择" filterable  @change="changeDimensions"  @click="changeDimensions">
+                            <template>
+                                <el-option v-for="(dimension, index) in dashboardHelper.reportssHelper[handleEditForm.reportXAxis][handleEditForm.reportYAxis].dimensions" :key="index" :label="dimension.showName" :value="dimension.id">
                                     <span style="float: left">{{ dimension.showName }}</span>
                                     <span style="float: right; color: #8492a6; font-size: 13px; margin-left: 20px">{{ dimension.expression }}</span>
                                 </el-option>
@@ -285,11 +285,15 @@
                                     <div></div>
                                     <div></div>
                                 </el-col>
+                                <el-col v-if="'TABLE' === handleEditForm.chartType">
+                                    <div></div>
+                                    <div></div>
+                                </el-col>
                                 <el-col v-if="'MAP' === handleEditForm.chartType">
                                     <el-form ref="handleEditForm.chartSettings" :rules="rules" :model="handleEditForm.chartSettings" label-width="20%">
                                         <el-form-item label="设置省份">
                                             <el-select v-model="handleEditForm.config.chartSettings.position" placeholder="请选择">
-                                                <el-option v-for="(province, index) in provinces" :key="index" :label="province.hanzi" :value="province.pinyin"></el-option>
+                                                <el-option v-for="(province, index) in provincesDup" :key="index" :label="province.hanzi" :value="province.pinyin"></el-option>
                                             </el-select>
                                         </el-form-item>
                                     </el-form>
@@ -494,7 +498,7 @@
                                     <Guage :report="report" v-if="'GUAGE' === report.chartType"></Guage>
                                     <Map :report="report" v-if="'MAP' === report.chartType"></Map>
                                     <Table :report="report" v-if="'TABLE' === report.chartType"></Table>
-                                    <Table style="margin-bottom: 20px" :report="report" :isTop10Table="true" v-if="'TOP_10_TABLE' === report.chartType"></Table>
+                                    <Table style="margin-bottom: 20px" :report="report" :isTopXTable="true" v-if="'TOP_X_TABLE' === report.chartType"></Table>
                                 </div>
                             </el-card>
                         </el-col>
@@ -626,10 +630,10 @@
                             {required: true, message: '请选择报表类型', trigger: 'change'}
                         ],
                         dataSetMetricFieldIds: [
-                            {required: true, message: '请选择数据集指标', trigger: 'change'}
+                            {required: true, message: '请选择数据集指标s', trigger: 'change'}
                         ],
                         dataSetDimensionFieldIds: [
-                            {required: true, message: '请选择数据集维度', trigger: 'change'}
+                            {required: true, message: '请选择数据集维度s', trigger: 'change'}
                         ],
                         dataSetMetricFieldId: [
                             {required: true, message: '请选择数据集指标', trigger: 'change'}
@@ -661,8 +665,16 @@
                 handleEditForm : {
                     reportXAxis: 0,
                     reportYAxis: 0,
-                    name: "",
+                    id: 0,
+                    name : "新报表",
+                    description: "",
                     dataSetId: "",
+                    isHandleEditFormMetricMultiple: true,
+                    isHandleEditFormDimensionMultiple: false,
+                    dataSetMetricFieldId: '',
+                    dataSetDimensionFieldId: '',
+                    dataSetMetricFieldIds: [],
+                    dataSetDimensionFieldIds: [],
                     chartType: '',
                     config: {}
                 },
@@ -697,7 +709,7 @@
 
                 chartTypeToolTips: [],
 
-                provinces: [
+                provincesDup: [
                     {
                         hanzi: "中国",
                         pinyin: "china"
@@ -709,7 +721,8 @@
                         hanzi: "山西",
                     },
                     {
-                        hanzi: "内蒙古"
+                        hanzi: "内蒙古",
+                        pinyin: "province/neimenggu"
                     },
                     {
                         hanzi: "辽宁"
@@ -803,36 +816,81 @@
         },
 
         watch: {
-            'handleEditForm.chartType'(val) {
-                this.handleEditForm.isHandleEditFormMetricMultiple = true
-                setTimeout(() => {
-                    this.handleEditForm.isHandleEditFormMetricMultiple =
-                        'GUAGE' !== val && 'TOP_10_TABLE' !== val
-                })
-
-                this.handleEditForm.isHandleEditFormDimensionMultiple = false
-                setTimeout(() => {
-                    this.handleEditForm.isHandleEditFormDimensionMultiple =
-                        'GUAGE' === val || 'TABLE' === val
-                })
-            }
+            'handleEditForm.chartType'() {
+                let report = this.handleEditForm
+                this.setHandleEditFormDimensionMetricMultiple(report)
+            },
         },
 
         methods: {
 
-            changeDataSetDimension() {
+            changeMetrics() {
+                this.clearValidate()
+                this.$forceUpdate()
+            },
+
+            changeDimensions() {
+                this.clearValidate()
                 let xAxis = this.handleEditForm.reportXAxis
                 let yAxis = this.handleEditForm.reportYAxis
                 let dimensions = this.dashboardHelper.reportssHelper[xAxis][yAxis].dimensions
-                dimensions.forEach(dimension => {
-                    if (dimension.id === this.handleEditForm.dataSetDimensionFieldId && dimension.isDate) {
-                        this.handleEditForm.config.chartSettings.xAxisType = 'time'
+                if ("HISTOGRAM" === this.handleEditForm.chartType) {
+                    dimensions.forEach(dimension => {
+                        if (dimension.id === this.handleEditForm.dataSetDimensionFieldId
+                            && dimension.isDate) {
+                            this.handleEditForm.config.chartSettings.xAxisType = 'time'
+                        }
+                    })
+                }
+                this.$forceUpdate()
+            },
+
+
+            editSetHandleEditFormDimensionMetricMultiple(report) {
+                report.isHandleEditFormMetricMultiple = true
+                setTimeout(() => {
+                    report.isHandleEditFormMetricMultiple =
+                        'GUAGE' !== report.chartType && 'TOP_10_TABLE' !== report.chartType
+                    if (!report.isHandleEditFormMetricMultiple) {
+                        report.dataSetMetricFieldId = report.dataSetMetricFieldIds[0]
+                        report.dataSetMetricFieldIds = []
+                    } else {
+                        report.dataSetMetricFieldId = ""
                     }
+                    this.$forceUpdate()
+                })
+
+                report.isHandleEditFormDimensionMultiple = false
+                setTimeout(() => {
+                    report.isHandleEditFormDimensionMultiple =
+                        'GUAGE' === report.chartType || 'TABLE' === report.chartType
+                    if (!report.isHandleEditFormDimensionMultiple) {
+                        report.dataSetDimensionFieldId = report.dataSetDimensionFieldIds[0]
+                        report.dataSetDimensionFieldIds = []
+                    } else {
+                        report.dataSetDimensionFieldId = ""
+                    }
+                    this.$forceUpdate()
+                })
+            },
+
+            setHandleEditFormDimensionMetricMultiple(report) {
+                report.isHandleEditFormMetricMultiple = true
+                setTimeout(() => {
+                    report.isHandleEditFormMetricMultiple =
+                        'GUAGE' !== report.chartType && 'TOP_10_TABLE' !== report.chartType
+                    this.$forceUpdate()
+                })
+
+                report.isHandleEditFormDimensionMultiple = false
+                setTimeout(() => {
+                    report.isHandleEditFormDimensionMultiple =
+                        'GUAGE' === report.chartType || 'TABLE' === report.chartType
+                    this.$forceUpdate()
                 })
             },
 
             changeChartType() {
-                console.log(this.handleEditForm.chartType)
                 this.handleEditForm.dataSetMetricFieldId = ''
                 this.handleEditForm.dataSetDimensionFieldId = ''
                 this.handleEditForm.dataSetMetricFieldIds = []
@@ -954,46 +1012,45 @@
                 chartSettings.area = 0 < chartSettings.stack.key.length;
             },
 
-            getDataSetMetricsAndDimensions(id) {
-                this.getDataSetMetrics(id)
-                this.getDataSetDimensions(id)
-            },
-
-            // 获取数据集下的指标列表
-            getDataSetMetrics(id) {
-                this.handleEditForm.dataSetMetricFieldIds = []
-                let queryParams = {
-                    id : id
-                }
-                this.$api.REPORT_DATA_SET_API.get('GET_DATA_SET_METRICS', queryParams).then(res => {
-                    this.dashboardHelper.reportssHelper[this.handleEditForm.reportXAxis][this.handleEditForm.reportYAxis].metrics = res.data
-                })
-            },
-
-            // 获取数据集下的维度列表
-            getDataSetDimensions(id) {
-                this.handleEditForm.dataSetDimensionFieldIds = []
-                let queryParams = {
-                    id : id
-                }
-                this.$api.REPORT_DATA_SET_API.get('GET_DATA_SET_DIMENSIONS', queryParams).then(res => {
-                    this.dashboardHelper.reportssHelper[this.handleEditForm.reportXAxis][this.handleEditForm.reportYAxis].dimensions = res.data
-                })
-            },
-
             // 获取所有数据集和数据集字段的组合cascade
-            getDataSetsFields() {
-                this.$api.REPORT_DATA_SET_API.get("GET_DATA_SETS_FIELDS").then(res => {
-                    this.dashboardConstant.reportConstant.dataSetsFields = res.data
+            async getDataSetsFields(dataSetIds) {
+                let dataSetsFields
+                let getParams = {
+                    ids : dataSetIds
+                }
+                await this.$api.REPORT_DATA_SET_API.get("GET_DATA_SETS_FIELDS", getParams).then(res => {
+                    dataSetsFields = res.data
+                })
+                return dataSetsFields
+            },
+
+            clearValidate() {
+                if (undefined !== this.$refs["handleEditForm"]) {
+                    this.$refs["handleEditForm"].clearValidate()
+                }
+                this.$forceUpdate()
+            },
+
+            changeDataSet() {
+                this.clearValidate()
+                this.handleEditForm.dataSetMetricFieldId = ''
+                this.handleEditForm.dataSetDimensionFieldId = ''
+                this.handleEditForm.dataSetMetricFieldIds = []
+                this.handleEditForm.dataSetDimensionFieldIds = []
+                this.getDataSetsFields([this.handleEditForm.dataSetId]).then(res => {
+                    this.dashboardHelper.reportssHelper[this.handleEditForm.reportXAxis][this.handleEditForm.reportYAxis].metrics = res[this.handleEditForm.dataSetId].metrics
+                    this.dashboardHelper.reportssHelper[this.handleEditForm.reportXAxis][this.handleEditForm.reportYAxis].dimensions = res[this.handleEditForm.dataSetId].dimensions
                 })
             },
 
             // step2-报表编辑
             handleEdit(reportXAxis, reportYAxis) {
+                this.clearValidate()
                 this.handleEditForm = this.dashboard.reportss[reportXAxis][reportYAxis]
                 this.handleEditForm.reportXAxis = reportXAxis
                 this.handleEditForm.reportYAxis = reportYAxis
                 this.editVisible = true
+                this.setHandleEditFormDimensionMetricMultiple(this.handleEditForm)
             },
 
             // 添加一行
@@ -1280,7 +1337,6 @@
                             queryColumns: []
                         })
                     })
-
                     /**
                      * 报表的数据集指标和维度
                      * @type {Array}
@@ -1289,11 +1345,16 @@
                     let dataSetIds = []
                     this.dashboard.reportss.forEach(reports => {
                         reports.forEach(report => {
+                            this.editSetHandleEditFormDimensionMetricMultiple(report)
                             if (-1 === dataSetIds.indexOf(report.dataSetId)) {
                                 dataSetIds.push(report.dataSetId)
                             }
                         })
                     })
+
+                    console.log(this.dashboard)
+                    console.log(this.dashboardHelper)
+
                     let getParams = {
                         ids : dataSetIds
                     }
@@ -1323,8 +1384,8 @@
             },
 
             setProvincesPinyin() {
-                this.provinces.forEach(province => {
-                    if ("china" !== province.pinyin) {
+                this.provincesDup.forEach(province => {
+                    if ("china" !== province.pinyin && "province/neimenggu" !== province.pinyin) {
                         province.pinyin = "province/" + this.$hanzi2Pinyin.hanzi2Pinyin(province.hanzi)
                     }
                 })

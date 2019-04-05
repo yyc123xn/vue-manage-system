@@ -82,7 +82,7 @@
                                 <Guage :report="report" :reportFilters="dashboard.reportFilters" v-if="'GUAGE' === report.chartType"></Guage>
                                 <Map :report="report" :reportFilters="dashboard.reportFilters" v-if="'MAP' === report.chartType"></Map>
                                 <Table :report="report" :reportFilters="dashboard.reportFilters" v-if="'TABLE' === report.chartType"></Table>
-                                <Table style="margin-bottom: 20px" :report="report" :reportFilters="dashboard.reportFilters" :isTopXTable="true" v-if="'TOP_10_TABLE' === report.chartType"></Table>
+                                <Table style="margin-bottom: 20px" :report="report" :reportFilters="dashboard.reportFilters" v-if="'TOP_X_TABLE' === report.chartType"></Table>
                             </div>
                         </el-card>
                     </el-col>

@@ -282,12 +282,24 @@
                                     <div>备注7. 展示指标数值：对于每一个指标的数值是否需要展示出来。</div>
                                 </el-col>
                                 <el-col v-if="'TABLE' === handleEditForm.chartType">
-                                    <div></div>
-                                    <div></div>
+                                    <el-form ref="handleEditForm.chartSettings" :rules="rules" :model="handleEditForm.chartSettings" label-width="20%">
+                                        <el-form-item label="展示分页标签">
+                                            <el-switch v-model="handleEditForm.config.chartSettings.isPaged"></el-switch>
+                                        </el-form-item>
+                                    </el-form>
+                                    <div>备注1. 展示分页标签：topXTable中是否展示分页标签，如果展示分页标签，每页默认展示10条数据。</div>
                                 </el-col>
-                                <el-col v-if="'TABLE' === handleEditForm.chartType">
-                                    <div></div>
-                                    <div></div>
+                                <el-col v-if="'TOP_X_TABLE' === handleEditForm.chartType">
+                                    <el-form ref="handleEditForm.chartSettings" :rules="rules" :model="handleEditForm.chartSettings" label-width="20%">
+                                        <el-form-item label="topX（可选）">
+                                            <el-input-number v-model="handleEditForm.config.chartSettings.topX" min="1" :step="1"></el-input-number>
+                                        </el-form-item>
+                                        <el-form-item label="展示分页标签">
+                                            <el-switch v-model="handleEditForm.config.chartSettings.isPaged"></el-switch>
+                                        </el-form-item>
+                                    </el-form>
+                                    <div>备注1. topX（可选）：topXTable中展示的topX条数据，例如：选择数字为10，则展示的数据为所选维度下的指标大小为前10的数据。</div>
+                                    <div>备注2. 展示分页标签：topXTable中是否展示分页标签，如果展示分页标签，每页默认展示10条数据。</div>
                                 </el-col>
                                 <el-col v-if="'MAP' === handleEditForm.chartType">
                                     <el-form ref="handleEditForm.chartSettings" :rules="rules" :model="handleEditForm.chartSettings" label-width="20%">
@@ -498,7 +510,7 @@
                                     <Guage :report="report" v-if="'GUAGE' === report.chartType"></Guage>
                                     <Map :report="report" v-if="'MAP' === report.chartType"></Map>
                                     <Table :report="report" v-if="'TABLE' === report.chartType"></Table>
-                                    <Table style="margin-bottom: 20px" :report="report" :isTopXTable="true" v-if="'TOP_X_TABLE' === report.chartType"></Table>
+                                    <Table style="margin-bottom: 20px" :report="report" v-if="'TOP_X_TABLE' === report.chartType"></Table>
                                 </div>
                             </el-card>
                         </el-col>
@@ -850,7 +862,7 @@
                 report.isHandleEditFormMetricMultiple = true
                 setTimeout(() => {
                     report.isHandleEditFormMetricMultiple =
-                        'GUAGE' !== report.chartType && 'TOP_10_TABLE' !== report.chartType
+                        'GUAGE' !== report.chartType && 'TOP_X_TABLE' !== report.chartType
                     if (!report.isHandleEditFormMetricMultiple) {
                         report.dataSetMetricFieldId = report.dataSetMetricFieldIds[0]
                         report.dataSetMetricFieldIds = []
@@ -878,7 +890,7 @@
                 report.isHandleEditFormMetricMultiple = true
                 setTimeout(() => {
                     report.isHandleEditFormMetricMultiple =
-                        'GUAGE' !== report.chartType && 'TOP_10_TABLE' !== report.chartType
+                        'GUAGE' !== report.chartType && 'TOP_X_TABLE' !== report.chartType
                     this.$forceUpdate()
                 })
 
@@ -909,6 +921,10 @@
                     return this.getPieConfig()
                 } else if ("GUAGE" === chartType) {
                     return this.getGuageConfig()
+                } else if ("TOP_X_TABLE" === chartType) {
+                    return this.getTopXTableConfig()
+                } else if ("TABLE" === chartType) {
+                    return this.getTableConfig()
                 } else {
                     return {}
                 }
@@ -986,6 +1002,25 @@
                                 max: 0
                             }
                         }
+                    }
+                }
+            },
+
+            getTopXTableConfig() {
+                return {
+                    chartSettings: {
+                        topX: 10,
+                        isPaged: false,
+                        pageSize: 10
+                    }
+                }
+            },
+
+            getTableConfig() {
+                return {
+                    chartSettings: {
+                        isPaged: false,
+                        pageSize: 10
                     }
                 }
             },

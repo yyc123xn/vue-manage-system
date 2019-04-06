@@ -23,7 +23,20 @@
                         </el-select>
                     </el-form-item>
                     <el-form-item label="数据库&表" prop="databaseTable">
-                        <el-cascader filterable v-model="dataSet.databaseTable" :options="dataSetConstant.databasesTables"></el-cascader>
+                        <el-cascader filterable v-model="dataSet.databaseTable" :options="dataSetConstant.databasesTables" @change="changeDataBaseTable"></el-cascader>
+                        <el-collapse style=" margin-top: 17px">
+                            <el-collapse-item :title="dataSet.databaseTable.length == 2 ?
+                            (dataSet.databaseTable[0] + ' / ' + dataSet.databaseTable[1] + ' 下的字段') : '所选数据库表下的字段'" name="1">
+                                <el-table height="300px" :data="dataSetConstant.databaseTableFields" border class="table">
+                                    <el-table-column prop="columnName" label="字段名">
+                                    </el-table-column>
+                                    <el-table-column prop="dataType" label="字段数据类型">
+                                    </el-table-column>
+                                    <el-table-column prop="columnComment" label="字段备注">
+                                    </el-table-column>
+                                </el-table>
+                            </el-collapse-item>
+                        </el-collapse>
                     </el-form-item>
                     <el-form-item label="计算周期" prop="period">
                         <el-select v-model="dataSet.period" placeholder="请选择">
@@ -36,8 +49,7 @@
                         </el-select>
                     </el-form-item>
                     <el-form-item label="字段详情">
-                        <el-table
-                                :data="dataSet.dataSetFields">
+                        <el-table :data="dataSet.dataSetFields">
                             <el-table-column type="expand">
                                 <template slot-scope="props">
                                     <el-form label-position="right" inline class="demo-table-expand">
@@ -180,6 +192,7 @@
                     databasesTables: [],
                     dataSourceTypes: [],
                     periods: [],
+                    databaseTableFields: [],
                     dataSetFieldsConstant: {
                         dataTypes: [],
                         calculateTypes: [],
@@ -189,6 +202,16 @@
             }
         },
         methods: {
+
+            changeDataBaseTable() {
+                let getParams = {
+                    database: this.dataSet.databaseTable[0],
+                    tableName : this.dataSet.databaseTable[1]
+                }
+                this.$api.REPORT_DATA_SOURCE_API.get("GET_DATABASE_TABLE_FIELDS", getParams).then(res => {
+                    this.dataSetConstant.databaseTableFields = res.data
+                })
+            },
 
             addDataSet(dataSet) {
                 this.$refs[dataSet].validate((valid) => {

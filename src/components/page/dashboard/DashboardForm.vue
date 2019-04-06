@@ -286,8 +286,12 @@
                                         <el-form-item label="展示分页标签">
                                             <el-switch v-model="handleEditForm.config.chartSettings.isPaged"></el-switch>
                                         </el-form-item>
+                                        <el-form-item label="分页每页大小">
+                                            <el-input-number v-model="handleEditForm.config.chartSettings.pageSize" min="1" :step="1"></el-input-number>
+                                        </el-form-item>
                                     </el-form>
                                     <div>备注1. 展示分页标签：topXTable中是否展示分页标签，如果展示分页标签，每页默认展示10条数据。</div>
+                                    <div>备注2. 分页每页大小：topXTable中分页每页展示的数据条目个数。</div>
                                 </el-col>
                                 <el-col v-if="'TOP_X_TABLE' === handleEditForm.chartType">
                                     <el-form ref="handleEditForm.chartSettings" :rules="rules" :model="handleEditForm.chartSettings" label-width="20%">
@@ -297,9 +301,13 @@
                                         <el-form-item label="展示分页标签">
                                             <el-switch v-model="handleEditForm.config.chartSettings.isPaged"></el-switch>
                                         </el-form-item>
+                                        <el-form-item label="分页每页大小">
+                                            <el-input-number v-model="handleEditForm.config.chartSettings.pageSize" min="1" :step="1"></el-input-number>
+                                        </el-form-item>
                                     </el-form>
                                     <div>备注1. topX（可选）：topXTable中展示的topX条数据，例如：选择数字为10，则展示的数据为所选维度下的指标大小为前10的数据。</div>
                                     <div>备注2. 展示分页标签：topXTable中是否展示分页标签，如果展示分页标签，每页默认展示10条数据。</div>
+                                    <div>备注3. 分页每页大小：topXTable中分页每页展示的数据条目个数。</div>
                                 </el-col>
                                 <el-col v-if="'MAP' === handleEditForm.chartType">
                                     <el-form ref="handleEditForm.chartSettings" :rules="rules" :model="handleEditForm.chartSettings" label-width="20%">
@@ -876,6 +884,7 @@
                 setTimeout(() => {
                     report.isHandleEditFormDimensionMultiple =
                         'GUAGE' === report.chartType || 'TABLE' === report.chartType
+                        || 'TOP_X_TABLE' === report.chartType
                     if (!report.isHandleEditFormDimensionMultiple) {
                         report.dataSetDimensionFieldId = report.dataSetDimensionFieldIds[0]
                         report.dataSetDimensionFieldIds = []
@@ -898,6 +907,7 @@
                 setTimeout(() => {
                     report.isHandleEditFormDimensionMultiple =
                         'GUAGE' === report.chartType || 'TABLE' === report.chartType
+                        || 'TOP_X_TABLE' === report.chartType
                     this.$forceUpdate()
                 })
             },

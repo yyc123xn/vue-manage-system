@@ -14,6 +14,8 @@ const reportDataSourceApi = {
 
     GET_DATABASE_TABLES : '/report/data_source/database/tables',
 
+    GET_DATABASE_TABLE_FIELDS: '/report/data_source/database/table/fields',
+
     get(urlName, getParams) {
         let url = this[urlName]
         return axios.get(url, {params : getParams})

@@ -22,7 +22,7 @@
         </el-col>
         <el-col v-if="report.config.chartSettings.isPaged">
             <el-col class="pagination">
-                <el-pagination height="50" small @current-change="handleCurrentChange" layout="prev, pager, next" :page-size="pageSize" :total="total">
+                <el-pagination height="50" small @current-change="handleCurrentChange" layout="prev, pager, next" :page-size="report.config.chartSettings.pageSize" :total="total">
                 </el-pagination>
             </el-col>
         </el-col>
@@ -120,7 +120,7 @@
                     id : reportId
                 }
                 if (this.report.config.chartSettings.isPaged) {
-                    postParams.pageSize = this.pageSize
+                    postParams.pageSize = this.report.config.chartSettings.pageSize
                     postParams.pageIndex = this.pageIndex
                 }
                 let queryReportFilter = this.initQueryReportFilter()
@@ -135,7 +135,6 @@
                     await this.$api.REPORT_REPORT_API.post('GET_REPORT_DATA', postParams).then(res => {
                         reportData = res.data
                         if (this.report.config.chartSettings.isPaged) {
-                            this.pageSize = reportData.pagination.pageSize
                             this.pageIndex = reportData.pagination.pageIndex
                             this.total = reportData.pagination.total
                         }

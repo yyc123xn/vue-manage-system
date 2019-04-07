@@ -27,7 +27,7 @@
                         <el-collapse style=" margin-top: 17px">
                             <el-collapse-item :title="dataSet.databaseTable.length == 2 ?
                             (dataSet.databaseTable[0] + ' / ' + dataSet.databaseTable[1] + ' 下的字段') : '所选数据库表下的字段'" name="1">
-                                <el-table height="300px" :data="dataSetConstant.databaseTableFields" border class="table">
+                                <el-table height="230px" :data="dataSetConstant.databaseTableFields" border class="table">
                                     <el-table-column prop="columnName" label="字段名">
                                     </el-table-column>
                                     <el-table-column prop="dataType" label="字段数据类型">

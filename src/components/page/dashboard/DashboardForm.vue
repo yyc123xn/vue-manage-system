@@ -67,16 +67,24 @@
                         <el-input type="textarea" rows="5" v-model="handleEditForm.description"></el-input>
                     </el-form-item>
                     <el-form-item label="数据集列表" prop="dataSetId">
-                        <el-select v-model="handleEditForm.dataSetId" placeholder="请选择" filterable @change="changeDataSet">
-                            <template v-for="(dataSet, index) in dashboardConstant.reportConstant.dataSets">
-                                <el-option :key="dataSet.id" :label="dataSet.name" :value="dataSet.id"></el-option>
+                        <el-select
+                                v-model="handleEditForm.dataSetId"
+                                filterable
+                                remote
+                                reserve-keyword
+                                placeholder="请输入数据集名"
+                                :remote-method="queryDataSets"
+                                :loading="loading"
+                                @change="changeDataSet">
+                            <template v-for="(dataSet, index) in dashboardHelper.reportssHelper[handleEditForm.reportXAxis][handleEditForm.reportYAxis].dataSets">
+                                <el-option :key="index" :label="dataSet.name" :value="dataSet.id"></el-option>
                             </template>
                         </el-select>
                     </el-form-item>
                     <el-form-item label="报表类型" prop="chartType">
                         <el-select v-model="handleEditForm.chartType" placeholder="请选择" @change="changeChartType">
                             <template v-for="(chartType, index) in dashboardConstant.reportConstant.chartTypes">
-                                <el-option :key="chartType.nameEn" :label="chartType.nameCn" :value="chartType.nameEn">
+                                <el-option :key="index" :label="chartType.nameCn" :value="chartType.nameEn">
                                     <span style="float: left">{{ chartType.nameCn }}</span>
                                     <span style="float: right; color: #8492a6; font-size: 13px; margin-left: 20px">{{ chartType.nameEn }}</span>
                                 </el-option>
@@ -287,26 +295,26 @@
                                             <el-switch v-model="handleEditForm.config.chartSettings.isPaged"></el-switch>
                                         </el-form-item>
                                         <el-form-item label="分页每页大小">
-                                            <el-input-number v-model="handleEditForm.config.chartSettings.pageSize" min="1" :step="1"></el-input-number>
+                                            <el-input-number v-model="handleEditForm.config.chartSettings.pageSize" :min="1" :step="1"></el-input-number>
                                         </el-form-item>
                                     </el-form>
-                                    <div>备注1. 展示分页标签：topXTable中是否展示分页标签，如果展示分页标签，每页默认展示10条数据。</div>
+                                    <div>备注1. 展示分页标签：topXTable中是否展示分页标签。</div>
                                     <div>备注2. 分页每页大小：topXTable中分页每页展示的数据条目个数。</div>
                                 </el-col>
                                 <el-col v-if="'TOP_X_TABLE' === handleEditForm.chartType">
                                     <el-form ref="handleEditForm.chartSettings" :rules="rules" :model="handleEditForm.chartSettings" label-width="20%">
                                         <el-form-item label="topX（可选）">
-                                            <el-input-number v-model="handleEditForm.config.chartSettings.topX" min="1" :step="1"></el-input-number>
+                                            <el-input-number v-model="handleEditForm.config.chartSettings.topX" :min="1" :step="1"></el-input-number>
                                         </el-form-item>
                                         <el-form-item label="展示分页标签">
                                             <el-switch v-model="handleEditForm.config.chartSettings.isPaged"></el-switch>
                                         </el-form-item>
                                         <el-form-item label="分页每页大小">
-                                            <el-input-number v-model="handleEditForm.config.chartSettings.pageSize" min="1" :step="1"></el-input-number>
+                                            <el-input-number v-model="handleEditForm.config.chartSettings.pageSize" :min="1" :step="1"></el-input-number>
                                         </el-form-item>
                                     </el-form>
                                     <div>备注1. topX（可选）：topXTable中展示的topX条数据，例如：选择数字为10，则展示的数据为所选维度下的指标大小为前10的数据。</div>
-                                    <div>备注2. 展示分页标签：topXTable中是否展示分页标签，如果展示分页标签，每页默认展示10条数据。</div>
+                                    <div>备注2. 展示分页标签：topXTable中是否展示分页标签。</div>
                                     <div>备注3. 分页每页大小：topXTable中分页每页展示的数据条目个数。</div>
                                 </el-col>
                                 <el-col v-if="'MAP' === handleEditForm.chartType">
@@ -394,7 +402,7 @@
                                         <el-form-item label="作用报表">
                                             <el-select v-model="props.row.reportKeys" placeholder="请选择" multiple filterable>
                                                 <template v-for="(report, index) in dashboardHelper.reportFilterHelper" :value="filterType.nameEn">
-                                                    <el-option :key="report.reportXAxis+ '|' + report.reportYAxis" :label="report.name" :value="report.reportXAxis+ '|' + report.reportYAxis"></el-option>
+                                                    <el-option :key="index" :label="report.name" :value="report.reportXAxis+ '|' + report.reportYAxis"></el-option>
                                                 </template>
                                             </el-select>
                                         </el-form-item>
@@ -592,7 +600,8 @@
                         [
                             {
                                 metrics: [],
-                                dimensions: []
+                                dimensions: [],
+                                dataSets: []
                             }
                         ]
                     ],
@@ -831,7 +840,9 @@
                     {
                         hanzi: "澳门"
                     }
-                ]
+                ],
+
+                loading: false
             }
         },
 
@@ -1117,7 +1128,8 @@
                 }
                 let reportHelper = {
                     metrics : [],
-                    dimensions: []
+                    dimensions: [],
+                    dataSets: []
                 }
                 this.dashboard.reportss[reportXAxis].push(report)
                 this.dashboardHelper.reportssHelper[reportXAxis].push(reportHelper)
@@ -1142,6 +1154,7 @@
                 let reportsHelper = [{
                     metrics : [],
                     dimensions: [],
+                    dataSets: []
                 }]
                 this.dashboard.reportss.push(reports)
                 this.dashboardHelper.reportssHelper.push(reportsHelper)
@@ -1277,10 +1290,40 @@
                 }
                 if (3 === this.pageIndex) {
                     this.dashboardHelper.reportFilterHelper = []
-                    this.dashboard.reportss.forEach(reports => {
-                        reports.forEach(report => {
+                    let dataSetsFields = []
+                    let dataSetIds = []
+                    for (let i = 0; i < this.dashboard.reportss.length; i++) {
+                        for (let j = 0; j < this.dashboard.reportss[i].length; j++) {
+                            let report = this.dashboard.reportss[i][j];
+                            if (-1 === dataSetIds.indexOf(report.dataSetId)) {
+                                dataSetIds.push(report.dataSetId)
+                            }
                             this.dashboardHelper.reportFilterHelper.push(report)
-                        })
+                        }
+                    }
+                    let getParams = {
+                        ids : dataSetIds
+                    }
+                    this.$api.REPORT_DATA_SET_API.get("GET_DATA_SETS_FIELDS", getParams).then(res => {
+                        let dataSetsFieldsMap = res.data
+                        for (let key in dataSetsFieldsMap) {
+                            let value = dataSetsFieldsMap[key]
+                            let children = []
+                            let dimensions = value.dimensions
+                            let dataSet = value.dataSet
+                            dimensions.forEach(dimension => {
+                                children.push({
+                                    value: dimension.expression,
+                                    label: dimension.showName
+                                })
+                            })
+                            dataSetsFields.push({
+                                value: dataSet.name,
+                                label: dataSet.name,
+                                children: children
+                            })
+                        }
+                        this.dashboardConstant.reportConstant.dataSetsFields = dataSetsFields
                     })
                 }
                 if (4 === this.pageIndex) {
@@ -1322,14 +1365,27 @@
             },
 
             // 获取数据集列表
-            getDataSets() {
-                let queryParams = {
-                    pageIndex: 1,
-                    pageSize: 10
+            queryDataSets(query) {
+                let xAxis = this.handleEditForm.reportXAxis
+                let yAxis = this.handleEditForm.reportYAxis
+                if (query !== '') {
+                    this.loading = true;
+                    let queryParams = {
+                        pageIndex: 1,
+                        pageSize: 10,
+                        queryColumn: "name",
+                        queryCondition: [query]
+                    }
+                    this.$api.REPORT_DATA_SET_API.get('GET_DATA_SET', queryParams).then(res => {
+                        this.dashboardHelper.reportssHelper[xAxis][yAxis].dataSets = res.data.list
+                    })
+                    setTimeout(() => {
+                        this.loading = false;
+                        this.dashboardHelper.reportssHelper[xAxis][yAxis].dataSets = []
+                    }, 200);
+                } else {
+                    this.dashboardHelper.reportssHelper[xAxis][yAxis].dataSets = [];
                 }
-                this.$api.REPORT_DATA_SET_API.get('GET_DATA_SET', queryParams).then(res => {
-                    this.dashboardConstant.reportConstant.dataSets = res.data.list
-                })
             },
 
             // 获取报表类型chartTypes
@@ -1396,10 +1452,6 @@
                             }
                         })
                     })
-
-                    console.log(this.dashboard)
-                    console.log(this.dashboardHelper)
-
                     let getParams = {
                         ids : dataSetIds
                     }
@@ -1410,7 +1462,8 @@
                                 let dataSetId = report.dataSetId
                                 this.dashboardHelper.reportssHelper[i].push({
                                     metrics: res.data[dataSetId].metrics,
-                                    dimensions: res.data[dataSetId].dimensions
+                                    dimensions: res.data[dataSetId].dimensions,
+                                    dataSets: []
                                 })
                             })
                         }
@@ -1443,10 +1496,8 @@
             if (undefined !== dashboardId) {
                 this.getDashboardInfo(dashboardId)
             }
-            this.getDataSets()
             this.getChartTypes()
             this.getFilterTypes()
-            this.getDataSetsFields()
             this.getChartTypeToolTips()
         }
     }

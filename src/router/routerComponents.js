@@ -28,6 +28,8 @@ const DashboardTable = () => import("../components/page/dashboard/DashboardTable
 const DashboardInfo = () => import("../components/page/dashboard/DashboardInfo")
 const DataSourceForm = () => import("../components/page/data_source/DataSourceForm")
 const DataSourceTable = () => import("../components/page/data_source/DataSourceTable")
+const MenuForm = () => import("../components/page/menu/MenuForm")
+const MenuTable = () => import("../components/page/menu/MenuTable")
 
 export default {
     Home: Home,
@@ -59,5 +61,7 @@ export default {
     DashboardTable: DashboardTable,
     DashboardInfo: DashboardInfo,
     DataSourceForm: DataSourceForm,
-    DataSourceTable: DataSourceTable
+    DataSourceTable: DataSourceTable,
+    MenuForm: MenuForm,
+    MenuTable: MenuTable
 };

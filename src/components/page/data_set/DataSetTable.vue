@@ -9,7 +9,7 @@
         <el-col class="container">
             <el-col class="handle-box">
                 <el-button type="primary" icon="delete" class="handle-del mr10">批量删除</el-button>
-                <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10">
+                <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10" filterable>
                     <el-option v-for="dataSetFilterField in dataSetFilterFields"
                                :key="dataSetFilterField.columnName" :label="dataSetFilterField.columnComment"
                                :value="dataSetFilterField.columnName">
@@ -223,7 +223,6 @@
                     endDate: ''
                 },
                 isMine: "false",
-                handleDeleteIndex: -1,
                 pickerOptions: {
                     shortcuts: [{
                         text: '最近一周',
@@ -465,10 +464,6 @@
 <style scoped>
     .handle-box {
         margin-bottom: 20px;
-    }
-
-    .handle-select {
-        width: 120px;
     }
 
     .handle-input {

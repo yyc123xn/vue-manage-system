@@ -176,6 +176,34 @@ export default [
     {
         path: "/",
         component: "Home",
+        name: 'menu',
+        meta: {
+            title: '菜单管理',
+            icon: 'el-icon-lx-punch',
+        },
+        children: [
+            {
+                path: 'menu_table',
+                component: "MenuTable",
+                name: 'menu_table',
+                meta: {
+                    icon: 'el-icon-lx-cascades',
+                    title: '菜单列表'
+                }
+            },
+            {
+                path: 'menu_form',
+                component: "MenuForm",
+                name: 'menu_form',
+                meta: {
+                    title: '菜单表单'
+                }
+            }
+        ]
+    },
+    {
+        path: "/",
+        component: "Home",
         name: 'fixed_assets',
         meta: {
             title: '公司固定资产',

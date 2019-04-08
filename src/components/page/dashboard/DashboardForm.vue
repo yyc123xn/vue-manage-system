@@ -320,7 +320,7 @@
                                 <el-col v-if="'MAP' === handleEditForm.chartType">
                                     <el-form ref="handleEditForm.chartSettings" :rules="rules" :model="handleEditForm.chartSettings" label-width="20%">
                                         <el-form-item label="设置省份">
-                                            <el-select v-model="handleEditForm.config.chartSettings.position" placeholder="请选择">
+                                            <el-select v-model="handleEditForm.config.chartSettings.position" placeholder="请选择" filterable>
                                                 <el-option v-for="(province, index) in provincesDup" :key="index" :label="province.hanzi" :value="province.pinyin"></el-option>
                                             </el-select>
                                         </el-form-item>
@@ -1301,11 +1301,8 @@
                             this.dashboardHelper.reportFilterHelper.push(report)
                         }
                     }
-                    let getParams = {
-                        ids : dataSetIds
-                    }
-                    this.$api.REPORT_DATA_SET_API.get("GET_DATA_SETS_FIELDS", getParams).then(res => {
-                        let dataSetsFieldsMap = res.data
+                    this.getDataSetsFields(dataSetIds).then(res => {
+                        let dataSetsFieldsMap = res
                         for (let key in dataSetsFieldsMap) {
                             let value = dataSetsFieldsMap[key]
                             let children = []
@@ -1452,22 +1449,23 @@
                             }
                         })
                     })
-                    let getParams = {
-                        ids : dataSetIds
-                    }
-                    this.$api.REPORT_DATA_SET_API.get("GET_DATA_SETS_FIELDS", getParams).then(res => {
-                        for(let i = 0; i < this.dashboard.reportss.length; i++) {
-                            this.dashboardHelper.reportssHelper.push([]);
-                            this.dashboard.reportss[i].forEach(report => {
-                                let dataSetId = report.dataSetId
-                                this.dashboardHelper.reportssHelper[i].push({
-                                    metrics: res.data[dataSetId].metrics,
-                                    dimensions: res.data[dataSetId].dimensions,
-                                    dataSets: []
-                                })
+                    this.setHandleEditFormDataSetAndMetricsAndDimensions(dataSetIds)
+                })
+            },
+
+            setHandleEditFormDataSetAndMetricsAndDimensions(dataSetIds) {
+                this.getDataSetsFields(dataSetIds).then(res => {
+                    for (let i = 0; i < this.dashboard.reportss.length; i++) {
+                        this.dashboardHelper.reportssHelper.push([]);
+                        this.dashboard.reportss[i].forEach(report => {
+                            let dataSetId = report.dataSetId
+                            this.dashboardHelper.reportssHelper[i].push({
+                                metrics: res[dataSetId].metrics,
+                                dimensions: res[dataSetId].dimensions,
+                                dataSets: [res[dataSetId].dataSet]
                             })
-                        }
-                    })
+                        })
+                    }
                 })
             },
 

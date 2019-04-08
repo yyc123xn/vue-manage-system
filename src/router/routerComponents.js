@@ -21,8 +21,6 @@ const DeveloperForm = () => import("../components/page/developer/DeveloperForm")
 const DeveloperTable = () => import("../components/page/developer/DeveloperTable")
 const ClientForm = () => import("../components/page/client/ClientForm")
 const ClientTable = () => import("../components/page/client/ClientTable")
-const ReportForm = () => import("../components/page/report/ReportForm")
-const ReportTable = () => import("../components/page/report/ReportTable")
 const DataSetForm = () => import("../components/page/data_set/DataSetForm")
 const DataSetTable = () => import("../components/page/data_set/DataSetTable")
 const DashboardForm = () => import("../components/page/dashboard/DashboardForm")
@@ -55,8 +53,6 @@ export default {
     DeveloperTable: DeveloperTable,
     ClientForm: ClientForm,
     ClientTable: ClientTable,
-    ReportForm: ReportForm,
-    ReportTable: ReportTable,
     DataSetForm: DataSetForm,
     DataSetTable: DataSetTable,
     DashboardForm: DashboardForm,

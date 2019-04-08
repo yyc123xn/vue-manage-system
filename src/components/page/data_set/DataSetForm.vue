@@ -38,6 +38,10 @@
                             </el-collapse-item>
                         </el-collapse>
                     </el-form-item>
+                    <el-form-item label="计算次数" prop="remainCalculateTimes">
+                        <el-input-number v-model="dataSet.remainCalculateTimes" :min="-1" :step="1"></el-input-number>
+                        说明：-1代表按照选择的计算周期持续进行定时计算
+                    </el-form-item>
                     <el-form-item label="计算周期" prop="period">
                         <el-select v-model="dataSet.period" placeholder="请选择">
                             <template v-for="(period, index) in dataSetConstant.periods">
@@ -153,6 +157,9 @@
                     dataSourceType: [
                         {required: true, message: '请选择数据源类型', trigger: 'blur'}
                     ],
+                    remainCalculateTimes: [
+                        {required: true, message: '请输入计算次数', trigger: 'blur'}
+                    ],
                     databaseTable: [
                         {required: true, message: '请选择数据库和表', trigger: 'blur'}
                     ],
@@ -167,6 +174,7 @@
                     sourceTable: '',
                     databaseTable: [],
                     dataSourceType: "",
+                    remainCalculateTimes: -1,
                     dataSetFields: [
                         {
                             expression: 'expression1',

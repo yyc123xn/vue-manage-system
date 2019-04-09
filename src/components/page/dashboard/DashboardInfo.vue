@@ -81,8 +81,8 @@
                                 <!--<MonitorCard v-if="'MONITOR_CARD' === report.chartType"></MonitorCard>-->
                                 <Guage :report="report" :reportFilters="dashboard.reportFilters" v-if="'GUAGE' === report.chartType"></Guage>
                                 <Map :report="report" :reportFilters="dashboard.reportFilters" v-if="'MAP' === report.chartType"></Map>
-                                <Table :report="report" :reportFilters="dashboard.reportFilters" v-if="'TABLE' === report.chartType"></Table>
-                                <Table style="margin-bottom: 20px" :report="report" :reportFilters="dashboard.reportFilters" v-if="'TOP_X_TABLE' === report.chartType"></Table>
+                                <Table :class="{'table-paged' : !report.config.chartSettings.isPaged}" :report="report" :reportFilters="dashboard.reportFilters" v-if="'TABLE' === report.chartType"></Table>
+                                <Table :class="{'top-x-table-paged' : !report.config.chartSettings.isPaged}" :report="report" :reportFilters="dashboard.reportFilters" v-if="'TOP_X_TABLE' === report.chartType"></Table>
                             </div>
                         </el-card>
                     </el-col>
@@ -225,3 +225,13 @@
         }
     }
 </script>
+
+<style scoped>
+    .table-paged {
+        margin-bottom: 17px
+    }
+
+    .top-x-table-paged {
+        margin-bottom: 20px;
+    }
+</style>

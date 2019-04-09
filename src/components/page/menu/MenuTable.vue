@@ -16,7 +16,7 @@
                     </el-option>
                 </el-select>
                 <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
-                <el-button type="primary" icon="el-icon-search" @click="getDataSets">搜索</el-button>
+                <el-button type="primary" icon="el-icon-search" @click="getMenus">搜索</el-button>
             </el-col>
             <el-col>
                 <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange" @cell-dblclick="dblhandleCurrentChange">
@@ -25,10 +25,8 @@
                     </el-table-column>
                     <el-table-column label="操作" width="180" align="center">
                         <template slot-scope="scope">
-                            <el-button v-if="tableData[scope.$index].infoVisible" type="text" icon="el-icon-info" @click="handleInfo(scope.$index, scope.row)">详情</el-button>
-                            <el-button v-if="tableData[scope.$index].editVisible" type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-                            <el-button v-if="tableData[scope.$index].backfillVisible" type="text" icon="el-icon-circle-plus-outline" @click="handleBackfill(scope.$index, scope.row)">补数据</el-button>
-                            <el-button v-if="tableData[scope.$index].deleteVisible" type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                            <el-button type="text" icon="el-icon-info" @click="handleInfo(scope.$index, scope.row)">详情</el-button>
+                            <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -46,88 +44,71 @@
                 <el-form-item label="id">
                     {{menu.id}}
                 </el-form-item>
-                <el-form-item label="名称">
+                <el-form-item label="英文名称">
                     {{menu.name}}
                 </el-form-item>
-                <el-form-item label="描述">
-                    {{menu.description}}
+                <el-form-item label="前端路径">
+                    {{menu.path}}
                 </el-form-item>
-                <el-form-item label="数据库">
-                    {{menu.database}}
+                <el-form-item label="前端组件名">
+                    {{menu.component}}
                 </el-form-item>
-                <el-form-item label="源表">
-                    {{menu.sourceTable}}
+                <el-form-item label="父菜单名称">
+                    {{menu.meta.title}}
                 </el-form-item>
-                <el-form-item label="数据源类型">
-                    {{menu.dataSourceType}}
+                <el-form-item label="父菜单icon">
+                    {{menu.meta.icon}}
                 </el-form-item>
-                <el-form-item label="周期">
-                    {{menu.period}}
+                <el-form-item label="重定向url">
+                    {{menu.redirect}}
                 </el-form-item>
-                <el-form-item label="额外运算条件">
-                    {{menu.extraExpression}}
+                <el-form-item label="菜单权重">
+                    {{menu.weight}}
                 </el-form-item>
-                <el-form-item label="已有数据">
-                    {{menu.beginDate}} 至 {{menu.endDate}}
+                <el-form-item label="权限">
+                    {{menu.privilege}}
                 </el-form-item>
                 <el-form-item label="字段详情">
-                    <el-table :data="menu.dataSetFields">
+                    <el-table :data="menu.children">
                         <el-table-column type="expand">
                             <template slot-scope="props">
                                 <el-form label-position="right" inline class="demo-table-expand">
-                                    <el-form-item label="表达式">{{props.row.expression}}
+                                    <el-form-item label="前端路径">{{props.row.path}}
                                     </el-form-item>
-                                    <el-form-item label="名称">{{props.row.showName}}
+                                    <el-form-item label="前端组件">{{props.row.component}}
                                     </el-form-item>
-                                    <el-form-item label="数据类型">{{props.row.dataType}}
+                                    <el-form-item label="英文名称">{{props.row.name}}
                                     </el-form-item>
-                                    <el-form-item label="字段类型">{{props.row.fieldType}}
+                                    <el-form-item label="菜单名称">{{props.row.meta.title}}
                                     </el-form-item>
-                                    <el-form-item label="计算方式">{{props.row.calculateType}}
-                                    </el-form-item>
-                                    <el-form-item label="周期日期">
-                                        {{props.row.isDate ? '是' : '否'}}
+                                    <el-form-item label="菜单icon">{{props.row.meta.icon}}
                                     </el-form-item>
                                 </el-form>
                             </template>
                         </el-table-column>
                         <el-table-column
-                                label="表达式"
-                                prop="expression">
+                                label="前端路径"
+                                prop="path">
                         </el-table-column>
                         <el-table-column
-                                label="名称"
-                                prop="showName">
+                                label="前端组件"
+                                prop="component">
                         </el-table-column>
                         <el-table-column
-                                label="数据类型"
-                                prop="dataType">
+                                label="英文名称"
+                                prop="name">
                         </el-table-column>
                         <el-table-column
-                                label="字段类型"
-                                prop="fieldType">
+                                label="菜单名称"
+                                prop="meta.title">
                         </el-table-column>
                         <el-table-column
-                                label="计算方式"
-                                prop="calculateType">
-                        </el-table-column>
-                        <el-table-column label="周期日期">
-                            <template slot-scope="scope">
-                                {{menu.dataSetFields[scope.$index].isDate ? '是' : '否'}}
-                            </template>
+                                label="菜单icon"
+                                prop="meta.icon">
                         </el-table-column>
                     </el-table>
                 </el-form-item>
             </el-form>
-        </el-dialog>
-
-        <!-- 删除提示框 -->
-        <el-dialog title="提示" :visible.sync="delVisible" width="30%" center>
-            <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="delVisible = false">取 消</el-button>
-                <el-button type="primary">确 定</el-button>
-            </span>
         </el-dialog>
     </div>
 </template>
@@ -152,7 +133,6 @@
                 queryColumn: "",
                 queryCondition: [],
                 editVisible: false,
-                delVisible: false,
                 infoVisible: false,
                 menu: {
                     id: 0,
@@ -190,8 +170,8 @@
             // 获取tableHeaders
             getTableHeader() {
                 let getParams = {
-                    tableName: "data_set_table",
-                    isMine: this.isMine
+                    tableName: "menu_table",
+                    isMine: false
                 }
                 this.$api.REPORT_COMMON_API.get("GET_TABLE_HEADER" ,getParams).then(res => {
                     this.tableHeader = res.data
@@ -213,9 +193,9 @@
                     pageSize: this.pageSize,
                     queryColumn: this.queryColumn,
                     queryCondition: this.queryCondition,
-                    isMine: this.isMine
+                    isMine: false
                 }
-                this.$api.REPORT_DATA_SET_API.get('GET_DATA_SET', queryParams).then(res => {
+                this.$api.FINANCE_MENU_API.get('GET_MENU', queryParams).then(res => {
                     this.tableData = res.data.list
                     this.total = res.data.total
                 })

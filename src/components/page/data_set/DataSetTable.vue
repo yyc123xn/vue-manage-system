@@ -154,15 +154,6 @@
                 <el-button type="primary" @click="saveBackfill('backfillForm')">确 定</el-button>
             </span>
         </el-dialog>
-
-        <!-- 删除提示框 -->
-        <el-dialog title="提示" :visible.sync="delVisible" width="30%" center>
-            <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="delVisible = false">取 消</el-button>
-                <el-button type="primary">确 定</el-button>
-            </span>
-        </el-dialog>
     </div>
 </template>
 
@@ -186,7 +177,6 @@
                 queryColumn: "",
                 queryCondition: [],
                 editVisible: false,
-                delVisible: false,
                 infoVisible: false,
                 backfillVisible: false,
                 backfillForm :{

@@ -503,7 +503,6 @@
                     </el-form>
                 </el-col>
                 <el-col>
-
                     <el-col v-for="(reports, index1) in dashboardHelper.reportssSymmetryHelper" :key="index1">
                         <el-col :span="24 / dashboardHelper.reportssSymmetryHelper[index1].length" v-for="(report, index2) in dashboardHelper.reportssSymmetryHelper[index1]" :key="index2">
                             <el-card>
@@ -525,8 +524,8 @@
                                     <!--<MonitorCard v-if="'MONITOR_CARD' === report.chartType"></MonitorCard>-->
                                     <Guage :report="report" v-if="'GUAGE' === report.chartType"></Guage>
                                     <Map :report="report" v-if="'MAP' === report.chartType"></Map>
-                                    <Table :report="report" v-if="'TABLE' === report.chartType"></Table>
-                                    <Table style="margin-bottom: 20px" :report="report" v-if="'TOP_X_TABLE' === report.chartType"></Table>
+                                    <Table :class="{'table-paged' : !report.config.chartSettings.isPaged}"  :report="report" v-if="'TABLE' === report.chartType"></Table>
+                                    <Table :class="{'top-x-table-paged' : !report.config.chartSettings.isPaged}"  :report="report" v-if="'TOP_X_TABLE' === report.chartType"></Table>
                                 </div>
                             </el-card>
                         </el-col>
@@ -1502,6 +1501,13 @@
 </script>
 
 <style>
+    .table-paged {
+        margin-bottom: 17px
+    }
+
+    .top-x-table-paged {
+        margin-bottom: 20px;
+    }
     .drag-box-item {
         flex: 1;
         max-width: 100%;

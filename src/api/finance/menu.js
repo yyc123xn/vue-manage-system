@@ -2,7 +2,11 @@ import axios from '../../interceptor'
 
 const financeMenuApi = {
 
+    GET_MENU: '/finance/menu',
+
     GET_MENUS : '/finance/menu/menus',
+
+    GET_MENU_INFO: '/finance/menu/info',
 
     GET_MENU_FILTER_FIELDS: "/finance/menu/menu_filter_fields",
 

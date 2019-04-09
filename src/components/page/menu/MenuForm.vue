@@ -93,7 +93,7 @@
                         <el-button @click="addSubMenu" type="primary">新增子菜单</el-button>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="addDataSet('dataSet')">表单提交</el-button>
+                        <el-button type="primary" @click="addMenu('menu')">表单提交</el-button>
                         <el-button @click="redirect2MenuTable">取消</el-button>
                     </el-form-item>
                 </el-form>
@@ -230,30 +230,28 @@
                 return counter;
             },
 
-            addDataSet(dataSet) {
-                this.$refs[dataSet].validate((valid) => {
+            addMenu(menu) {
+                this.$refs[menu].validate((valid) => {
                     if (valid) {
-                        this.dataSet.database = this.dataSet.databaseTable[0]
-                        this.dataSet.sourceTable = this.dataSet.databaseTable[1]
-                        let dataSetId = this.$route.query.id
-                        if (undefined !== dataSetId) {
+                        let menuId = this.$route.query.id
+                        if (undefined !== menuId) {
                             // 编辑
-                            this.$api.REPORT_DATA_SET_API.put('EDIT_DATA_SET', this.dataSet).then(res => {
-                                this.$message.success("成功编辑数据集")
+                            this.$api.FINANCE_MENU_API.put('EDIT_DATA_SET', this.menu).then(res => {
+                                this.$message.success("成功编辑菜单")
                             }).catch(error => {
                                 this.$message.error ("提交失败", error)
                             })
                         } else {
                             // 添加
-                            this.$api.REPORT_DATA_SET_API.post('ADD_DATA_SET', this.dataSet).then(res => {
-                                this.$message.success("成功添加数据集")
+                            this.$api.FINANCE_MENU_API.post('ADD_DATA_SET', this.menu).then(res => {
+                                this.$message.success("成功添加菜单")
                             }).catch(error => {
                                 this.$message.error ("提交失败", error)
                             })
                         }
-                        this.$router.push('/data_set_table')
+                        this.$router.push('/menu_table')
                     } else {
-                        this.$message.error("请将数据集信息填写完整")
+                        this.$message.error("请将菜单信息填写完整")
                         return false;
                     }
                 })
@@ -283,10 +281,10 @@
 
             // 获取数菜单详情
             getMenuInfo(menuId) {
-                let queryParams = {
+                let getParams = {
                     id : menuId
                 }
-                this.$api.REPORT_MENU_API.get('GET_MENU_INFO', queryParams).then(res => {
+                this.$api.FINANCE_MENU_API.get('GET_MENU_INFO', getParams).then(res => {
                     this.menu = res.data
                 })
             },

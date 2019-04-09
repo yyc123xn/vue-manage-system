@@ -309,10 +309,10 @@
 
             // 获取数据集详情
             getDataSetInfo(dataSetId) {
-                let queryParams = {
+                let getParams = {
                     id : dataSetId
                 }
-                this.$api.REPORT_DATA_SET_API.get('GET_DATA_SET_INFO', queryParams).then(res => {
+                this.$api.REPORT_DATA_SET_API.get('GET_DATA_SET_INFO', getParams).then(res => {
                     this.dataSet = res.data
                     this.dataSet.databaseTable = [this.dataSet.database, this.dataSet.sourceTable]
                 })

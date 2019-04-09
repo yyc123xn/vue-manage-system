@@ -36,15 +36,6 @@ export default [
                 }
             },
             {
-                path: 'icon',
-                component: "Icon",
-                name: 'icon',
-                meta: {
-                    icon: 'el-icon-lx-emoji',
-                    title: '自定义图标'
-                }
-            },
-            {
                 path: 'base_charts',
                 component: "BaseCharts",
                 name: 'base_charts',
@@ -197,6 +188,15 @@ export default [
                 name: 'menu_form',
                 meta: {
                     title: '菜单表单'
+                }
+            },
+            {
+                path: 'icon',
+                component: "Icon",
+                name: 'icon',
+                meta: {
+                    icon: 'el-icon-lx-emoji',
+                    title: '自定义图标'
                 }
             }
         ]

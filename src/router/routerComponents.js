@@ -2,7 +2,6 @@ const Home = () => import("../components/common/Home")
 const Department = () => import("../components/page/department/Department")
 const Privilege = () => import("../components/page/department/Privilege")
 const Dashboard = () => import("../components/page/Dashboard")
-const Icon = () => import("../components/page/Icon")
 const BaseTable = () => import("../components/page/BaseTable")
 const Tabs = () => import("../components/page/Tabs")
 const BaseForm = () => import("../components/page/BaseForm")
@@ -30,6 +29,7 @@ const DataSourceForm = () => import("../components/page/data_source/DataSourceFo
 const DataSourceTable = () => import("../components/page/data_source/DataSourceTable")
 const MenuForm = () => import("../components/page/menu/MenuForm")
 const MenuTable = () => import("../components/page/menu/MenuTable")
+const Icon = () => import("../components/page/menu/Icon")
 
 export default {
     Home: Home,

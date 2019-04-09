@@ -2,7 +2,7 @@
     <el-col>
         <el-col class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-lx-punch"></i> 部门管理</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-lx-text"></i> 部门管理</el-breadcrumb-item>
                 <el-breadcrumb-item>部门管理</el-breadcrumb-item>
             </el-breadcrumb>
         </el-col>

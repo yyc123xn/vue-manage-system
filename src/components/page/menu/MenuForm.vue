@@ -2,7 +2,7 @@
     <el-col>
         <el-col class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-lx-text"></i> 菜单管理</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-lx-sort"></i> 菜单管理</el-breadcrumb-item>
                 <el-breadcrumb-item>菜单表单</el-breadcrumb-item>
             </el-breadcrumb>
         </el-col>
@@ -18,14 +18,21 @@
                     <el-form-item label="前端组件名" prop="component">
                         <el-input v-model="menu.component"></el-input>
                     </el-form-item>
-                    <el-form-item label="父菜单名称" prop="title">
+                    <el-form-item label="父菜单名称" prop="meta.title">
                         <el-input v-model="menu.meta.title"></el-input>
                     </el-form-item>
-                    <el-form-item label="父菜单icon" prop="icon">
-                        <el-input v-model="menu.meta.icon"></el-input>
+                    <el-form-item label="父菜单icon" prop="meta.icon">
+                        <el-select v-model="menu.meta.icon" placeholder="请选择">
+                            <template v-for="(icon, index) in menuConstant.icons">
+                                <el-option :key="index" :label="icon" :value="'el-icon-lx-' + icon">
+                                    <span style="float: left">{{icon}}</span>
+                                    <span style="float: right; color: #8492a6; font-size: 17px"><i :class="`el-icon-lx-${icon}`"></i></span>
+                                </el-option>
+                            </template>
+                        </el-select>
                     </el-form-item>
-                    <el-form-item label="重定向url" prop="redirect">
-                        <el-input v-model="menu.redirect"></el-input>
+                    <el-form-item label="重定向url">
+                        <el-input :placeholder="'默认为空字符串'" v-model="menu.redirect"></el-input>
                     </el-form-item>
                     <el-form-item label="菜单权重" prop="weight">
                         <el-input-number v-model="menu.weight" :step="1"></el-input-number>
@@ -51,10 +58,17 @@
                                             <el-input v-model="props.row.meta.title"></el-input>
                                         </el-form-item>
                                         <el-form-item label="菜单icon">
-                                            <el-input v-model="props.row.meta.icon"></el-input>
+                                            <el-select v-model="props.row.meta.icon" placeholder="请选择">
+                                                <template v-for="(icon, index) in menuConstant.icons">
+                                                    <el-option :key="index" :label="icon" :value="'el-icon-lx-' + icon">
+                                                        <span style="float: left">{{icon}}</span>
+                                                        <span style="float: right; color: #8492a6; font-size: 17px"><i :class="`el-icon-lx-${icon}`"></i></span>
+                                                    </el-option>
+                                                </template>
+                                            </el-select>
                                         </el-form-item>
                                         <el-form-item label="重定向url">
-                                            <el-input v-model="props.row.redirect"></el-input>
+                                            <el-input :placeholder="'默认为空字符串'" v-model="props.row.redirect"></el-input>
                                         </el-form-item>
                                     </el-form>
                                 </template>
@@ -105,9 +119,12 @@
 
 <script>
     import multiCascader from "multi-cascader"
+    import ElButton from "../../../../node_modules/element-ui/packages/button/src/button.vue";
     export default {
         name: 'MenuForm',
-        components: {multiCascader},
+        components: {
+            ElButton,
+            multiCascader},
         data: function(){
             return {
                 rules: {
@@ -125,9 +142,6 @@
                     ],
                     icon: [
                         {required: true, message: '请输入父菜单icon', trigger: 'blur'}
-                    ],
-                    redirect: [
-                        {required: true, message: '请输入重定向url', trigger: 'blur'}
                     ],
                     weight: [
                         {required: true, message: '请输入菜单权重', trigger: 'blur'}
@@ -162,7 +176,134 @@
                 },
 
                 menuConstant: {
-                    departments: []
+                    departments: [],
+                    icons: [
+                        'attentionforbid',
+                        'attentionforbidfill',
+                        'attention',
+                        'attentionfill',
+                        'tag',
+                        'tagfill',
+                        'people',
+                        'peoplefill',
+                        'notice',
+                        'noticefill',
+                        'mobile',
+                        'mobilefill',
+                        'voice',
+                        'voicefill',
+                        'unlock',
+                        'lock',
+                        'home',
+                        'homefill',
+                        'delete',
+                        'deletefill',
+                        'notification',
+                        'notificationfill',
+                        'notificationforbidfill',
+                        'like',
+                        'likefill',
+                        'comment',
+                        'commentfill',
+                        'camera',
+                        'camerafill',
+                        'warn',
+                        'warnfill',
+                        'time',
+                        'timefill',
+                        'location',
+                        'locationfill',
+                        'favor',
+                        'favorfill',
+                        'skin',
+                        'skinfill',
+                        'news',
+                        'newsfill',
+                        'record',
+                        'recordfill',
+                        'emoji',
+                        'emojifill',
+                        'message',
+                        'messagefill',
+                        'goods',
+                        'goodsfill',
+                        'crown',
+                        'crownfill',
+                        'move',
+                        'add',
+                        'hot',
+                        'hotfill',
+                        'service',
+                        'servicefill',
+                        'present',
+                        'presentfill',
+                        'pic',
+                        'picfill',
+                        'rank',
+                        'rankfill',
+                        'male',
+                        'female',
+                        'down',
+                        'top',
+                        'recharge',
+                        'rechargefill',
+                        'forward',
+                        'forwardfill',
+                        'info',
+                        'infofill',
+                        'redpacket',
+                        'redpacket_fill',
+                        'roundadd',
+                        'roundaddfill',
+                        'friendadd',
+                        'friendaddfill',
+                        'cart',
+                        'cartfill',
+                        'more',
+                        'moreandroid',
+                        'back',
+                        'right',
+                        'shop',
+                        'shopfill',
+                        'question',
+                        'questionfill',
+                        'roundclose',
+                        'roundclosefill',
+                        'roundcheck',
+                        'roundcheckfill',
+                        'global',
+                        'mail',
+                        'punch',
+                        'exit',
+                        'upload',
+                        'read',
+                        'file',
+                        'link',
+                        'full',
+                        'group',
+                        'friend',
+                        'profile',
+                        'addressbook',
+                        'calendar',
+                        'text',
+                        'copy',
+                        'share',
+                        'wifi',
+                        'vipcard',
+                        'weibo',
+                        'remind',
+                        'refresh',
+                        'filter',
+                        'settings',
+                        'scan',
+                        'qrcode',
+                        'cascades',
+                        'apps',
+                        'sort',
+                        'searchlist',
+                        'search',
+                        'edit'
+                    ],
                 },
 
                 configTips: "请选择权限",
@@ -243,11 +384,12 @@
                             })
                         } else {
                             // 添加
-                            this.$api.FINANCE_MENU_API.post('ADD_DATA_SET', this.menu).then(res => {
-                                this.$message.success("成功添加菜单")
-                            }).catch(error => {
-                                this.$message.error ("提交失败", error)
-                            })
+                            console.log(this.menu)
+//                            this.$api.FINANCE_MENU_API.post('ADD_DATA_SET', this.menu).then(res => {
+//                                this.$message.success("成功添加菜单")
+//                            }).catch(error => {
+//                                this.$message.error ("提交失败", error)
+//                            })
                         }
                         this.$router.push('/menu_table')
                     } else {
@@ -292,6 +434,13 @@
             redirect2MenuTable() {
                 this.$router.push("/menu_table")
             },
+
+            redirect2Icon() {
+                const {href} = this.$router.resolve({
+                    name: 'icon'
+                })
+                window.open(href, '_blank')
+            }
         },
         created() {
             let menuId = this.$route.query.id

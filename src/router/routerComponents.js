@@ -30,6 +30,8 @@ const DataSourceTable = () => import("../components/page/data_source/DataSourceT
 const MenuForm = () => import("../components/page/menu/MenuForm")
 const MenuTable = () => import("../components/page/menu/MenuTable")
 const Icon = () => import("../components/page/menu/Icon")
+const FileTableForm = () => import("../components/page/file_table/FileTableForm")
+const FileTableTable = () => import("../components/page/file_table/FileTableTable")
 
 export default {
     Home: Home,
@@ -63,5 +65,7 @@ export default {
     DataSourceForm: DataSourceForm,
     DataSourceTable: DataSourceTable,
     MenuForm: MenuForm,
-    MenuTable: MenuTable
+    MenuTable: MenuTable,
+    FileTableForm: FileTableForm,
+    FileTableTable: FileTableTable
 };

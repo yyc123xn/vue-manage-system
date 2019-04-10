@@ -2,8 +2,8 @@
     <el-col>
         <el-col class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-lx-sort"></i> 菜单管理</el-breadcrumb-item>
-                <el-breadcrumb-item>菜单表单</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-lx-sort"></i> 文件转表</el-breadcrumb-item>
+                <el-breadcrumb-item>表单</el-breadcrumb-item>
             </el-breadcrumb>
         </el-col>
         <el-col class="container">
@@ -121,7 +121,7 @@
     import multiCascader from "multi-cascader"
     import ElButton from "../../../../node_modules/element-ui/packages/button/src/button.vue";
     export default {
-        name: 'MenuForm',
+        name: 'FileTableForm',
         components: {
             ElButton,
             multiCascader},

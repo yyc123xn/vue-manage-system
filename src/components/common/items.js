@@ -380,6 +380,34 @@ export default [
     {
         path: "/",
         component: "Home",
+        name: 'file_table',
+        meta: {
+            title: '文件转表',
+            icon: 'el-icon-lx-upload',
+        },
+        children: [
+            {
+                path: 'file_table_table',
+                component: "FileTableTable",
+                name: 'file_table_table',
+                meta: {
+                    icon: 'el-icon-lx-cascades',
+                    title: '列表'
+                }
+            },
+            {
+                path: 'file_table_form',
+                component: "FileTableForm",
+                name: 'file_table_form',
+                meta: {
+                    title: '表单'
+                }
+            }
+        ]
+    },
+    {
+        path: "/",
+        component: "Home",
         name: 'department',
         meta: {
             title: '部门管理',

@@ -2,8 +2,8 @@
     <div class="table">
         <el-col class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-lx-sort"></i> 菜单管理</el-breadcrumb-item>
-                <el-breadcrumb-item>菜单列表</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-lx-sort"></i> 文件转表</el-breadcrumb-item>
+                <el-breadcrumb-item>列表</el-breadcrumb-item>
             </el-breadcrumb>
         </el-col>
         <el-col class="container">
@@ -116,7 +116,7 @@
 
 <script>
     export default {
-        name: 'MenuTable',
+        name: 'FileTableTable',
         data: function () {
             return {
                 rules: {

@@ -230,9 +230,9 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    let dataSetId = this.tableData[index].id;
+                    let menuId = this.tableData[index].id;
                     let deleteParams = {
-                        id: dataSetId
+                        id: menuId
                     }
                     this.$api.FINANCE_MENU_API.delete('DELETE_MENU', deleteParams).then(res => {
                         this.tableData.splice(index, 1);

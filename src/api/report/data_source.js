@@ -8,6 +8,8 @@ const reportDataSourceApi = {
 
     GET_DATABASES_TABLES : '/report/data_source/databases/tables',
 
+    GET_DATABASES: '/report/data_source/databases',
+
     GET_DATA_SOURCES : '/report/data_source',
 
     GET_DATA_SOURCE_INFO : '/report/data_source/info',

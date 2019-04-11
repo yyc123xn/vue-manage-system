@@ -10,13 +10,13 @@
             <el-col class="handle-box">
                 <el-button type="primary" icon="delete" class="handle-del mr10">批量删除</el-button>
                 <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10" filterable>
-                    <el-option v-for="menuFilterField in menuFilterFields"
-                               :key="menuFilterField.columnName" :label="menuFilterField.columnComment"
-                               :value="menuFilterField.columnName">
+                    <el-option v-for="fileTableFilterField in fileTableFilterFields"
+                               :key="fileTableFilterField.columnName" :label="fileTableFilterField.columnComment"
+                               :value="fileTableFilterField.columnName">
                     </el-option>
                 </el-select>
                 <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
-                <el-button type="primary" icon="el-icon-search" @click="getMenus">搜索</el-button>
+                <el-button type="primary" icon="el-icon-search" @click="getFileTables">搜索</el-button>
             </el-col>
             <el-col>
                 <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange" @cell-dblclick="dblhandleCurrentChange">
@@ -27,6 +27,7 @@
                         <template slot-scope="scope">
                             <el-button v-if="tableData[scope.$index].infoVisible" type="text" icon="el-icon-info" @click="handleInfo(scope.$index, scope.row)">详情</el-button>
                             <el-button v-if="tableData[scope.$index].editVisible" type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                            <el-button v-if="tableData[scope.$index].file2TableVisible" type="text" icon="el-icon-circle-plus-outline" @click="handleFile2Table(scope.$index, scope.row)">file2Table</el-button>
                             <el-button v-if="tableData[scope.$index].deleteVisible" type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
                         </template>
                     </el-table-column>
@@ -41,71 +42,47 @@
 
         <!-- 详情弹出框 -->
         <el-dialog title="详情" :visible.sync="infoVisible" width="70%">
-            <el-form ref="menu" :model="menu" label-width="10%">
+            <el-form ref="fileTable" :model="fileTable" label-width="10%">
                 <el-form-item label="id">
-                    {{menu.id}}
+                    {{fileTable.id}}
                 </el-form-item>
-                <el-form-item label="英文名称">
-                    {{menu.name}}
+                <el-form-item label="文件原名">
+                    {{fileTable.fileOriginalName}}
                 </el-form-item>
-                <el-form-item label="前端路径">
-                    {{menu.path}}
+                <el-form-item label="文件路径">
+                    {{fileTable.filePath}}
                 </el-form-item>
-                <el-form-item label="前端组件名">
-                    {{menu.component}}
+                <el-form-item label="数据库">
+                    {{fileTable.database}}
                 </el-form-item>
-                <el-form-item label="父菜单名称">
-                    {{menu.meta.title}}
-                </el-form-item>
-                <el-form-item label="父菜单icon">
-                    {{menu.meta.icon}}
-                </el-form-item>
-                <el-form-item label="重定向url">
-                    {{menu.redirect}}
-                </el-form-item>
-                <el-form-item label="菜单权重">
-                    {{menu.weight}}
-                </el-form-item>
-                <el-form-item label="权限">
-                    {{menu.privilege}}
+                <el-form-item label="表名">
+                    {{fileTable.tableName}}
                 </el-form-item>
                 <el-form-item label="字段详情">
-                    <el-table :data="menu.children">
+                    <el-table :data="fileTable.fileTableFields">
                         <el-table-column type="expand">
                             <template slot-scope="props">
                                 <el-form label-position="right" inline class="demo-table-expand">
-                                    <el-form-item label="前端路径">{{props.row.path}}
+                                    <el-form-item label="字段类型">{{props.row.dataType}}
                                     </el-form-item>
-                                    <el-form-item label="前端组件">{{props.row.component}}
+                                    <el-form-item label="字段名">{{props.row.fieldName}}
                                     </el-form-item>
-                                    <el-form-item label="英文名称">{{props.row.name}}
-                                    </el-form-item>
-                                    <el-form-item label="菜单名称">{{props.row.meta.title}}
-                                    </el-form-item>
-                                    <el-form-item label="菜单icon">{{props.row.meta.icon}}
+                                    <el-form-item label="字段备注">{{props.row.fieldComment}}
                                     </el-form-item>
                                 </el-form>
                             </template>
                         </el-table-column>
                         <el-table-column
-                                label="前端路径"
-                                prop="path">
+                                label="字段类型"
+                                prop="dataType">
                         </el-table-column>
                         <el-table-column
-                                label="前端组件"
-                                prop="component">
+                                label="字段名"
+                                prop="fieldName">
                         </el-table-column>
                         <el-table-column
-                                label="英文名称"
-                                prop="name">
-                        </el-table-column>
-                        <el-table-column
-                                label="菜单名称"
-                                prop="meta.title">
-                        </el-table-column>
-                        <el-table-column
-                                label="菜单icon"
-                                prop="meta.icon">
+                                label="字段备注"
+                                prop="fieldComment">
                         </el-table-column>
                     </el-table>
                 </el-form-item>
@@ -124,8 +101,7 @@
                         {required: true, message: '请选择开始和结束时间', trigger: 'blur'}
                     ]
                 },
-                menuSetFilterField: "",
-                menuFilterFields: [],
+                fileTableFilterFields: [],
                 tableHeader: {},
                 tableData: [],
                 pageIndex: 1,
@@ -135,43 +111,32 @@
                 queryCondition: [],
                 editVisible: false,
                 infoVisible: false,
-                menu: {
+                fileTable: {
                     id: 0,
-                    name: '',
-                    path: '/',
-                    component: '',
-                    meta: {
-                        title: "",
-                        icon: ""
-                    },
-                    redirect: '',
-                    children: [
-                        {
-                            name: 'sub_menu_name1',
-                            path: 'sub_menu_path1',
-                            component: 'sub_menu_component1',
-                            meta: {
-                                title: "",
-                                icon: ""
-                            },
-                            redirect: '',
-                        }
-                    ],
-                    weight: 0,
-                    privilege: []
+                    filePresentName: '',
+                    fileOriginalName: '',
+                    filePath: '',
+                    database: '',
+                    fileType: '',
+                    tableName: '',
+                    createTime: '',
+                    updateTime: '',
+                    createDeveloper: '',
+                    updateDeveloper: '',
+                    file_table_fields: []
                 }
             }
         },
         created() {
             this.getFilterFields();
-            this.getMenus();
+            this.getFileTables();
         },
         methods: {
 
             // 获取tableHeaders
             getTableHeader() {
                 let getParams = {
-                    tableName: "menu_table",
+                    tableName: "file_table_table",
                     isMine: false
                 }
                 this.$api.REPORT_COMMON_API.get("GET_TABLE_HEADER" ,getParams).then(res => {
@@ -181,13 +146,13 @@
 
             // 获取数据集的过滤字段
             getFilterFields() {
-                this.$api.FINANCE_MENU_API.get('GET_MENU_FILTER_FIELDS').then(res => {
-                    this.menuFilterFields = res.data;
+                this.$api.REPORT_FILE_TABLE_API.get('GET_FILE_TABLE_FILTER_FIELDS').then(res => {
+                    this.fileTableFilterFields = res.data;
                 })
             },
 
             // 获取数据集列表
-            getMenus() {
+            getFileTables() {
                 this.getTableHeader()
                 let queryParams = {
                     pageIndex: this.pageIndex,
@@ -196,7 +161,7 @@
                     queryCondition: this.queryCondition,
                     isMine: false
                 }
-                this.$api.FINANCE_MENU_API.get('GET_MENU', queryParams).then(res => {
+                this.$api.REPORT_FILE_TABLE_API.get('GET_FILE_TABLE', queryParams).then(res => {
                     this.tableData = res.data.list
                     this.total = res.data.total
                 })
@@ -215,11 +180,11 @@
 
 
             handleEdit(index, row) {
-                let menuId = this.tableData[index].id;
+                let fileTableId = this.tableData[index].id;
                 this.$router.push({
-                    path: '/menu_form',
+                    path: '/file_table_form',
                     query: {
-                        id: menuId
+                        id: fileTableId
                     }
                 })
             },
@@ -230,11 +195,11 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    let dataSetId = this.tableData[index].id;
+                    let fileTableId = this.tableData[index].id;
                     let deleteParams = {
-                        id: dataSetId
+                        id: fileTableId
                     }
-                    this.$api.FINANCE_MENU_API.delete('DELETE_MENU', deleteParams).then(res => {
+                    this.$api.REPORT_FILE_TABLE_API.delete('DELETE_FILE_TABLE', deleteParams).then(res => {
                         this.tableData.splice(index, 1);
                         this.$message.success("删除成功")
                     })
@@ -247,23 +212,33 @@
             },
 
             handleInfo(index, row) {
-                let menuId = this.tableData[index].id;
-                this.getMenuInfo(menuId)
+                let fileTableId = this.tableData[index].id;
+                this.getFileTableInfo(fileTableId)
                 this.infoVisible = true
             },
 
-            // 获取数据集详情
-            getMenuInfo(menuId) {
-                let queryParams = {
-                    id : menuId
+            handleFile2Table(index, row) {
+                let fileTableId = this.tableData[index].id;
+                let getParams = {
+                    id : fileTableId
                 }
-                this.$api.FINANCE_MENU_API.get('GET_MENU_INFO', queryParams).then(res => {
-                    this.menu = res.data
+                this.$api.REPORT_FILE_TABLE_API.get("FILE_2_TABLE", getParams).then(res => {
+                    this.$message.success("开始将文件中数据导入到数据库表")
+                })
+            },
+
+            // 获取数据集详情
+            getFileTableInfo(fileTableId) {
+                let queryParams = {
+                    id : fileTableId
+                }
+                this.$api.REPORT_FILE_TABLE_API.get('GET_FILE_TABLE_INFO', queryParams).then(res => {
+                    this.fileTable = res.data
                 })
             },
 
             dblhandleCurrentChange(row) {
-                this.getMenuInfo(row.id)
+                this.getFileTableInfo(row.id)
                 this.infoVisible = true
             },
 
@@ -273,7 +248,7 @@
 
             handleCurrentChange(pageIndex) {
                 this.pageIndex = pageIndex;
-                this.getMenus()
+                this.getFileTableInfo()
             },
         }
     }

@@ -14,6 +14,7 @@ import reportReportApi from './report/report'
 import reportCommonApi from './report/common'
 import reportReportFilterApi from './report/report_filter'
 import echartsCommon from './echarts/common'
+import reportFileTableApi from "./report/file_table";
 
 const api = {
 
@@ -44,6 +45,8 @@ const api = {
     REPORT_COMMON_API: reportCommonApi,
 
     REPORT_REPORT_FILTER_API: reportReportFilterApi,
+
+    REPORT_FILE_TABLE_API: reportFileTableApi,
 
     ECHARTS_COMMON_API : echartsCommon
 }

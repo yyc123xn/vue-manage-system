@@ -8,107 +8,86 @@
         </el-col>
         <el-col class="container">
             <el-col class="form-box">
-                <el-form :model="menu" :rules="rules" ref="menu" label-width="8%">
-                    <el-form-item label="英文名称" prop="name">
-                        <el-input v-model="menu.name"></el-input>
+                <el-form :model="fileTable" :rules="rules" ref="fileTable" label-width="8%">
+                    <el-form-item label="表名前缀" prop="tableNameHelper">
+                        <el-input v-model="fileTable.tableNameHelper" @change="changeTableNameHelper"></el-input>
                     </el-form-item>
-                    <el-form-item label="前端路径" prop="path">
-                        <el-input v-model="menu.path"></el-input>
+                    <el-form-item label="表名全称">
+                        {{fileTable.tableName}}
                     </el-form-item>
-                    <el-form-item label="前端组件名" prop="component">
-                        <el-input v-model="menu.component"></el-input>
-                    </el-form-item>
-                    <el-form-item label="父菜单名称" prop="meta.title">
-                        <el-input v-model="menu.meta.title"></el-input>
-                    </el-form-item>
-                    <el-form-item label="父菜单icon" prop="meta.icon">
-                        <el-select v-model="menu.meta.icon" placeholder="请选择">
-                            <template v-for="(icon, index) in menuConstant.icons">
-                                <el-option :key="index" :label="icon" :value="'el-icon-lx-' + icon">
-                                    <span style="float: left">{{icon}}</span>
-                                    <span style="float: right; color: #8492a6; font-size: 17px"><i :class="`el-icon-lx-${icon}`"></i></span>
+                    <el-form-item label="目标数据库" prop="database">
+                        <el-select v-model="fileTable.database" placeholder="请选择">
+                            <template v-for="(database, index) in fileTableConstant.databases">
+                                <el-option :key="index" :label="database.database" :value="database.database">
                                 </el-option>
                             </template>
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="重定向url">
-                        <el-input :placeholder="'默认为空字符串'" v-model="menu.redirect"></el-input>
-                    </el-form-item>
-                    <el-form-item label="菜单权重" prop="weight">
-                        <el-input-number v-model="menu.weight" :step="1"></el-input-number>
-                    </el-form-item>
-                    <el-form-item labelWidth="40%" style="width: 20%" label="权限">
-                        <multiCascader placeholder="请选择" :options="configOptions" @on-selected="getSelected" :inputValue="configTips"></multiCascader>
-                    </el-form-item>
-                    <el-form-item label="子菜单">
-                        <el-table :data="menu.children">
+                    <el-form-item label="表字段">
+                        <el-table :data="fileTable.fileTableFields">
                             <el-table-column type="expand">
                                 <template slot-scope="props">
                                     <el-form label-position="right" inline class="demo-table-expand">
-                                        <el-form-item label="英文名称">
-                                            <el-input v-model="props.row.name"></el-input>
+                                        <el-form-item label="字段名称">
+                                            <el-input v-model="props.row.fieldName"></el-input>
                                         </el-form-item>
-                                        <el-form-item label="前端路径">
-                                            <el-input v-model="props.row.path"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="前端组件名">
-                                            <el-input v-model="props.row.component"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="菜单名称">
-                                            <el-input v-model="props.row.meta.title"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="菜单icon">
-                                            <el-select v-model="props.row.meta.icon" placeholder="请选择">
-                                                <template v-for="(icon, index) in menuConstant.icons">
-                                                    <el-option :key="index" :label="icon" :value="'el-icon-lx-' + icon">
-                                                        <span style="float: left">{{icon}}</span>
-                                                        <span style="float: right; color: #8492a6; font-size: 17px"><i :class="`el-icon-lx-${icon}`"></i></span>
+                                        <el-form-item label="字段类型">
+                                            <el-select v-model="props.row.dataType" placeholder="请选择">
+                                                <template v-for="(dataType, index) in fileTableConstant.dataTypes">
+                                                    <el-option :key="index" :label="dataType.nameEn" :value="dataType.nameEn">
                                                     </el-option>
                                                 </template>
                                             </el-select>
                                         </el-form-item>
-                                        <el-form-item label="重定向url">
-                                            <el-input :placeholder="'默认为空字符串'" v-model="props.row.redirect"></el-input>
+                                        <el-form-item label="字段注释">
+                                            <el-input v-model="props.row.fieldComment"></el-input>
                                         </el-form-item>
                                     </el-form>
                                 </template>
                             </el-table-column>
                             <el-table-column
-                                    label="英文名称"
-                                    prop="name">
+                                    label="字段名称"
+                                    prop="fieldName">
                             </el-table-column>
                             <el-table-column
-                                    label="前端组件名"
-                                    prop="component">
+                                    label="字段类型"
+                                    prop="dataType">
                             </el-table-column>
                             <el-table-column
-                                    label="菜单名称">
-                                <template slot-scope="scope">
-                                    {{menu.children[scope.$index].meta.title}}
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                    label="菜单icon">
-                                <template slot-scope="scope">
-                                    {{menu.children[scope.$index].meta.icon}}
-                                </template>
+                                    label="字段注释"
+                                    prop="fieldComment">
                             </el-table-column>
                             <el-table-column label="操作">
                                 <template slot-scope="scope">
                                     <el-button
                                             size="mini"
                                             type="danger"
-                                            @click="removeSubMenu(scope.$index)">删除</el-button>
+                                            @click="removeFileTableField(scope.$index)">删除</el-button>
                                 </template>
                             </el-table-column>
                         </el-table>
                     </el-form-item>
                     <el-form-item>
-                        <el-button @click="addSubMenu" type="primary">新增子菜单</el-button>
+                        <el-button @click="addFileTableField" type="primary">新增表字段</el-button>
+                    </el-form-item>
+                    <el-form-item label="源文件">
+                        <el-upload
+                                class="upload-demo"
+                                drag
+                                action="/report/file_table/file_upload"
+                                accept=".txt,.csv"
+                                :before-upload="beforeUploadFile"
+                                :on-change="fileChange"
+                                :on-success="handleSuccess"
+                                :on-error="handleError">
+                            <i class="el-icon-upload"></i>
+                            <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                            <div class="el-upload__tip" slot="tip">只能上传csv/txt文件</div>
+                        </el-upload>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="addMenu('menu')">表单提交</el-button>
-                        <el-button @click="redirect2MenuTable">取消</el-button>
+                        <el-button type="primary" @click="addFileTable('fileTable')">表单提交</el-button>
+                        <el-button @click="redirect2FileTableTable">取消</el-button>
                     </el-form-item>
                 </el-form>
             </el-col>
@@ -120,331 +99,175 @@
 <script>
     import multiCascader from "multi-cascader"
     import ElButton from "../../../../node_modules/element-ui/packages/button/src/button.vue";
+    import ElFormItem from "../../../../node_modules/element-ui/packages/form/src/form-item.vue";
+    import axios from 'axios' //引用axios
     export default {
         name: 'FileTableForm',
         components: {
+            ElFormItem,
             ElButton,
             multiCascader},
         data: function(){
             return {
                 rules: {
-                    name: [
-                        {required: true, message: '请输入英文名称', trigger: 'blur'}
+                    tableNameHelper: [
+                        {required: true, message: '请输入目标表名称', trigger: 'blur'},
+                        { validator : this.$validator.enText, trigger: 'blur'}
                     ],
-                    path: [
-                        {required: true, message: '请输入前端路径', trigger: 'blur'}
-                    ],
-                    component: [
-                        {required: true, message: '请输入前端组件名', trigger: 'blur'}
-                    ],
-                    title: [
-                        {required: true, message: '请输入父菜单名称', trigger: 'blur'}
-                    ],
-                    icon: [
-                        {required: true, message: '请输入父菜单icon', trigger: 'blur'}
-                    ],
-                    weight: [
-                        {required: true, message: '请输入菜单权重', trigger: 'blur'}
+                    database: [
+                        {required: true, message: '请选择目标数据库', trigger: 'blur'}
                     ]
                 },
-                menu: {
-                    name: '',
-                    path: '/',
-                    component: '',
-                    meta: {
-                        title: "",
-                        icon: ""
-                    },
-                    redirect: '',
-                    children: [
+                fileTable: {
+                    tableNameHelper: '',
+                    tableName: '',
+                    database: '',
+                    fileTableFields: [
                         {
-                            name: 'sub_menu_name1',
-                            path: 'sub_menu_path1',
-                            component: 'sub_menu_component1',
-                            meta: {
-                                title: "",
-                                icon: ""
-                            },
-                            redirect: '',
+                            fieldName: 'field_name1',
+                            dataType: '',
+                            fieldComment: "field_comment1"
                         }
-                    ],
-                    weight: 0,
-                    privilege: []
+                    ]
                 },
 
-                menuConstant: {
-                    departments: [],
-                    icons: [
-                        'attentionforbid',
-                        'attentionforbidfill',
-                        'attention',
-                        'attentionfill',
-                        'tag',
-                        'tagfill',
-                        'people',
-                        'peoplefill',
-                        'notice',
-                        'noticefill',
-                        'mobile',
-                        'mobilefill',
-                        'voice',
-                        'voicefill',
-                        'unlock',
-                        'lock',
-                        'home',
-                        'homefill',
-                        'delete',
-                        'deletefill',
-                        'notification',
-                        'notificationfill',
-                        'notificationforbidfill',
-                        'like',
-                        'likefill',
-                        'comment',
-                        'commentfill',
-                        'camera',
-                        'camerafill',
-                        'warn',
-                        'warnfill',
-                        'time',
-                        'timefill',
-                        'location',
-                        'locationfill',
-                        'favor',
-                        'favorfill',
-                        'skin',
-                        'skinfill',
-                        'news',
-                        'newsfill',
-                        'record',
-                        'recordfill',
-                        'emoji',
-                        'emojifill',
-                        'message',
-                        'messagefill',
-                        'goods',
-                        'goodsfill',
-                        'crown',
-                        'crownfill',
-                        'move',
-                        'add',
-                        'hot',
-                        'hotfill',
-                        'service',
-                        'servicefill',
-                        'present',
-                        'presentfill',
-                        'pic',
-                        'picfill',
-                        'rank',
-                        'rankfill',
-                        'male',
-                        'female',
-                        'down',
-                        'top',
-                        'recharge',
-                        'rechargefill',
-                        'forward',
-                        'forwardfill',
-                        'info',
-                        'infofill',
-                        'redpacket',
-                        'redpacket_fill',
-                        'roundadd',
-                        'roundaddfill',
-                        'friendadd',
-                        'friendaddfill',
-                        'cart',
-                        'cartfill',
-                        'more',
-                        'moreandroid',
-                        'back',
-                        'right',
-                        'shop',
-                        'shopfill',
-                        'question',
-                        'questionfill',
-                        'roundclose',
-                        'roundclosefill',
-                        'roundcheck',
-                        'roundcheckfill',
-                        'global',
-                        'mail',
-                        'punch',
-                        'exit',
-                        'upload',
-                        'read',
-                        'file',
-                        'link',
-                        'full',
-                        'group',
-                        'friend',
-                        'profile',
-                        'addressbook',
-                        'calendar',
-                        'text',
-                        'copy',
-                        'share',
-                        'wifi',
-                        'vipcard',
-                        'weibo',
-                        'remind',
-                        'refresh',
-                        'filter',
-                        'settings',
-                        'scan',
-                        'qrcode',
-                        'cascades',
-                        'apps',
-                        'sort',
-                        'searchlist',
-                        'search',
-                        'edit'
-                    ],
+                file: '',
+
+                fileTableConstant: {
+                    databases: [],
+                    dataTypes: []
                 },
-
-                configTips: "请选择权限",
-
-                configOptions: [
-                    {
-                        value: 2,
-                        checked: false,
-                        label: "一级菜单（2）"
-                    },
-                    {
-                        value: 3,
-                        checked: false,
-                        label: "一级菜单（3）"
-                    }
-                ]
             }
         },
         methods: {
 
-            getSelected() {
-                this.menu.privilege = this.checkTreeData(this.configOptions)
-                if (0 !== this.menu.privilege.length) {
-                    this.configTips = `已选择${this.menu.privilege.length}个分组`;
-                } else {
-                    this.configTips = `请选择权限`;
+            changeTableNameHelper() {
+                this.fileTable.tableName = this.fileTable.tableNameHelper + "_" + new Date().getTime()
+            },
+
+            // 文件上传成功时的钩子
+            handleSuccess(res, file) {
+                this.$notify.success({
+                    title: '成功',
+                    message: `文件上传成功`
+                });
+            },
+            // 文件上传失败时的钩子
+            handleError(err, file) {
+                this.$notify.error({
+                    title: '错误',
+                    message: `文件上传失败`
+                });
+            },
+
+            // 文件状态改变时的钩子
+            fileChange(file) {
+                this.file = file.raw
+            },
+
+            beforeUploadFile(file) {
+                let size = file.size / 1024 / 1024
+                if(size > 1) {
+                    this.$notify.warning({
+                        title: '警告',
+                        message: `文件大小不得超过1M`
+                    });
                 }
             },
 
-            getDepartments() {
-                this.$api.FINANCE_DEPARTMENT_API.get("GET_DEPARTMENTS").then(res => {
-                    this.menuConstant.departments = this.getTreeData(res.data, this.menu.privilege)
-                    this.configOptions = this.menuConstant.departments
-                    this.getSelected()
+            getDatabases() {
+                this.$api.REPORT_DATA_SOURCE_API.get("GET_DATABASES").then(res => {
+                    this.fileTableConstant.databases = res.data
                 })
             },
 
-            getTreeData(data, privilege){
-                // 循环遍历json数据
-                for(var i = 0;i < data.length; i++){
-                    data[i].checked = -1 !== privilege.indexOf(data[i].value);
-                    if(data[i].children.length < 1){
-                        // children若为空数组，则将children设为undefined
-                        data[i].children = undefined;
-                    }else {
-                        // children若不为空数组，则继续 递归调用 本方法
-                        this.getTreeData(data[i].children, privilege);
-                    }
-                }
-                return data;
-            },
-
-            checkTreeData(configOptions) {
-                let counter = [];
-                configOptions.forEach(option => {
-                    if (option.checked) {
-                        counter.push(option.value)
-                        if (option.children !== undefined) {
-                            this.checkTreeData(option.children).forEach(innerData => {
-                                counter.push(innerData)
-                            })
-                        }
-                    }
+            getDataTypes() {
+                this.$api.REPORT_DATA_SET_API.get('GET_DATA_TYPES').then(res => {
+                    this.fileTableConstant.dataTypes = res.data
                 })
-                return counter;
             },
 
-            addMenu(menu) {
-                this.$refs[menu].validate((valid) => {
+            addFileTable(fileTable) {
+                this.$refs[fileTable].validate((valid) => {
                     if (valid) {
-                        let menuId = this.$route.query.id
-                        if (undefined !== menuId) {
+                        let fileTable = this.$route.query.id
+                        let formData = new FormData()
+                        formData.append('file', this.file)
+                        formData.append("fileTable", JSON.stringify(this.fileTable))
+                        if (undefined !== fileTable) {
                             // 编辑
-                            this.$api.FINANCE_MENU_API.put('EDIT_MENU', this.menu).then(res => {
-                                this.$message.success("成功编辑菜单")
+                            let axios = this.getFormDataAxios();
+                            axios.put("/report/file_table", formData).then(res => {
+                                console.log(res.data)
                             }).catch(error => {
                                 this.$message.error ("提交失败", error)
                             })
                         } else {
                             // 添加
-                            this.$api.FINANCE_MENU_API.post('ADD_MENU', this.menu).then(res => {
-                                this.$message.success("成功添加菜单")
+                            let axios = this.getFormDataAxios();
+                            axios.post("/report/file_table", formData).then(res => {
+                                console.log(res.data)
                             }).catch(error => {
                                 this.$message.error ("提交失败", error)
                             })
                         }
-                        this.$router.push('/menu_table')
+                        this.$router.push('/file_table_table')
                     } else {
-                        this.$message.error("请将菜单信息填写完整")
+                        this.$message.error("请将文件到表的映射信息填写完整")
                         return false;
                     }
                 })
             },
 
-            removeSubMenu(index) {
-                if (this.menu.children.length > 1) {
-                    this.menu.children.splice(index, 1)
+            getFormDataAxios() {
+                const service = axios.create({ // 创建服务
+                    timeout: 5000 // 请求延时
+                })
+                service.defaults.withCredentials = true
+                service.defaults.headers = {
+                    'Content-Type': 'multipart/form-data'
+                }
+                return service
+            },
+
+            removeFileTableField(index) {
+                if (this.fileTable.fileTableFields.length > 1) {
+                    this.fileTable.fileTableFields.splice(index, 1)
                 } else {
-                    this.$message.error("父菜单至少有一个子菜单")
+                    this.$message.error("表至少有一个字段")
                 }
             },
 
-            addSubMenu() {
-                this.menu.children.push({
-                    name: 'sub_menu_name' + (this.menu.children.length + 1),
-                    path: 'sub_menu_path' + (this.menu.children.length + 1),
-                    component: 'sub_menu_component' + (this.menu.children.length + 1),
-                    meta: {
-                        title: "",
-                        icon: ""
-                    },
-                    redirect: '',
+            addFileTableField() {
+                this.fileTable.fileTableFields.push({
+                    fieldName: 'field_name' + (this.fileTable.fileTableFields.length + 1),
+                    dataType: '',
+                    fieldComment: "field_comment" + (this.fileTable.fileTableFields.length + 1),
                     key: Date.now()
                 })
             },
 
             // 获取数菜单详情
-            getMenuInfo(menuId) {
+            getFileTableInfo(FileTableId) {
                 let getParams = {
-                    id : menuId
+                    id : FileTableId
                 }
-                this.$api.FINANCE_MENU_API.get('GET_MENU_INFO', getParams).then(res => {
-                    this.menu = res.data
+                this.$api.REPORT_FILE_TABLE_API.get('GET_FILE_TABLE_INFO', getParams).then(res => {
+                    this.fileTable = res.data
                 })
             },
 
-            redirect2MenuTable() {
-                this.$router.push("/menu_table")
-            },
-
-            redirect2Icon() {
-                const {href} = this.$router.resolve({
-                    name: 'icon'
-                })
-                window.open(href, '_blank')
+            redirect2FileTableTable() {
+                this.$router.push("/file_table_table")
             }
         },
         created() {
-            let menuId = this.$route.query.id
-            if (undefined !== menuId) {
-                this.getMenuInfo(menuId)
-            } else {
-                this.getDepartments()
+            let fileTableId = this.$route.query.id
+            if (undefined !== fileTableId) {
+                this.getFileTableInfo(fileTableId)
             }
+            this.getDatabases()
+            this.getDataTypes()
         }
     }
 </script>

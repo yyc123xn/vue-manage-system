@@ -22,6 +22,10 @@
                             </template>
                         </el-select>
                     </el-form-item>
+                    <el-form-item label="需要计算">
+                        <el-switch v-model="dataSet.needCalculation" @change="changeNeedCalculation"></el-switch>
+                        说明：不选择代表该数据集只能用来展示数据，选择该选项代表可以根据填写的维度进行计算数据
+                    </el-form-item>
                     <el-form-item label="数据库&表" prop="databaseTable">
                         <el-cascader filterable v-model="dataSet.databaseTable" :options="dataSetConstant.databasesTables" @change="changeDataBaseTable"></el-cascader>
                         <el-collapse style=" margin-top: 17px">
@@ -39,7 +43,7 @@
                         </el-collapse>
                     </el-form-item>
                     <el-form-item label="计算次数" prop="remainCalculateTimes">
-                        <el-input-number v-model="dataSet.remainCalculateTimes" :min="-1" :step="1"></el-input-number>
+                        <el-input-number v-model="dataSet.remainCalculateTimes" :min="-1" :max="dataSetHelper.remainCalculateTimesMax" :step="1"></el-input-number>
                         说明：-1代表按照选择的计算周期持续进行定时计算
                     </el-form-item>
                     <el-form-item label="计算周期" prop="period">
@@ -129,7 +133,7 @@
                         <el-button @click="addDataSetField" type="primary">新增数据集字段</el-button>
                     </el-form-item>
                     <el-form-item label="过滤运算条件">
-                        <el-input type="textarea" rows="5" v-model="dataSet.extraExpression"></el-input>
+                        <el-input type="textarea" rows="5" v-model="dataSet.extraExpression" :disabled="dataSetHelper.extraExpressionDisabled"></el-input>
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="addDataSet('dataSet')">表单提交</el-button>
@@ -143,7 +147,10 @@
 </template>
 
 <script>
+    import ElFormItem from "../../../../node_modules/element-ui/packages/form/src/form-item.vue";
+
     export default {
+        components: {ElFormItem},
         name: 'DataSetForm',
         data: function(){
             return {
@@ -175,6 +182,7 @@
                     databaseTable: [],
                     dataSourceType: "",
                     remainCalculateTimes: -1,
+                    needCalculation: true,
                     dataSetFields: [
                         {
                             expression: 'expression1',
@@ -196,6 +204,10 @@
                     period: "",
                     extraExpression: ''
                 },
+                dataSetHelper: {
+                    remainCalculateTimesMax: 10000,
+                    extraExpressionDisabled: false
+                },
                 dataSetConstant: {
                     databasesTables: [],
                     dataSourceTypes: [],
@@ -210,6 +222,23 @@
             }
         },
         methods: {
+
+            changeNeedCalculation() {
+                if (this.dataSet.needCalculation) {
+                    this.getPeriods()
+                    this.dataSetHelper.remainCalculateTimesMax = 10000
+                    this.dataSetHelper.extraExpressionDisabled = false
+                    this.dataSet.period = ""
+                } else {
+                    this.dataSetConstant.periods = [{
+                        nameEn: "DISPLAY",
+                        nameCn: "展示数据使用"
+                    }]
+                    this.dataSetHelper.remainCalculateTimesMax = -1
+                    this.dataSetHelper.extraExpressionDisabled = true
+                    this.dataSet.period = "DISPLAY"
+                }
+            },
 
             changeDataBaseTable() {
                 let getParams = {

@@ -67,6 +67,9 @@
                 <el-form-item label="数据源类型">
                     {{dataSet.dataSourceType}}
                 </el-form-item>
+                <el-form-item label="需要计算">
+                    {{dataSet.needCalculation ? '是' : '否'}}
+                </el-form-item>
                 <el-form-item label="周期">
                     {{dataSet.period}}
                 </el-form-item>

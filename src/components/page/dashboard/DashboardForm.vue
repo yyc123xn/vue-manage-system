@@ -271,7 +271,7 @@
                                             </el-select>
                                         </el-form-item>
                                         <el-form-item label="指标展示为折线">
-                                            <el-select v-model="handleEditForm.config.chartSettings.showLine" placeholder="请选择" multiple @change="showStack(handleEditForm.config.chartSettings)">
+                                            <el-select v-model="handleEditForm.config.chartSettings.showLine" placeholder="请选择" multiple filterable @change="showStack(handleEditForm.config.chartSettings)">
                                                 <template v-for="(metric, index) in dashboardHelper.reportssHelper[handleEditForm.reportXAxis][handleEditForm.reportYAxis].metrics">
                                                     <el-option :key="metric.showName" :label="metric.showName" :value="metric.showName"></el-option>
                                                 </template>
@@ -297,9 +297,17 @@
                                         <el-form-item label="分页每页大小">
                                             <el-input-number v-model="handleEditForm.config.chartSettings.pageSize" :min="1" :step="1"></el-input-number>
                                         </el-form-item>
+                                        <el-form-item label="逆序展示维度">
+                                            <el-select v-model="handleEditForm.config.chartSettings.descDisplayDimensions" placeholder="请选择" multiple filterable>
+                                                <template v-for="(dimension, index) in dashboardHelper.reportssHelper[handleEditForm.reportXAxis][handleEditForm.reportYAxis].dimensions">
+                                                    <el-option :key="dimension.showName" :label="dimension.showName" :value="dimension.showName"></el-option>
+                                                </template>
+                                            </el-select>
+                                        </el-form-item>
                                     </el-form>
                                     <div>备注1. 展示分页标签：topXTable中是否展示分页标签。</div>
                                     <div>备注2. 分页每页大小：topXTable中分页每页展示的数据条目个数。</div>
+                                    <div>备注3. 逆序展示维度：topXTable中展示数据按照选择的维度进行逆序展示，不选择则按照维度正序展示。</div>
                                 </el-col>
                                 <el-col v-if="'TOP_X_TABLE' === handleEditForm.chartType">
                                     <el-form ref="handleEditForm.chartSettings" :rules="rules" :model="handleEditForm.chartSettings" label-width="20%">
@@ -1040,7 +1048,8 @@
                 return {
                     chartSettings: {
                         isPaged: false,
-                        pageSize: 10
+                        pageSize: 10,
+                        descDisplayDimensions: []
                     }
                 }
             },

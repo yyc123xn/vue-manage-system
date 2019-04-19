@@ -8,7 +8,7 @@
                     border
                     style="width: 100%"
                     @cell-dblclick="dblhandleCurrentChange">
-                <el-table-column min-width="100" v-for="column in chartColumns" :prop="column.prop" :label="column.label">
+                <el-table-column min-width="100" v-for="column in chartColumns" :prop="column.prop" :label="column.label" :sortable="true">
                 </el-table-column>
                 <el-table-column
                         fixed="right"

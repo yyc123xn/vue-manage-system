@@ -10,6 +10,8 @@ const reportFileTableApi = {
 
     FILE_2_TABLE: '/report/file_table/file_2_table',
 
+    DOWNLOAD_FILE: '/report/file_table/download_file',
+
     get(urlName, getParams) {
         let url = this[urlName]
         return axios.get(url, {params : getParams})

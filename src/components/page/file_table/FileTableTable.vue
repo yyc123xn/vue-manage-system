@@ -28,6 +28,7 @@
                             <el-button v-if="tableData[scope.$index].infoVisible" type="text" icon="el-icon-info" @click="handleInfo(scope.$index, scope.row)">详情</el-button>
                             <el-button v-if="tableData[scope.$index].editVisible" type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
                             <el-button v-if="tableData[scope.$index].file2TableVisible" type="text" icon="el-icon-circle-plus-outline" @click="handleFile2Table(scope.$index, scope.row)">file2Table</el-button>
+                            <el-button v-if="tableData[scope.$index].downloadFileVisible" type="text" icon="el-icon-lx-down" @click="handleDownloadFile(scope.$index, scope.row)">下载源文件</el-button>
                             <el-button v-if="tableData[scope.$index].deleteVisible" type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
                         </template>
                     </el-table-column>
@@ -225,6 +226,11 @@
                 this.$api.REPORT_FILE_TABLE_API.get("FILE_2_TABLE", getParams).then(res => {
                     this.$message.success("开始将文件中数据导入到数据库表")
                 })
+            },
+
+            handleDownloadFile(index, row) {
+                let fileTableId = this.tableData[index].id
+                window.location.href = "http://localhost:7777/report/file_table/download_file?id=" + fileTableId
             },
 
             // 获取数据集详情

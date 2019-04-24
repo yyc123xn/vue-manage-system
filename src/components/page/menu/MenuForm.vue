@@ -387,7 +387,7 @@
                                 this.$message.error ("提交失败", error)
                             })
                         }
-                        this.$router.push('/menu_table')
+                        this.$router.go(0)
                     } else {
                         this.$message.error("请将菜单信息填写完整")
                         return false;
@@ -442,9 +442,8 @@
             let menuId = this.$route.query.id
             if (undefined !== menuId) {
                 this.getMenuInfo(menuId)
-            } else {
-                this.getDepartments()
             }
+            this.getDepartments()
         }
     }
 </script>

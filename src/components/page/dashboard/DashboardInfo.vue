@@ -71,6 +71,10 @@
                                             <div slot="content" v-html="chartTypeToolTip.toolTip + '<br>' + report.description.replace('\n', '<br>')"></div>
                                             <el-button type="primary" icon="el-icon-search" circle plain></el-button>
                                         </el-tooltip>
+                                        <el-tooltip v-if="report.chartType === chartTypeToolTip.chartType" placement="top">
+                                            <div slot="content" v-html="'点击可导出为csv文件'"></div>
+                                            <el-button type="primary" icon="el-icon-lx-down" circle plain @click="exportReportData2File(report)"></el-button>
+                                        </el-tooltip>
                                     </span>
                                 </span>
                             </div>
@@ -221,6 +225,63 @@
                 this.$api.REPORT_REPORT_FILTER_API.get("GET_REPORT_REPORT_FILTER_VALUES", getParams).then(res => {
                     reportFilter.values = res.data
                 })
+            },
+
+            exportReportData2File(report) {
+                let postParams = {
+                    id : report.id
+                }
+                let queryReportFilter = this.initQueryReportFilter(report.id)
+                if (queryReportFilter.queryColumns !== undefined && 0 < queryReportFilter.queryColumns.length) {
+                    if (-1 !== ['TOP_X_TABLE', 'TABLE'].indexOf(report.chartType)
+                        && report.config.chartSettings.isPaged) {
+                        postParams.pageSize = report.config.chartSettings.pageSize
+                        postParams.pageIndex = report.config.chartSettings.pageIndex
+                    }
+                    postParams.queryColumns = queryReportFilter.queryColumns
+                    postParams.queryConditions = queryReportFilter.queryConditions
+                }
+                this.$api.REPORT_REPORT_API.post('EXPORT_REPORT_DATA_2_FILE', postParams).then(res => {
+                    this.download(res)
+                })
+            },
+
+            download (data) {
+                if (!data) {
+                    return
+                }
+                let url = window.URL.createObjectURL(new Blob([data], { type: 'text/csv;charset=ANSI;' }))
+                let link = document.createElement('a')
+                link.style.display = 'none'
+                link.href = url
+                // 获取文件名
+                // download 属性定义了下载链接的地址而不是跳转路径
+                link.setAttribute('download', "reportData.csv")
+                document.body.appendChild(link)
+                link.click()
+            },
+
+            /**
+             * 重新生成queryReportFilter
+             */
+            initQueryReportFilter(reportId) {
+                let queryReportFilter = {
+                    queryColumns: [],
+                    queryConditions: [],
+                }
+                this.dashboard.reportFilters.forEach(reportFilter => {
+                    if (-1 !== reportFilter.reportIds.indexOf(reportId)
+                        && null !== reportFilter.queryCondition
+                        && 0 !== reportFilter.queryCondition.length) {
+                        if (-1 !== queryReportFilter.queryColumns.indexOf(reportFilter.queryColumn)) {
+                            queryReportFilter.queryConditions[index] = reportFilter.queryCondition
+                        } else {
+                            queryReportFilter.queryColumns.push(reportFilter.queryColumn)
+                            queryReportFilter.queryConditions.push(reportFilter.queryCondition)
+                        }
+                    }
+                })
+                return queryReportFilter
             }
         }
     }

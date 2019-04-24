@@ -8,7 +8,6 @@
         </el-col>
         <el-col class="container">
             <el-col class="handle-box">
-                <el-button type="primary" icon="delete" class="handle-del mr10">批量删除</el-button>
                 <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10" filterable>
                     <el-option v-for="fixedAssetsFilterField in fixedAssetsFilterFields"
                                :key="fixedAssetsFilterField.columnName" :label="fixedAssetsFilterField.columnComment"
@@ -17,6 +16,8 @@
                 </el-select>
                 <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="getFixedAssets">搜索</el-button>
+
+                <el-button type="primary" icon="el-icon-lx-add" class="mr10" style="float: right" @click="redirect2FixedAssetsForm">新增固定资产</el-button>
             </el-col>
             <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="55" align="center"></el-table-column>
@@ -139,7 +140,11 @@
             handleCurrentChange(pageIndex) {
                 this.pageIndex = pageIndex;
                 this.getDevelopers()
-            }
+            },
+
+            redirect2FixedAssetsForm() {
+                this.$router.push("/fixed_assets_form")
+            },
         }
     }
 

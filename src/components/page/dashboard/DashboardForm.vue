@@ -522,6 +522,10 @@
                                             <div slot="content" v-html="chartTypeToolTip.toolTip + '<br>' + report.description.replace('\n', '<br>')"></div>
                                             <el-button type="primary" icon="el-icon-search" circle plain></el-button>
                                         </el-tooltip>
+                                        <el-tooltip v-if="report.chartType === chartTypeToolTip.chartType" placement="top">
+                                            <div slot="content" v-html="'点击可导出为csv文件'"></div>
+                                            <el-button type="primary" icon="el-icon-lx-down" circle plain></el-button>
+                                        </el-tooltip>
                                     </span>
                                 </span>
                                 </div>
@@ -1386,8 +1390,7 @@
                     })
                     setTimeout(() => {
                         this.loading = false;
-                        this.dashboardHelper.reportssHelper[xAxis][yAxis].dataSets = []
-                    }, 200);
+                    });
                 } else {
                     this.dashboardHelper.reportssHelper[xAxis][yAxis].dataSets = [];
                 }

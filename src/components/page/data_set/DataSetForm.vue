@@ -344,6 +344,7 @@
                 this.$api.REPORT_DATA_SET_API.get('GET_DATA_SET_INFO', getParams).then(res => {
                     this.dataSet = res.data
                     this.dataSet.databaseTable = [this.dataSet.database, this.dataSet.sourceTable]
+                    this.changeDataBaseTable()
                 })
             },
 

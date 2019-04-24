@@ -15,6 +15,8 @@ const reportReportApi = {
         return axios.get(url, {params : getParams})
     },
 
+    EXPORT_REPORT_DATA_2_FILE: '/report/report/export_data_2_file',
+
     post(urlName, postParams) {
         let url = this[urlName]
         return axios.post(url, postParams)

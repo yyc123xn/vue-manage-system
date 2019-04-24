@@ -8,7 +8,6 @@
         </el-col>
         <el-col class="container">
             <el-col class="handle-box">
-                <el-button type="primary" icon="delete" class="handle-del mr10">批量删除</el-button>
                 <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10" filterable>
                     <el-option v-for="voucherFilterField in voucherFilterFields"
                                :key="voucherFilterField.columnName" :label="voucherFilterField.columnComment"
@@ -17,6 +16,8 @@
                 </el-select>
                 <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="getVouchers">搜索</el-button>
+
+                <el-button type="primary" icon="el-icon-lx-add" class="mr10" style="float: right" @click="redirect2VoucherForm">新增票据</el-button>
             </el-col>
             <el-col>
                 <el-tabs type="border-card" v-model="isMine">
@@ -124,6 +125,15 @@
                                 prop="sum">
                         </el-table-column>
                     </el-table>
+                </el-form-item>
+                <el-form-item label="票据图片">
+                    <el-carousel>
+                        <el-carousel-item v-for="item in 4" :key="item">
+                            <el-form-item>
+                                <img src="http://localhost:17777/finance/file?name=file.jpg">
+                            </el-form-item>
+                        </el-carousel-item>
+                    </el-carousel>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -290,7 +300,7 @@
                     })
                     setTimeout(() => {
                         this.loading = false;
-                    }, 1000);
+                    });
                 } else {
                     this.constant.developers = [];
                 }
@@ -492,7 +502,11 @@
             handleCurrentChange(pageIndex) {
                 this.pageIndex = pageIndex;
                 this.getVouchers()
-            }
+            },
+
+            redirect2VoucherForm() {
+                this.$router.push("/voucher_form")
+            },
         }
     }
 

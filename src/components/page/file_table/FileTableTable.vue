@@ -8,7 +8,6 @@
         </el-col>
         <el-col class="container">
             <el-col class="handle-box">
-                <el-button type="primary" icon="delete" class="handle-del mr10">批量删除</el-button>
                 <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10" filterable>
                     <el-option v-for="fileTableFilterField in fileTableFilterFields"
                                :key="fileTableFilterField.columnName" :label="fileTableFilterField.columnComment"
@@ -17,6 +16,8 @@
                 </el-select>
                 <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="getFileTables">搜索</el-button>
+
+                <el-button type="primary" icon="el-icon-lx-add" class="mr10" style="float: right" @click="redirect2FileTableForm">上传文件</el-button>
             </el-col>
             <el-col>
                 <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange" @cell-dblclick="dblhandleCurrentChange">
@@ -52,6 +53,10 @@
                 </el-form-item>
                 <el-form-item label="文件路径">
                     {{fileTable.filePath}}
+                </el-form-item>
+
+                <el-form-item label="文件类型">
+                    {{fileTable.fileType}}
                 </el-form-item>
                 <el-form-item label="数据库">
                     {{fileTable.database}}
@@ -168,18 +173,6 @@
                 })
             },
 
-            delAll() {
-                const length = this.multipleSelection.length;
-                let str = '';
-                this.del_list = this.del_list.concat(this.multipleSelection);
-                for (let i = 0; i < length; i++) {
-                    str += this.multipleSelection[i].name + ' ';
-                }
-                this.$message.error('删除了' + str);
-                this.multipleSelection = [];
-            },
-
-
             handleEdit(index, row) {
                 let fileTableId = this.tableData[index].id;
                 this.$router.push({
@@ -255,6 +248,10 @@
             handleCurrentChange(pageIndex) {
                 this.pageIndex = pageIndex;
                 this.getFileTableInfo()
+            },
+
+            redirect2FileTableForm() {
+                this.$router.push("/file_table_form")
             },
         }
     }

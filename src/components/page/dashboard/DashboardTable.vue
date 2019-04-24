@@ -8,7 +8,6 @@
         </el-col>
         <el-col class="container">
             <el-col class="handle-box">
-                <el-button type="primary" icon="delete" class="handle-del mr10" @click="delAll">批量删除</el-button>
                 <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10" filterable>
                     <el-option v-for="dashboardFilterField in dashboardFilterFields"
                                :key="dashboardFilterField.columnName" :label="dashboardFilterField.columnComment"
@@ -17,6 +16,7 @@
                 </el-select>
                 <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="getDashboards">搜索</el-button>
+                <el-button type="primary" icon="el-icon-lx-add" class="mr10" style="float: right" @click="redirect2DashboardForm">新增看板</el-button>
             </el-col>
             <el-col>
                 <el-tabs type="border-card" v-model="isMine">
@@ -160,19 +160,13 @@
                 })
             },
 
-            delAll() {
-                const length = this.multipleSelection.length;
-                let str = '';
-                this.del_list = this.del_list.concat(this.multipleSelection);
-                for (let i = 0; i < length; i++) {
-                    str += this.multipleSelection[i].name + ' ';
-                }
-                this.$message.error('删除了' + str);
-                this.multipleSelection = [];
-            },
             handleSelectionChange(val) {
                 this.multipleSelection = val;
-            }
+            },
+
+            redirect2DashboardForm() {
+                this.$router.push("/dashboard_form")
+            },
         }
     }
 

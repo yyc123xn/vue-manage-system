@@ -4,17 +4,25 @@
             :settings="report.config.chartSettings"
             :loading="loading"
             :data-empty="dataEmpty"
-            :events="chartEvents">
+            :events="chartEvents"
+            :toolbox="toolbox">
     </ve-map>
 </template>
 
 <script>
+    import 'echarts/lib/component/toolbox'
+    import 'v-charts/lib/style.css'
     import ElCol from "element-ui/packages/col/src/col";
     export default {
         components: {ElCol},
         name: "Map",
         props: {report: Object, reportFilters: Array},
         data () {
+            this.toolbox = {
+                feature: {
+                    saveAsImage: {}
+                }
+            }
             this.chartSettings = {
                 position: 'china',
                 selectData: true,

@@ -34,6 +34,7 @@
 </template>
 
 <script>
+    // todo 菜单show
     import bus from '../common/bus';
     import items from '../common/items'
     export default {
@@ -45,6 +46,7 @@
         },
         computed:{
             onRoutes(){
+                this.add2Edit()
                 return this.$route.path.replace('/','');
             }
         },
@@ -56,12 +58,33 @@
 
             // todo 用户直接输入url所以会导航到相关页面
             this.getMenus()
+            this.add2Edit()
         },
 
         methods: {
             getMenus() {
                 this.$api.FINANCE_MENU_API.get("GET_MENUS").then(res => {
                     this.items = res.data
+                    console.log(this.items)
+                })
+            },
+
+            add2Edit() {
+                let id = this.$route.query.id
+                let path = this.$route.path.replace('/','')
+                this.items.forEach(menu => {
+                    let children = menu.children
+                    children.forEach(subMenu => {
+                        if (subMenu.name === path) {
+                            if (undefined !== id) {
+                                subMenu.meta.title = subMenu.meta.title.replace('新增', '编辑')
+                            } else if (undefined === id) {
+                                subMenu.meta.title = subMenu.meta.title.replace('编辑', '新增')
+                            }
+                        } else {
+                            subMenu.meta.title = subMenu.meta.title.replace('编辑', '新增')
+                        }
+                    })
                 })
             }
         }

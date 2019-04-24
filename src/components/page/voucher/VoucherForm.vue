@@ -29,7 +29,7 @@
                             <template v-for="(type, index) in voucherConstant.types">
                                 <el-option :key="type.nameEn" :label="type.nameCn" :value="type.nameEn">
                                     <span style="float: left">{{ type.nameCn }}</span>
-                                    <span style="float: right; color: #8492a6; font-size: 13px">{{ type.nameEn }}</span>
+                                    <span style="margin-left: 20px;float: right; color: #8492a6; font-size: 13px">{{ type.nameEn }}</span>
                                 </el-option>
                             </template>
                         </el-select>
@@ -75,6 +75,21 @@
                             </el-table-column>
                         </el-table>
                     </el-form-item>
+                    <el-form-item label="票据图片">
+                        <el-upload
+                                class="upload-demo"
+                                drag
+                                action="/finance/voucher/file_upload"
+                                accept=".jpg,.png"
+                                :before-upload="beforeUploadFile"
+                                :on-change="fileChange"
+                                :on-success="handleSuccess"
+                                :on-error="handleError">
+                            <i class="el-icon-upload"></i>
+                            <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                            <div class="el-upload__tip" slot="tip">只能上传jpg/png文件</div>
+                        </el-upload>
+                    </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="addVoucherDetail">添加票据详情</el-button>
                     </el-form-item>
@@ -109,9 +124,12 @@
 
 <script>
     import ElCol from "element-ui/packages/col/src/col";
+    import ElFormItem from "../../../../node_modules/element-ui/packages/form/src/form-item.vue";
 
     export default {
-        components: {ElCol},
+        components: {
+            ElFormItem,
+            ElCol},
         name: 'DeveloperForm',
         data: function(){
             return {
@@ -206,6 +224,36 @@
                         return false;
                     }
                 })
+            },
+
+            // 文件上传成功时的钩子
+            handleSuccess(res, file) {
+                this.$notify.success({
+                    title: '成功',
+                    message: `文件上传成功`
+                });
+            },
+            // 文件上传失败时的钩子
+            handleError(err, file) {
+                this.$notify.error({
+                    title: '错误',
+                    message: `文件上传失败`
+                });
+            },
+
+            // 文件状态改变时的钩子
+            fileChange(file) {
+                this.file = file.raw
+            },
+
+            beforeUploadFile(file) {
+                let size = file.size / 1024 / 1024
+                if(size > 1) {
+                    this.$notify.warning({
+                        title: '警告',
+                        message: `文件大小不得超过1M`
+                    });
+                }
             },
 
             getVoucherTypes() {

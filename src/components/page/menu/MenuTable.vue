@@ -8,7 +8,6 @@
         </el-col>
         <el-col class="container">
             <el-col class="handle-box">
-                <el-button type="primary" icon="delete" class="handle-del mr10">批量删除</el-button>
                 <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10" filterable>
                     <el-option v-for="menuFilterField in menuFilterFields"
                                :key="menuFilterField.columnName" :label="menuFilterField.columnComment"
@@ -17,6 +16,8 @@
                 </el-select>
                 <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="getMenus">搜索</el-button>
+
+                <el-button type="primary" icon="el-icon-lx-add" class="mr10" style="float: right" @click="redirect2MenuForm">新增菜单</el-button>
             </el-col>
             <el-col>
                 <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange" @cell-dblclick="dblhandleCurrentChange">
@@ -67,9 +68,9 @@
                     {{menu.weight}}
                 </el-form-item>
                 <el-form-item label="权限">
-                    {{menu.privilege}}
+                    {{menuHelper.privilege}}
                 </el-form-item>
-                <el-form-item label="字段详情">
+                <el-form-item label="子菜单">
                     <el-table :data="menu.children">
                         <el-table-column type="expand">
                             <template slot-scope="props">
@@ -159,12 +160,21 @@
                     ],
                     weight: 0,
                     privilege: []
-                }
+                },
+
+                menuHelper: {
+                    privilege: []
+                },
+
+                menuConstant: {
+                    departments: []
+                },
             }
         },
         created() {
             this.getFilterFields();
             this.getMenus();
+            this.getDepartments()
         },
         methods: {
 
@@ -186,31 +196,30 @@
                 })
             },
 
+            getDepartments() {
+                this.$api.FINANCE_DEPARTMENT_API.get("GET_DEPARTMENTS").then(res => {
+                    this.menuConstant.departments = res.data
+                })
+            },
+
             // 获取数据集列表
             getMenus() {
                 this.getTableHeader()
-                let queryParams = {
+                let getParams = {
                     pageIndex: this.pageIndex,
                     pageSize: this.pageSize,
                     queryColumn: this.queryColumn,
                     queryCondition: this.queryCondition,
                     isMine: false
                 }
-                this.$api.FINANCE_MENU_API.get('GET_MENU', queryParams).then(res => {
+                this.$api.FINANCE_MENU_API.get('GET_MENU', getParams).then(res => {
                     this.tableData = res.data.list
                     this.total = res.data.total
                 })
             },
 
-            delAll() {
-                const length = this.multipleSelection.length;
-                let str = '';
-                this.del_list = this.del_list.concat(this.multipleSelection);
-                for (let i = 0; i < length; i++) {
-                    str += this.multipleSelection[i].name + ' ';
-                }
-                this.$message.error('删除了' + str);
-                this.multipleSelection = [];
+            redirect2MenuForm() {
+                this.$router.push("/menu_form")
             },
 
 
@@ -254,11 +263,12 @@
 
             // 获取数据集详情
             getMenuInfo(menuId) {
-                let queryParams = {
+                let getParams = {
                     id : menuId
                 }
-                this.$api.FINANCE_MENU_API.get('GET_MENU_INFO', queryParams).then(res => {
+                this.$api.FINANCE_MENU_API.get('GET_MENU_INFO', getParams).then(res => {
                     this.menu = res.data
+                    this.menuHelper.privilege = this.$common.translateDepartmentsFromIds(this.menuConstant.departments, this.menu.privilege);
                 })
             },
 

@@ -134,7 +134,7 @@
                     })
                     setTimeout(() => {
                         this.loading = false;
-                    }, 1000);
+                    });
                 } else {
                     this.developers = [];
                 }

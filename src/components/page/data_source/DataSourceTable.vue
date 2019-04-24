@@ -8,7 +8,6 @@
         </el-col>
         <el-col class="container">
             <el-col class="handle-box">
-                <el-button type="primary" icon="delete" class="handle-del mr10">批量删除</el-button>
                 <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10" filterable>
                     <el-option v-for="dataSourceFilterField in dataSourceFilterFields"
                                :key="dataSourceFilterField.columnName" :label="dataSourceFilterField.columnComment"
@@ -17,6 +16,8 @@
                 </el-select>
                 <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="getDataSources">搜索</el-button>
+
+                <el-button type="primary" icon="el-icon-lx-add" class="mr10" style="float: right" @click="redirect2DataSourceForm">新增数据源</el-button>
             </el-col>
             <el-col>
                 <el-tabs type="border-card" v-model="isMine">
@@ -171,14 +172,14 @@
             // 获取数据集列表
             getDataSources() {
                 this.getTableHeader()
-                let queryParams = {
+                let getParams = {
                     pageIndex: this.pageIndex,
                     pageSize: this.pageSize,
                     queryColumn: this.queryColumn,
                     queryCondition: this.queryCondition,
                     isMine: this.isMine
                 }
-                this.$api.REPORT_DATA_SOURCE_API.get('GET_DATA_SOURCES' ,queryParams).then(res => {
+                this.$api.REPORT_DATA_SOURCE_API.get('GET_DATA_SOURCES', getParams).then(res => {
                     this.tableData = res.data.list
                     this.total = res.data.total
                 })
@@ -203,10 +204,10 @@
 
             // 获取数据库下的所有表
             async getDatabaseTables(database) {
-                let queryParams = {
+                let getParams = {
                     database : database
                 }
-                await this.$api.REPORT_DATA_SOURCE_API.get('GET_DATABASE_TABLES', queryParams).then(res => {
+                await this.$api.REPORT_DATA_SOURCE_API.get('GET_DATABASE_TABLES', getParams).then(res => {
                     this.tables = res.data
                 })
             },
@@ -279,7 +280,11 @@
             handleCurrentChange(pageIndex) {
                 this.pageIndex = pageIndex;
                 this.getDataSources()
-            }
+            },
+
+            redirect2DataSourceForm() {
+                this.$router.push("/data_source_form")
+            },
         }
     }
 

@@ -208,7 +208,6 @@
             handleInfo(index, row) {
                 let fileTableId = this.tableData[index].id;
                 this.getFileTableInfo(fileTableId)
-                this.infoVisible = true
             },
 
             handleFile2Table(index, row) {
@@ -233,12 +232,12 @@
                 }
                 this.$api.REPORT_FILE_TABLE_API.get('GET_FILE_TABLE_INFO', queryParams).then(res => {
                     this.fileTable = res.data
+                    this.infoVisible = true
                 })
             },
 
             dblhandleCurrentChange(row) {
                 this.getFileTableInfo(row.id)
-                this.infoVisible = true
             },
 
             handleSelectionChange(val) {
@@ -247,7 +246,7 @@
 
             handleCurrentChange(pageIndex) {
                 this.pageIndex = pageIndex;
-                this.getFileTableInfo()
+                this.getFileTables()
             },
 
             redirect2FileTableForm() {

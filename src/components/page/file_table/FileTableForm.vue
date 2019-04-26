@@ -79,10 +79,11 @@
                                 :before-upload="beforeUploadFile"
                                 :on-change="fileChange"
                                 :on-success="handleSuccess"
+                                :fileList="fileTableHelper.files"
                                 :on-error="handleError">
                             <i class="el-icon-upload"></i>
                             <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-                            <div class="el-upload__tip" slot="tip">只能上传csv/txt文件</div>
+                            <div class="el-upload__tip" slot="tip">只能上传csv/txt文件，且不超过1MB</div>
                         </el-upload>
                     </el-form-item>
                     <el-form-item>
@@ -131,7 +132,10 @@
                     ]
                 },
 
-                file: '',
+                fileTableHelper: {
+                    file: "",
+                    files: []
+                },
 
                 fileTableConstant: {
                     databases: [],
@@ -162,7 +166,7 @@
 
             // 文件状态改变时的钩子
             fileChange(file) {
-                this.file = file.raw
+                this.fileTableHelper.file = file.raw
             },
 
             beforeUploadFile(file) {
@@ -190,23 +194,23 @@
             addFileTable(fileTable) {
                 this.$refs[fileTable].validate((valid) => {
                     if (valid) {
-                        let fileTable = this.$route.query.id
+                        let fileTableId = this.$route.query.id
                         let formData = new FormData()
-                        formData.append('file', this.file)
+                        formData.append('file', this.fileTableHelper.file)
                         formData.append("fileTable", JSON.stringify(this.fileTable))
-                        if (undefined !== fileTable) {
+                        if (undefined !== fileTableId) {
                             // 编辑
                             let axios = this.getFormDataAxios();
                             axios.put("/report/file_table", formData).then(res => {
-                                console.log(res.data)
+                                this.$message.success("成功编辑文件")
                             }).catch(error => {
-                                this.$message.error ("提交失败", error)
+                                this.$message.error ("编辑失败", error)
                             })
                         } else {
                             // 添加
                             let axios = this.getFormDataAxios();
                             axios.post("/report/file_table", formData).then(res => {
-                                console.log(res.data)
+                                this.$message.success("成功添加文件")
                             }).catch(error => {
                                 this.$message.error ("提交失败", error)
                             })
@@ -254,6 +258,11 @@
                 }
                 this.$api.REPORT_FILE_TABLE_API.get('GET_FILE_TABLE_INFO', getParams).then(res => {
                     this.fileTable = res.data
+                    this.fileTable.tableNameHelper = this.fileTable.tableName.substring(0, this.fileTable.tableName.lastIndexOf("_"))
+                    this.fileTableHelper.files = [{
+                        name : this.fileTable.fileOriginalName,
+                        url: "http://localhost:7777/report/file?uuid=" + this.fileTable.filePresentName
+                    }]
                 })
             },
 

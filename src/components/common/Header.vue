@@ -30,13 +30,7 @@
                         {{username}} <i class="el-icon-caret-bottom"></i>
                     </span>
                     <el-dropdown-menu slot="dropdown">
-                        <a href="http://blog.gdfengshuo.com/about/" target="_blank">
-                            <el-dropdown-item>关于作者</el-dropdown-item>
-                        </a>
-                        <a href="https://github.com/lin-xin/vue-manage-system" target="_blank">
-                            <el-dropdown-item>项目仓库</el-dropdown-item>
-                        </a>
-                        <el-dropdown-item divided  command="loginout">退出登录</el-dropdown-item>
+                        <el-dropdown-item divided  command="logout">退出登录</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
             </div>
@@ -50,7 +44,6 @@
             return {
                 collapse: false,
                 fullscreen: false,
-                name: 'linxin',
                 message: 2
             }
         },
@@ -63,9 +56,12 @@
         methods:{
             // 用户名下拉菜单选择事件
             handleCommand(command) {
-                if(command == 'loginout'){
-                    localStorage.removeItem('username')
-                    this.$router.push('/login');
+                if(command === 'logout'){
+                    this.$api.FINANCE_DEVELOPER_API.get("LOGOUT").then(res => {
+                        localStorage.removeItem('username')
+                        localStorage.removeItem('routes')
+                        this.$router.push('/login');
+                    })
                 }
             },
             // 侧边栏折叠

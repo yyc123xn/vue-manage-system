@@ -10,6 +10,7 @@ const financeDeveloperApi = {
     GET_ACADEMIC_DEGREES : '/finance/developer/academic_degrees',
     GET_DEVELOPER_INFO: '/finance/developer/info',
     QUERY_DEVELOPERS: '/finance/developer/query',
+    LOGOUT: "/finance/developer/logout",
 
     get(urlName, getParams) {
         let url = this[urlName]

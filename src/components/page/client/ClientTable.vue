@@ -138,6 +138,7 @@
         watch: {
             isMine(val) {
                 this.isMine = val;
+                this.pageIndex = 1
                 this.getClients()
             }
         },
@@ -188,14 +189,12 @@
 
             dblhandleCurrentChange(row) {
                 this.getClientInfo(row.id)
-                this.infoVisible = true;
             },
 
             handleInfo(index, row) {
                 const item = this.tableData[index];
                 let id = item.id
                 this.getClientInfo(id)
-                this.infoVisible = true;
             },
 
             getClientInfo(clientId) {
@@ -207,6 +206,7 @@
                     this.client.address.forEach(inner => {
                         this.clientHelper.address.push(inner.value)
                     })
+                    this.infoVisible = true;
                 })
             },
 

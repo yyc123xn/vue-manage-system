@@ -258,7 +258,6 @@
             handleInfo(index, row) {
                 let menuId = this.tableData[index].id;
                 this.getMenuInfo(menuId)
-                this.infoVisible = true
             },
 
             // 获取数据集详情
@@ -269,12 +268,12 @@
                 this.$api.FINANCE_MENU_API.get('GET_MENU_INFO', getParams).then(res => {
                     this.menu = res.data
                     this.menuHelper.privilege = this.$common.translateDepartmentsFromIds(this.menuConstant.departments, this.menu.privilege);
+                    this.infoVisible = true
                 })
             },
 
             dblhandleCurrentChange(row) {
                 this.getMenuInfo(row.id)
-                this.infoVisible = true
             },
 
             handleSelectionChange(val) {

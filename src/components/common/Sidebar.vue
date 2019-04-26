@@ -65,7 +65,6 @@
             getMenus() {
                 this.$api.FINANCE_MENU_API.get("GET_MENUS").then(res => {
                     this.items = res.data
-                    console.log(this.items)
                 })
             },
 

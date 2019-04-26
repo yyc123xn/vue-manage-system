@@ -8,15 +8,20 @@
         </el-col>
         <el-col class="container">
             <el-col class="handle-box">
-                <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10" filterable>
+                <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10" filterable @change="queryColumnChange">
                     <el-option v-for="voucherFilterField in voucherFilterFields"
                                :key="voucherFilterField.columnName" :label="voucherFilterField.columnComment"
                                :value="voucherFilterField.columnName">
                     </el-option>
                 </el-select>
-                <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
+                <el-select v-if="querySelectVisible" v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10">
+                    <el-option v-for="enumValue in tableHeader.enumsValues[queryColumn]"
+                                :key="enumValue.nameEn" :label="enumValue.nameCn"
+                                :value="enumValue.nameEn">
+                    </el-option>
+                </el-select>
+                <el-input v-if="!querySelectVisible" v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="getVouchers">搜索</el-button>
-
                 <el-button type="primary" icon="el-icon-lx-add" class="mr10" style="float: right" @click="redirect2VoucherForm">新增票据</el-button>
             </el-col>
             <el-col>
@@ -90,13 +95,10 @@
                 <el-form-item label="类型">
                     {{voucher.type}}
                 </el-form-item>
-                <el-form-item label="电话号码">
-                    {{voucher.phoneNumber}}
-                </el-form-item>
-                <el-form-item label="审核人">
+                <el-form-item v-if="undefined !== voucher.auditDeveloper && '' !== voucher.auditDeveloper" label="审核人">
                     {{voucher.auditDeveloper}}
                 </el-form-item>
-                <el-form-item label="回绝理由">
+                <el-form-item v-if="undefined !== voucher.reason && '' !== voucher.reason" label="回绝理由">
                     {{voucher.reason}}
                 </el-form-item>
                 <el-form-item label="票据详情">
@@ -126,11 +128,11 @@
                         </el-table-column>
                     </el-table>
                 </el-form-item>
-                <el-form-item label="票据图片">
+                <el-form-item label="票据图片" v-if="undefined !== voucher.imgs && 0 != voucher.imgs.length">
                     <el-carousel>
-                        <el-carousel-item v-for="item in 4" :key="item">
+                        <el-carousel-item v-for="img in voucher.imgs" :key="img.name">
                             <el-form-item>
-                                <img src="http://localhost:17777/finance/file?name=file.jpg">
+                                <img :src="img.url">
                             </el-form-item>
                         </el-carousel-item>
                     </el-carousel>
@@ -213,7 +215,9 @@
         data: function () {
             return {
                 voucherFilterFields: [],
-                tableHeader: {},
+                tableHeader: {
+                    enums: []
+                },
                 tableData: [],
                 pageIndex: 1,
                 pageSize: 10,
@@ -226,6 +230,7 @@
                 commitVisible: false,
                 rejectVisible: false,
                 transferVisible: false,
+                querySelectVisible: false,
                 loading: false,
                 selectedVoucherIds: [],
                 commitForm: {
@@ -251,7 +256,8 @@
                         name: '票据详情1',
                         description: '票据描述1',
                         sum: 0
-                    }]
+                    }],
+                    imgUrls: []
                 },
                 rules: {
                     auditDeveloper: [
@@ -278,15 +284,21 @@
         watch: {
             isMine(val) {
                 this.isMine = val;
+                this.pageIndex = 1
                 this.getVouchers()
             },
 
             status(val) {
                 this.status = val;
+                this.pageIndex = 1
                 this.getVouchers()
             }
         },
         methods: {
+
+            queryColumnChange() {
+                this.querySelectVisible = "" !== this.queryColumn && -1 !== this.tableHeader.enums.indexOf(this.queryColumn)
+            },
 
             queryDevelopers(query) {
                 if (query !== '') {
@@ -449,7 +461,6 @@
             handleInfo(index, row) {
                 let voucherId = this.tableData[index].id;
                 this.getVoucherInfo(voucherId)
-                this.infoVisible = true
             },
 
             getVoucherInfo(voucherId) {

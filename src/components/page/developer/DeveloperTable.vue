@@ -54,6 +54,9 @@
                 <el-form-item label="email">
                     {{developer.email}}
                 </el-form-item>
+                <el-form-item v-if="undefined !== developer.password && '' !== developer.password" label="密码">
+                    {{developer.password}}
+                </el-form-item>
                 <el-form-item label="权限">
                     {{developerHelper.privilege}}
                 </el-form-item>
@@ -185,12 +188,10 @@
                 const item = this.tableData[index];
                 let id = item.id
                 this.getDeveloperInfo(id)
-                this.infoVisible = true;
             },
 
             dblhandleCurrentChange(row) {
                 this.getDeveloperInfo(row.id)
-                this.infoVisible = true;
             },
 
             getDeveloperInfo(developerId) {
@@ -202,6 +203,7 @@
                     this.developerHelper.departmentId = this.translateDepartmentFromId(this.developerConstant.departments, this.developer.departmentId)
                     this.developerHelper.privilege = this.$common.translateDepartmentsFromIds(this.developerConstant.departments, this.developer.privilege);
                     this.developerHelper.academicDegree = this.$common.translateNameEn(this.developerConstant.academicDegrees, this.developer.academicDegree)
+                    this.infoVisible = true;
                 })
             },
 

@@ -24,17 +24,17 @@
                           <span class="custom-tree-node" slot-scope="{ node, data }">
                               <span style="margin-right: 20px">{{ node.label }}</span>
                               <span>
-                                  <el-button
+                                  <el-button v-if="data.editVisible"
                                           type="text"
                                           @click="editDepartment(node, data)">
                                     编辑
                                   </el-button>
-                                  <el-button
+                                  <el-button v-if="data.addChildVisible"
                                           type="text"
                                           @click="addDepartment(node, data)">
                                     添加子部门
                                   </el-button>
-                                  <el-button v-if="node.label !== '部门'"
+                                  <el-button v-if="data.deleteVisible"
                                           type="text"
                                           @click="deleteDepartment(node, data)"
                                           style="color:red;">

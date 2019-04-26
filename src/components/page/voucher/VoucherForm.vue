@@ -75,23 +75,23 @@
                             </el-table-column>
                         </el-table>
                     </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="addVoucherDetail">添加票据详情</el-button>
+                    </el-form-item>
                     <el-form-item label="票据图片">
                         <el-upload
                                 class="upload-demo"
-                                drag
                                 action="/finance/voucher/file_upload"
                                 accept=".jpg,.png"
                                 :before-upload="beforeUploadFile"
-                                :on-change="fileChange"
+                                :on-change="handleChange"
+                                :fileList="voucher.imgs"
                                 :on-success="handleSuccess"
-                                :on-error="handleError">
-                            <i class="el-icon-upload"></i>
-                            <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-                            <div class="el-upload__tip" slot="tip">只能上传jpg/png文件</div>
+                                :on-error="handleError"
+                                list-type="picture">
+                            <el-button size="small" type="primary">点击上传</el-button>
+                            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过1MB</div>
                         </el-upload>
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button type="primary" @click="addVoucherDetail">添加票据详情</el-button>
                     </el-form-item>
                     <el-form-item label="票据状态" prop="status">
                         <el-select v-model="voucher.status" placeholder="请选择">
@@ -125,7 +125,7 @@
 <script>
     import ElCol from "element-ui/packages/col/src/col";
     import ElFormItem from "../../../../node_modules/element-ui/packages/form/src/form-item.vue";
-
+    import axios from 'axios' //引用axios
     export default {
         components: {
             ElFormItem,
@@ -146,11 +146,13 @@
                         description: '票据描述1',
                         sum: 0
                     }],
-                    departmentId: 0
+                    departmentId: 0,
+                    imgs: []
                 },
 
                 voucherHelper: {
-                    departmentId: []
+                    departmentId: [],
+                    imgs: []
                 },
 
                 voucherConstant: {
@@ -207,15 +209,24 @@
                     if (valid) {
                         let voucherId = this.$route.query.id
                         this.voucher.departmentId = this.voucherHelper.departmentId[this.voucherHelper.departmentId.length - 1]
+                        let formData = new FormData()
+                        formData.append('imgs', this.voucherHelper.imgs)
+                        formData.append("voucher", JSON.stringify(this.voucher))
                         if (undefined === voucherId) {
                             // 添加
-                            this.$api.FINANCE_VOUCHER_API.post('ADD_VOUCHER', this.voucher).then(res => {
+                            let axios = this.getFormDataAxios();
+                            axios.post("/finance/voucher", formData).then(res => {
                                 this.$message.success("成功添加票据")
+                            }).catch(error => {
+                                this.$message.error ("提交失败", error)
                             })
                         } else {
                             // 编辑
-                            this.$api.FINANCE_VOUCHER_API.put("EDIT_VOUCHER", this.voucher).then(res => {
+                            let axios = this.getFormDataAxios();
+                            axios.post("/finance/voucher", formData).then(res => {
                                 this.$message.success("成功编辑票据")
+                            }).catch(error => {
+                                this.$message.error ("编辑失败", error)
                             })
                         }
                         this.$router.replace('/voucher_table')
@@ -224,6 +235,17 @@
                         return false;
                     }
                 })
+            },
+
+            getFormDataAxios() {
+                const service = axios.create({ // 创建服务
+                    timeout: 5000 // 请求延时
+                })
+                service.defaults.withCredentials = true
+                service.defaults.headers = {
+                    'Content-Type': 'multipart/form-data'
+                }
+                return service
             },
 
             // 文件上传成功时的钩子
@@ -239,6 +261,10 @@
                     title: '错误',
                     message: `文件上传失败`
                 });
+            },
+
+            handleChange(file, fileList) {
+                this.voucherHelper.imgs = fileList
             },
 
             // 文件状态改变时的钩子

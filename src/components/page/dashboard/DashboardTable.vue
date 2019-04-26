@@ -73,6 +73,7 @@
         watch: {
             isMine(val) {
                 this.isMine = val;
+                this.pageIndex = 1
                 this.getDashboards()
             }
         },

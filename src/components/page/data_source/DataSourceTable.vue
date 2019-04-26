@@ -146,6 +146,7 @@
         watch: {
             isMine(val) {
                 this.isMine = val;
+                this.pageIndex = 1
                 this.getDataSources()
             }
         },
@@ -209,6 +210,7 @@
                 }
                 await this.$api.REPORT_DATA_SOURCE_API.get('GET_DATABASE_TABLES', getParams).then(res => {
                     this.tables = res.data
+                    this.infoVisible = true;
                 })
             },
 
@@ -263,13 +265,11 @@
                 this.getDataSourceInfo(id)
                 let database = item.database
                 this.getDatabaseTables(database)
-                this.infoVisible = true;
             },
 
             dblhandleCurrentChange(row) {
                 this.getDataSourceInfo(row.id)
                 this.getDatabaseTables(row.database)
-                this.infoVisible = true;
             },
 
             handleSelectionChange(val) {

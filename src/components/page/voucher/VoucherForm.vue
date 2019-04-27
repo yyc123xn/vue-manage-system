@@ -3,7 +3,8 @@
         <el-col class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item><i class="el-icon-lx-punch"></i> 公司票据</el-breadcrumb-item>
-                <el-breadcrumb-item>票据表单</el-breadcrumb-item>
+                <el-breadcrumb-item v-if="isEdit">编辑票据</el-breadcrumb-item>
+                <el-breadcrumb-item v-if="!isEdit">新增票据</el-breadcrumb-item>
             </el-breadcrumb>
         </el-col>
         <el-col class="container">
@@ -366,6 +367,11 @@
 
             redirect2VoucherTable() {
                 this.$router.push("/voucher_table")
+            }
+        },
+        computed: {
+            isEdit: function () {
+                return undefined !== this.$route.query.id
             }
         },
         created() {

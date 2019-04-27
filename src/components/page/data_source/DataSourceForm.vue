@@ -3,7 +3,8 @@
         <el-col class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item><i class="el-icon-lx-file"></i> 数据源</el-breadcrumb-item>
-                <el-breadcrumb-item>数据源表单</el-breadcrumb-item>
+                <el-breadcrumb-item v-if="isEdit">编辑数据源</el-breadcrumb-item>
+                <el-breadcrumb-item v-if="!isEdit">新增数据源</el-breadcrumb-item>
             </el-breadcrumb>
         </el-col>
         <el-col class="container">
@@ -126,6 +127,11 @@
 
             redirect2DataSourceTable() {
                 this.$router.push("/data_source_table")
+            }
+        },
+        computed: {
+            isEdit: function () {
+                return undefined !== this.$route.query.id
             }
         },
         created() {

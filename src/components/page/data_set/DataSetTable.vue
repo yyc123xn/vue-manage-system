@@ -79,10 +79,10 @@
                 <el-form-item label="周期">
                     {{dataSet.period}}
                 </el-form-item>
-                <el-form-item label="额外运算条件">
+                <el-form-item v-if="undefined !== dataSet.extraExpression && '' !== dataSet.extraExpression" label="额外运算条件">
                     {{dataSet.extraExpression}}
                 </el-form-item>
-                <el-form-item label="已有数据">
+                <el-form-item v-if="undefined !== dataSet.beginDate && '' !== dataSet.beginDate" label="已有数据">
                     {{dataSet.beginDate}} 至 {{dataSet.endDate}}
                 </el-form-item>
                 <el-form-item label="字段详情">

@@ -3,7 +3,8 @@
         <el-col class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item><i class="el-icon-lx-text"></i> 数据集</el-breadcrumb-item>
-                <el-breadcrumb-item>数据集表单</el-breadcrumb-item>
+                <el-breadcrumb-item v-if="isEdit">编辑数据集</el-breadcrumb-item>
+                <el-breadcrumb-item v-if="!isEdit">新增数据集</el-breadcrumb-item>
             </el-breadcrumb>
         </el-col>
         <el-col class="container">
@@ -224,16 +225,12 @@
         methods: {
 
             changeNeedCalculation() {
+                this.getPeriods()
                 if (this.dataSet.needCalculation) {
-                    this.getPeriods()
                     this.dataSetHelper.remainCalculateTimesMax = 10000
                     this.dataSetHelper.extraExpressionDisabled = false
                     this.dataSet.period = ""
                 } else {
-                    this.dataSetConstant.periods = [{
-                        nameEn: "DISPLAY",
-                        nameCn: "展示数据使用"
-                    }]
                     this.dataSetHelper.remainCalculateTimesMax = -1
                     this.dataSetHelper.extraExpressionDisabled = true
                     this.dataSet.period = "DISPLAY"
@@ -294,7 +291,8 @@
 
             getPeriods() {
                 this.$api.REPORT_DATA_SET_API.get('GET_PERIODS').then(res => {
-                    this.dataSetConstant.periods = res.data;
+                    this.dataSetConstant.periods = res.data.filter(
+                        period => period.needCalculation === this.dataSet.needCalculation);
                 })
             },
 
@@ -352,17 +350,22 @@
                 this.$router.push("/data_set_table")
             },
         },
+        computed: {
+            isEdit: function () {
+                return undefined !== this.$route.query.id
+            },
+        },
         created() {
             let dataSetId = this.$route.query.id
             if (undefined !== dataSetId) {
                 this.getDataSetInfo(dataSetId)
             }
             this.getDatabasesTables(),
-            this.getPeriods(),
             this.getDataTypes(),
             this.getCalculateTypes(),
             this.getFieldTypes(),
-            this.getDataSourceTypes()
+            this.getDataSourceTypes(),
+            this.getPeriods()
         }
     }
 </script>

@@ -3,7 +3,8 @@
         <el-col class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item><i class="el-icon-lx-sort"></i> 文件转表</el-breadcrumb-item>
-                <el-breadcrumb-item>表单</el-breadcrumb-item>
+                <el-breadcrumb-item v-if="isEdit">文件上传</el-breadcrumb-item>
+                <el-breadcrumb-item v-if="!isEdit">文件上传</el-breadcrumb-item>
             </el-breadcrumb>
         </el-col>
         <el-col class="container">
@@ -180,7 +181,10 @@
             },
 
             getDatabases() {
-                this.$api.REPORT_DATA_SOURCE_API.get("GET_DATABASES").then(res => {
+                let getParams = {
+                    isDeveloperAdd : false
+                }
+                this.$api.REPORT_DATA_SOURCE_API.get("GET_DATABASES", getParams).then(res => {
                     this.fileTableConstant.databases = res.data
                 })
             },
@@ -268,6 +272,11 @@
 
             redirect2FileTableTable() {
                 this.$router.push("/file_table_table")
+            }
+        },
+        computed: {
+            isEdit: function () {
+                return undefined !== this.$route.query.id
             }
         },
         created() {

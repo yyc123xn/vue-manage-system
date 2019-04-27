@@ -3,7 +3,8 @@
         <el-col class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item><i class="el-icon-lx-profile"></i> 公司客户</el-breadcrumb-item>
-                <el-breadcrumb-item>客户表单</el-breadcrumb-item>
+                <el-breadcrumb-item v-if="isEdit">编辑客户</el-breadcrumb-item>
+                <el-breadcrumb-item v-if="!isEdit">新增客户</el-breadcrumb-item>
             </el-breadcrumb>
         </el-col>
         <el-col class="container">
@@ -168,7 +169,13 @@
                 }
             }
         },
+        computed: {
+            isEdit: function () {
+                return undefined !== this.$route.query.id
+            }
+        },
         methods: {
+
             addClient(client) {
                 this.$refs[client].validate((valid) => {
                     if (valid) {

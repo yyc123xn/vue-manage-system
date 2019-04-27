@@ -3,7 +3,8 @@
         <el-col class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item><i class="el-icon-lx-rank"></i> 数据看板</el-breadcrumb-item>
-                <el-breadcrumb-item>看板表单</el-breadcrumb-item>
+                <el-breadcrumb-item v-if="isEdit">编辑看板</el-breadcrumb-item>
+                <el-breadcrumb-item v-if="!isEdit">新增看板</el-breadcrumb-item>
             </el-breadcrumb>
         </el-col>
 
@@ -854,6 +855,12 @@
                 ],
 
                 loading: false
+            }
+        },
+
+        computed: {
+            isEdit: function () {
+                return undefined !== this.$route.query.id
             }
         },
 

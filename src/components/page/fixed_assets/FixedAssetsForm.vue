@@ -3,7 +3,8 @@
         <el-col class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item><i class="el-icon-lx-apps"></i> 公司固定资产</el-breadcrumb-item>
-                <el-breadcrumb-item>固定资产表单</el-breadcrumb-item>
+                <el-breadcrumb-item v-if="isEdit">编辑固定资产</el-breadcrumb-item>
+                <el-breadcrumb-item v-if="!isEdit">新增固定资产</el-breadcrumb-item>
             </el-breadcrumb>
         </el-col>
         <el-col class="container">
@@ -127,6 +128,11 @@
 
             redirect2FixedAssetsTable() {
                 this.$router.push("/fixed_assets_table")
+            }
+        },
+        computed: {
+            isEdit: function () {
+                return undefined !== this.$route.query.id
             }
         },
         created() {

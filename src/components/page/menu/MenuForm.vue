@@ -3,7 +3,8 @@
         <el-col class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item><i class="el-icon-lx-sort"></i> 菜单管理</el-breadcrumb-item>
-                <el-breadcrumb-item>菜单表单</el-breadcrumb-item>
+                <el-breadcrumb-item v-if="isEdit">编辑菜单</el-breadcrumb-item>
+                <el-breadcrumb-item v-if="!isEdit">新增菜单</el-breadcrumb-item>
             </el-breadcrumb>
         </el-col>
         <el-col class="container">
@@ -436,6 +437,11 @@
                     name: 'icon'
                 })
                 window.open(href, '_blank')
+            }
+        },
+        computed: {
+            isEdit: function () {
+                return undefined !== this.$route.query.id
             }
         },
         created() {

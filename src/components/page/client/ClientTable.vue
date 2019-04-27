@@ -8,13 +8,19 @@
         </el-col>
         <el-col class="container">
             <el-col class="handle-box">
-                <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10" filterable>
-                    <el-option v-for="clientFilterField in clientFilterFields"
+                <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10" filterable @change="queryColumnChange">
+                    <el-option v-for="clientFilterField in clientFilterFields.filterFields"
                                :key="clientFilterField.columnName" :label="clientFilterField.columnComment"
                                :value="clientFilterField.columnName">
                     </el-option>
                 </el-select>
-                <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
+                <el-select v-if="querySelectVisible" v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10" @change="getClients">
+                    <el-option v-for="enumValue in clientFilterFields.enumsValues[queryColumn]"
+                               :key="enumValue.nameEn" :label="enumValue.nameCn"
+                               :value="enumValue.nameEn">
+                    </el-option>
+                </el-select>
+                <el-input v-if="!querySelectVisible" v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="getClients">搜索</el-button>
                 <el-button type="primary" icon="el-icon-lx-add" class="mr10" style="float: right" @click="redirect2ClientForm">新增客户</el-button>
             </el-col>
@@ -107,6 +113,7 @@
                 editVisible: false,
                 delVisible: false,
                 infoVisible: false,
+                querySelectVisible: false,
                 isMine: "false",
                 client: {
                     id : 0,
@@ -143,6 +150,12 @@
             }
         },
         methods: {
+
+            queryColumnChange() {
+                this.queryCondition[0] = ''
+                this.querySelectVisible = "" !== this.queryColumn && -1 !== this.clientFilterFields.enums.indexOf(this.queryColumn)
+            },
+
             // 获取票据的过滤字段
             getFilterFields() {
                 this.$api.FINANCE_CLIENT_API.get('GET_CLIENT_FILTER_FIELDS').then(res => {

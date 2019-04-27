@@ -8,13 +8,19 @@
         </el-col>
         <el-col class="container">
             <el-col class="handle-box">
-                <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10" filterable>
-                    <el-option v-for="menuFilterField in menuFilterFields"
+                <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10" filterable @change="queryColumnChange">
+                    <el-option v-for="menuFilterField in menuFilterFields.filterFields"
                                :key="menuFilterField.columnName" :label="menuFilterField.columnComment"
                                :value="menuFilterField.columnName">
                     </el-option>
                 </el-select>
-                <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
+                <el-select v-if="querySelectVisible" v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10" @change="getMenus">
+                    <el-option v-for="enumValue in menuFilterFields.enumsValues[queryColumn]"
+                               :key="enumValue.nameEn" :label="enumValue.nameCn"
+                               :value="enumValue.nameEn">
+                    </el-option>
+                </el-select>
+                <el-input v-if="!querySelectVisible" v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="getMenus">搜索</el-button>
 
                 <el-button type="primary" icon="el-icon-lx-add" class="mr10" style="float: right" @click="redirect2MenuForm">新增菜单</el-button>
@@ -136,6 +142,7 @@
                 queryCondition: [],
                 editVisible: false,
                 infoVisible: false,
+                querySelectVisible: false,
                 menu: {
                     id: 0,
                     name: '',
@@ -178,13 +185,18 @@
         },
         methods: {
 
+            queryColumnChange() {
+                this.queryCondition[0] = ''
+                this.querySelectVisible = "" !== this.queryColumn && -1 !== this.menuFilterFields.enums.indexOf(this.queryColumn)
+            },
+
             // 获取tableHeaders
             getTableHeader() {
                 let getParams = {
                     tableName: "menu_table",
                     isMine: false
                 }
-                this.$api.REPORT_COMMON_API.get("GET_TABLE_HEADER" ,getParams).then(res => {
+                this.$api.FINANCE_COMMON_API.get("GET_TABLE_HEADER" ,getParams).then(res => {
                     this.tableHeader = res.data
                 })
             },

@@ -8,13 +8,19 @@
         </el-col>
         <el-col class="container">
             <el-col class="handle-box">
-                <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10" filterable>
-                    <el-option v-for="dataSourceFilterField in dataSourceFilterFields"
+                <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10" filterable @change="queryColumnChange">
+                    <el-option v-for="dataSourceFilterField in dataSourceFilterFields.filterFields"
                                :key="dataSourceFilterField.columnName" :label="dataSourceFilterField.columnComment"
                                :value="dataSourceFilterField.columnName">
                     </el-option>
                 </el-select>
-                <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
+                <el-select v-if="querySelectVisible" v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10" @change="getDataSources">
+                    <el-option v-for="enumValue in dataSourceFilterFields.enumsValues[queryColumn]"
+                               :key="enumValue.nameEn" :label="enumValue.nameCn"
+                               :value="enumValue.nameEn">
+                    </el-option>
+                </el-select>
+                <el-input v-if="!querySelectVisible" v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="getDataSources">搜索</el-button>
 
                 <el-button type="primary" icon="el-icon-lx-add" class="mr10" style="float: right" @click="redirect2DataSourceForm">新增数据源</el-button>
@@ -135,6 +141,7 @@
                 infoVisible: false,
                 editVisible: false,
                 delVisible: false,
+                querySelectVisible: false,
                 isMine: "false",
             }
         },
@@ -151,6 +158,11 @@
             }
         },
         methods: {
+
+            queryColumnChange() {
+                this.queryCondition[0] = ''
+                this.querySelectVisible = "" !== this.queryColumn && -1 !== this.dataSourceFilterFields.enums.indexOf(this.queryColumn)
+            },
 
             // 获取tableHeaders
             getTableHeader() {

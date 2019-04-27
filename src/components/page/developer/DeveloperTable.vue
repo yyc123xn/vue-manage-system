@@ -8,13 +8,19 @@
         </el-col>
         <el-col class="container">
             <el-col class="handle-box">
-                <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10" filterable>
-                    <el-option v-for="developerFilterField in developerFilterFields"
+                <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10" filterable @change="queryColumnChange">
+                    <el-option v-for="developerFilterField in developerFilterFields.filterFields"
                                :key="developerFilterField.columnName" :label="developerFilterField.columnComment"
                                :value="developerFilterField.columnName">
                     </el-option>
                 </el-select>
-                <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
+                <el-select v-if="querySelectVisible" v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10" @change="getDevelopers">
+                    <el-option v-for="enumValue in developerFilterFields.enumsValues[queryColumn]"
+                               :key="enumValue.nameEn" :label="enumValue.nameCn"
+                               :value="enumValue.nameEn">
+                    </el-option>
+                </el-select>
+                <el-input v-if="!querySelectVisible" v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="getDevelopers">搜索</el-button>
                 <el-button type="primary" icon="el-icon-lx-add" class="mr10" style="float: right" @click="redirect2DeveloperForm">新增员工</el-button>
             </el-col>
@@ -105,6 +111,7 @@
                 editVisible: false,
                 delVisible: false,
                 infoVisible: false,
+                querySelectVisible: false,
                 loading: false,
                 developer: {
                     id : 0,
@@ -144,6 +151,11 @@
         },
 
         methods: {
+
+            queryColumnChange() {
+                this.queryCondition[0] = ''
+                this.querySelectVisible = "" !== this.queryColumn && -1 !== this.developerFilterFields.enums.indexOf(this.queryColumn)
+            },
 
             getAcademicDegrees() {
                 this.$api.FINANCE_DEVELOPER_API.get('GET_ACADEMIC_DEGREES').then(res => {

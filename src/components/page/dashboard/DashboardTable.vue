@@ -8,13 +8,19 @@
         </el-col>
         <el-col class="container">
             <el-col class="handle-box">
-                <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10" filterable>
-                    <el-option v-for="dashboardFilterField in dashboardFilterFields"
+                <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10" filterable @change="queryColumnChange">
+                    <el-option v-for="dashboardFilterField in dashboardFilterFields.filterFields"
                                :key="dashboardFilterField.columnName" :label="dashboardFilterField.columnComment"
                                :value="dashboardFilterField.columnName">
                     </el-option>
                 </el-select>
-                <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
+                <el-select v-if="querySelectVisible" v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10" @change="getDashboards">
+                    <el-option v-for="enumValue in dashboardFilterFields.enumsValues[queryColumn]"
+                               :key="enumValue.nameEn" :label="enumValue.nameCn"
+                               :value="enumValue.nameEn">
+                    </el-option>
+                </el-select>
+                <el-input v-if="!querySelectVisible" v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="getDashboards">搜索</el-button>
                 <el-button type="primary" icon="el-icon-lx-add" class="mr10" style="float: right" @click="redirect2DashboardForm">新增看板</el-button>
             </el-col>
@@ -61,6 +67,7 @@
                 queryCondition: [],
                 editVisible: false,
                 delVisible: false,
+                querySelectVisible: false,
                 isMine: "false"
             }
         },
@@ -78,6 +85,12 @@
             }
         },
         methods: {
+
+            queryColumnChange() {
+                this.queryCondition[0] = ''
+                this.querySelectVisible = "" !== this.queryColumn && -1 !== this.dashboardFilterFields.enums.indexOf(this.queryColumn)
+            },
+
             // 获取看板的过滤字段
             getFilterFields() {
                 this.$api.REPORT_DASHBOARD_API.get('GET_DASHBOARD_FILTER_FIELDS').then(res => {

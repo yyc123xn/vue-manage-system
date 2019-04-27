@@ -8,15 +8,20 @@
         </el-col>
         <el-col class="container">
             <el-col class="handle-box">
-                <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10" filterable>
-                    <el-option v-for="fileTableFilterField in fileTableFilterFields"
+                <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10" filterable @change="queryColumnChange">
+                    <el-option v-for="fileTableFilterField in fileTableFilterFields.filterFields"
                                :key="fileTableFilterField.columnName" :label="fileTableFilterField.columnComment"
                                :value="fileTableFilterField.columnName">
                     </el-option>
                 </el-select>
-                <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
+                <el-select v-if="querySelectVisible" v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10" @change="getFileTables">
+                    <el-option v-for="enumValue in fileTableFilterFields.enumsValues[queryColumn]"
+                               :key="enumValue.nameEn" :label="enumValue.nameEn"
+                               :value="enumValue.nameEn">
+                    </el-option>
+                </el-select>
+                <el-input v-if="!querySelectVisible" v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="getFileTables">搜索</el-button>
-
                 <el-button type="primary" icon="el-icon-lx-add" class="mr10" style="float: right" @click="redirect2FileTableForm">上传文件</el-button>
             </el-col>
             <el-col>
@@ -117,6 +122,7 @@
                 queryCondition: [],
                 editVisible: false,
                 infoVisible: false,
+                querySelectVisible: false,
                 fileTable: {
                     id: 0,
                     filePresentName: '',
@@ -138,6 +144,11 @@
             this.getFileTables();
         },
         methods: {
+
+            queryColumnChange() {
+                this.queryCondition[0] = ''
+                this.querySelectVisible = "" !== this.queryColumn && -1 !== this.fileTableFilterFields.enums.indexOf(this.queryColumn)
+            },
 
             // 获取tableHeaders
             getTableHeader() {

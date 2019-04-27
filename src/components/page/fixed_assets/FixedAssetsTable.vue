@@ -8,15 +8,20 @@
         </el-col>
         <el-col class="container">
             <el-col class="handle-box">
-                <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10" filterable>
-                    <el-option v-for="fixedAssetsFilterField in fixedAssetsFilterFields"
+                <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10" filterable @change="queryColumnChange">
+                    <el-option v-for="fixedAssetsFilterField in fixedAssetsFilterFields.filterFields"
                                :key="fixedAssetsFilterField.columnName" :label="fixedAssetsFilterField.columnComment"
                                :value="fixedAssetsFilterField.columnName">
                     </el-option>
                 </el-select>
-                <el-input v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
+                <el-select v-if="querySelectVisible" v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10" @change="getFixedAssets">
+                    <el-option v-for="enumValue in fixedAssetsFilterFields.enumsValues[queryColumn]"
+                               :key="enumValue.nameEn" :label="enumValue.nameCn"
+                               :value="enumValue.nameEn">
+                    </el-option>
+                </el-select>
+                <el-input v-if="!querySelectVisible" v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="getFixedAssets">搜索</el-button>
-
                 <el-button type="primary" icon="el-icon-lx-add" class="mr10" style="float: right" @click="redirect2FixedAssetsForm">新增固定资产</el-button>
             </el-col>
             <el-table :data="tableData" border class="table" ref="tableData" @selection-change="handleSelectionChange">
@@ -53,6 +58,7 @@
                 queryCondition: [],
                 editVisible: false,
                 delVisible: false,
+                querySelectVisible: false,
                 form: {
                     name: '',
                     date: '',
@@ -67,6 +73,12 @@
         computed: {
         },
         methods: {
+
+            queryColumnChange() {
+                this.queryCondition[0] = ''
+                this.querySelectVisible = "" !== this.queryColumn && -1 !== this.fixedAssetsFilterFields.enums.indexOf(this.queryColumn)
+            },
+
             // 获取票据的过滤字段
             getFilterFields() {
                 this.$api.FINANCE_FIXED_ASSETS_API.get('GET_FIXED_ASSETS_FILTER_FIELDS').then(res => {

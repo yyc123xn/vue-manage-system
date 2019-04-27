@@ -9,13 +9,13 @@
         <el-col class="container">
             <el-col class="handle-box">
                 <el-select v-model="queryColumn" placeholder="筛选项" class="handle-select mr10" filterable @change="queryColumnChange">
-                    <el-option v-for="voucherFilterField in voucherFilterFields"
+                    <el-option v-for="voucherFilterField in voucherFilterFields.filterFields"
                                :key="voucherFilterField.columnName" :label="voucherFilterField.columnComment"
                                :value="voucherFilterField.columnName">
                     </el-option>
                 </el-select>
-                <el-select v-if="querySelectVisible" v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10">
-                    <el-option v-for="enumValue in tableHeader.enumsValues[queryColumn]"
+                <el-select v-if="querySelectVisible" v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10" @change="getVouchers">
+                    <el-option v-for="enumValue in voucherFilterFields.enumsValues[queryColumn]"
                                 :key="enumValue.nameEn" :label="enumValue.nameCn"
                                 :value="enumValue.nameEn">
                     </el-option>
@@ -297,7 +297,8 @@
         methods: {
 
             queryColumnChange() {
-                this.querySelectVisible = "" !== this.queryColumn && -1 !== this.tableHeader.enums.indexOf(this.queryColumn)
+                this.queryCondition[0] = ''
+                this.querySelectVisible = "" !== this.queryColumn && -1 !== this.voucherFilterFields.enums.indexOf(this.queryColumn)
             },
 
             queryDevelopers(query) {

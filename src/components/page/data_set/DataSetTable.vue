@@ -185,6 +185,7 @@
                 total : 0,
                 queryColumn: "",
                 queryCondition: [],
+                queryColumnExpType: "",
                 editVisible: false,
                 infoVisible: false,
                 backfillVisible: false,
@@ -268,6 +269,9 @@
             queryColumnChange() {
                 this.queryCondition[0] = ''
                 this.querySelectVisible = "" !== this.queryColumn && -1 !== this.dataSetFilterFields.enums.indexOf(this.queryColumn)
+                if ("" !== this.queryColumn) {
+                    this.queryColumnExpType = this.dataSetFilterFields.enumsExp[this.queryColumn]
+                }
             },
 
             // 获取tableHeaders
@@ -296,6 +300,7 @@
                     pageSize: this.pageSize,
                     queryColumn: this.queryColumn,
                     queryCondition: this.queryCondition,
+                    queryColumnExpType: this.queryColumnExpType,
                     isMine: this.isMine
                 }
                 this.$api.REPORT_DATA_SET_API.get('GET_DATA_SET', queryParams).then(res => {

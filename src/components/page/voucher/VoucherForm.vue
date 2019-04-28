@@ -35,6 +35,21 @@
                             </template>
                         </el-select>
                     </el-form-item>
+                    <el-form-item v-if="needClient" label="客户" prop="client">
+                        <el-select
+                                v-model="voucher.client"
+                                filterable
+                                remote
+                                reserve-keyword
+                                placeholder="请输入关键词"
+                                :remote-method="queryClients"
+                                :loading="loading">
+                            <el-option v-for="client in voucherConstant.clients"
+                                       :key="client.nameEn" :label="client.nameCn"
+                                       :value="client.nameEn">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
                     <el-form-item label="票据详情">
                         <el-table
                                 :data="voucher.voucherDetails"
@@ -148,7 +163,8 @@
                         sum: 0
                     }],
                     departmentId: 0,
-                    imgs: []
+                    imgs: [],
+                    client: ""
                 },
 
                 voucherHelper: {
@@ -159,8 +175,11 @@
                 voucherConstant: {
                     types: [],
                     statuses: [],
-                    departments: []
+                    departments: [],
+                    clients: []
                 },
+
+                loading: false,
 
                 rules: {
                     name: [
@@ -205,13 +224,34 @@
             }
         },
         methods: {
+
+            queryClients(query) {
+                if (query !== '') {
+                    this.loading = true;
+                    let getParams = {
+                        name: query
+                    }
+                    this.$api.FINANCE_CLIENT_API.get("QUERY_CLIENTS", getParams).then(res => {
+                        this.voucherConstant.clients = res.data
+                        this.loading = false;
+                    })
+                    setTimeout(() => {
+                        this.loading = false;
+                    });
+                } else {
+                    this.voucherConstant.clients = []
+                }
+            },
+
             addVoucher(voucher) {
                 this.$refs[voucher].validate((valid) => {
                     if (valid) {
                         let voucherId = this.$route.query.id
                         this.voucher.departmentId = this.voucherHelper.departmentId[this.voucherHelper.departmentId.length - 1]
                         let formData = new FormData()
-                        formData.append('imgs', this.voucherHelper.imgs)
+                        this.voucherHelper.imgs.forEach(img => {
+                            formData.append('img[]', img.raw)
+                        })
                         formData.append("voucher", JSON.stringify(this.voucher))
                         if (undefined === voucherId) {
                             // 添加
@@ -372,6 +412,15 @@
         computed: {
             isEdit: function () {
                 return undefined !== this.$route.query.id
+            },
+            needClient: function () {
+                let needClient = false;
+                this.voucherConstant.types.forEach(type => {
+                    if (type.nameEn === this.voucher.type && type.needClient) {
+                        needClient = type.needClient
+                    }
+                })
+                return needClient
             }
         },
         created() {

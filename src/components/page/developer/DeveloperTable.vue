@@ -108,6 +108,7 @@
                 total : 0,
                 queryColumn: "",
                 queryCondition: [],
+                queryColumnExpType: "",
                 editVisible: false,
                 delVisible: false,
                 infoVisible: false,
@@ -155,6 +156,9 @@
             queryColumnChange() {
                 this.queryCondition[0] = ''
                 this.querySelectVisible = "" !== this.queryColumn && -1 !== this.developerFilterFields.enums.indexOf(this.queryColumn)
+                if ("" !== this.queryColumn) {
+                    this.queryColumnExpType = this.developerFilterFields.enumsExp[this.queryColumn]
+                }
             },
 
             getAcademicDegrees() {
@@ -189,6 +193,7 @@
                     pageSize: this.pageSize,
                     queryColumn: this.queryColumn,
                     queryCondition: this.queryCondition,
+                    queryColumnExpType: this.queryColumnExpType,
                 }
                 this.$api.FINANCE_DEVELOPER_API.get('GET_DEVELOPERS' ,queryParams).then(res => {
                     this.tableData = res.data.list

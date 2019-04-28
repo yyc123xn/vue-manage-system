@@ -89,6 +89,9 @@
                 <el-form-item label="日期">
                     {{voucher.date}}
                 </el-form-item>
+                <el-form-item v-if="undefined !== voucher.client && '' !== voucher.client" label="客户">
+                    {{voucher.client}}
+                </el-form-item>
                 <el-form-item label="状态">
                     {{voucher.status}}
                 </el-form-item>
@@ -224,6 +227,7 @@
                 total : 0,
                 queryColumn: "",
                 queryCondition: [],
+                queryColumnExpType: "",
                 editVisible: false,
                 delVisible: false,
                 infoVisible: false,
@@ -299,6 +303,9 @@
             queryColumnChange() {
                 this.queryCondition[0] = ''
                 this.querySelectVisible = "" !== this.queryColumn && -1 !== this.voucherFilterFields.enums.indexOf(this.queryColumn)
+                if ("" !== this.queryColumn) {
+                    this.queryColumnExpType = this.voucherFilterFields.enumsExp[this.queryColumn]
+                }
             },
 
             queryDevelopers(query) {
@@ -349,6 +356,7 @@
                     pageSize: this.pageSize,
                     queryColumn: this.queryColumn,
                     queryCondition: this.queryCondition,
+                    queryColumnExpType: this.queryColumnExpType,
                     isMine: this.isMine
                 }
                 if ('true' === this.isMine) {

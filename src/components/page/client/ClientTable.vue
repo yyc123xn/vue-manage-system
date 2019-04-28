@@ -110,6 +110,7 @@
                 total : 0,
                 queryColumn: "",
                 queryCondition: [],
+                queryColumnExpType: "",
                 editVisible: false,
                 delVisible: false,
                 infoVisible: false,
@@ -154,6 +155,9 @@
             queryColumnChange() {
                 this.queryCondition[0] = ''
                 this.querySelectVisible = "" !== this.queryColumn && -1 !== this.clientFilterFields.enums.indexOf(this.queryColumn)
+                if ("" !== this.queryColumn) {
+                    this.queryColumnExpType = this.clientFilterFields.enumsExp[this.queryColumn]
+                }
             },
 
             // 获取票据的过滤字段
@@ -171,6 +175,7 @@
                     pageSize: this.pageSize,
                     queryColumn: this.queryColumn,
                     queryCondition: this.queryCondition,
+                    queryColumnExpType: this.queryColumnExpType,
                     isMine: this.isMine
                 }
                 this.$api.FINANCE_CLIENT_API.get('GET_CLIENTS' ,queryParams).then(res => {

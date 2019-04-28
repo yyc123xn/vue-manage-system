@@ -120,6 +120,7 @@
                 total : 0,
                 queryColumn: "",
                 queryCondition: [],
+                queryColumnExpType: "",
                 dataSource : {
                     id : 0,
                     url : '',
@@ -162,6 +163,9 @@
             queryColumnChange() {
                 this.queryCondition[0] = ''
                 this.querySelectVisible = "" !== this.queryColumn && -1 !== this.dataSourceFilterFields.enums.indexOf(this.queryColumn)
+                if ("" !== this.queryColumn) {
+                    this.queryColumnExpType = this.dataSourceFilterFields.enumsExp[this.queryColumn]
+                }
             },
 
             // 获取tableHeaders
@@ -190,6 +194,7 @@
                     pageSize: this.pageSize,
                     queryColumn: this.queryColumn,
                     queryCondition: this.queryCondition,
+                    queryColumnExpType: this.queryColumnExpType,
                     isMine: this.isMine
                 }
                 this.$api.REPORT_DATA_SOURCE_API.get('GET_DATA_SOURCES', getParams).then(res => {

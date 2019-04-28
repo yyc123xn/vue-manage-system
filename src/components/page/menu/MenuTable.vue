@@ -140,6 +140,7 @@
                 total : 0,
                 queryColumn: "",
                 queryCondition: [],
+                queryColumnExpType: "",
                 editVisible: false,
                 infoVisible: false,
                 querySelectVisible: false,
@@ -188,6 +189,9 @@
             queryColumnChange() {
                 this.queryCondition[0] = ''
                 this.querySelectVisible = "" !== this.queryColumn && -1 !== this.menuFilterFields.enums.indexOf(this.queryColumn)
+                if ("" !== this.queryColumn) {
+                    this.queryColumnExpType = this.menuFilterFields.enumsExp[this.queryColumn]
+                }
             },
 
             // 获取tableHeaders
@@ -222,6 +226,7 @@
                     pageSize: this.pageSize,
                     queryColumn: this.queryColumn,
                     queryCondition: this.queryCondition,
+                    queryColumnExpType: this.queryColumnExpType,
                     isMine: false
                 }
                 this.$api.FINANCE_MENU_API.get('GET_MENU', getParams).then(res => {

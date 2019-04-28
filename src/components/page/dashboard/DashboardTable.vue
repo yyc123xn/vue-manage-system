@@ -65,6 +65,7 @@
                 total : 0,
                 queryColumn: "",
                 queryCondition: [],
+                queryColumnExpType: "",
                 editVisible: false,
                 delVisible: false,
                 querySelectVisible: false,
@@ -89,6 +90,9 @@
             queryColumnChange() {
                 this.queryCondition[0] = ''
                 this.querySelectVisible = "" !== this.queryColumn && -1 !== this.dashboardFilterFields.enums.indexOf(this.queryColumn)
+                if ("" !== this.queryColumn) {
+                    this.queryColumnExpType = this.dashboardFilterFields.enumsExp[this.queryColumn]
+                }
             },
 
             // 获取看板的过滤字段
@@ -106,6 +110,7 @@
                     pageSize: this.pageSize,
                     queryColumn: this.queryColumn,
                     queryCondition: this.queryCondition,
+                    queryColumnExpType: this.queryColumnExpType,
                     isMine: this.isMine
                 }
                 this.$api.REPORT_DASHBOARD_API.get('GET_DASHBOARD', getParams).then(res => {

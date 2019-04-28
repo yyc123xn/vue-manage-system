@@ -56,6 +56,7 @@
                 total : 0,
                 queryColumn: "",
                 queryCondition: [],
+                queryColumnExpType: "",
                 editVisible: false,
                 delVisible: false,
                 querySelectVisible: false,
@@ -77,6 +78,9 @@
             queryColumnChange() {
                 this.queryCondition[0] = ''
                 this.querySelectVisible = "" !== this.queryColumn && -1 !== this.fixedAssetsFilterFields.enums.indexOf(this.queryColumn)
+                if ("" !== this.queryColumn) {
+                    this.queryColumnExpType = this.fixedAssetsFilterFields.enumsExp[this.queryColumn]
+                }
             },
 
             // 获取票据的过滤字段
@@ -94,6 +98,7 @@
                     pageSize: this.pageSize,
                     queryColumn: this.queryColumn,
                     queryCondition: this.queryCondition,
+                    queryColumnExpType: this.queryColumnExpType,
                 }
                 this.$api.FINANCE_FIXED_ASSETS_API.get('GET_FIXED_ASSETS', getParams).then(res => {
                     this.tableData = res.data.list

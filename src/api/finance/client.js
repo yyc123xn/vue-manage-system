@@ -6,6 +6,8 @@ const financeClientApi = {
     GET_CLIENT_FILTER_FIELDS : '/finance/client/client_filter_fields',
     GET_CLIENT_INFO: '/finance/client/info',
 
+    QUERY_CLIENTS: '/finance/client/query',
+
     get(urlName, getParams) {
         let url = this[urlName]
         return axios.get(url, {params : getParams})

@@ -58,6 +58,8 @@
                                 }
                                 this.add_Routes(items) //触发vuex里的增加路由
                                 this.$router.push('/dashboard')
+                            } else {
+                                this.$message.error("用户名或密码错误！")
                             }
                         })
                     } else {

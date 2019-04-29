@@ -49,6 +49,7 @@
                                        :value="client.nameEn">
                             </el-option>
                         </el-select>
+                        <el-button style="margin-left: 2%" type="primary" @click="redirect2ClientForm">新增客户</el-button>
                     </el-form-item>
                     <el-form-item label="票据详情">
                         <el-table
@@ -407,6 +408,10 @@
 
             redirect2VoucherTable() {
                 this.$router.push("/voucher_table")
+            },
+
+            redirect2ClientForm() {
+                this.$router.push("/client_form")
             }
         },
         computed: {

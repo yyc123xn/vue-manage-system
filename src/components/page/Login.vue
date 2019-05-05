@@ -1,7 +1,7 @@
 <template>
     <el-col class="login-wrap">
         <el-col class="ms-login">
-            <el-col class="ms-title">后台管理系统</el-col>
+            <el-col class="ms-title">数据统计展示系统</el-col>
             <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="0px" class="ms-content">
                 <el-form-item prop="username">
                     <el-input v-model="ruleForm.username" placeholder="username">
@@ -84,7 +84,7 @@
         line-height: 50px;
         text-align: center;
         font-size:20px;
-        color: #fff;
+        color: #6f7180;
         border-bottom: 1px solid #ddd;
     }
     .ms-login{

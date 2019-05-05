@@ -975,7 +975,7 @@
                         axisSite: {right: []},
                         yAxisType: [],
                         yAxisName: [],
-                        xAxisType: 'value',
+                        xAxisType: '',
                         stack: { key: [] },
                         area: false
                     },
@@ -997,7 +997,7 @@
                         axisSite: {right: []},
                         yAxisType: [],
                         yAxisName: [],
-                        xAxisType: 'value',
+                        xAxisType: '',
                         stack: { key: [] },
                         area: false,
                         showLine: [],

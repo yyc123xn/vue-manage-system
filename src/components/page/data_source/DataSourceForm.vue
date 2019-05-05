@@ -30,7 +30,7 @@
                         <el-input v-model="dataSource.database"></el-input>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="addDataSource('dataSource')">表单提交</el-button>
+                        <el-button type="primary" @click="addDataSource('dataSource')">提交</el-button>
                         <el-button @click="redirect2DataSourceTable">取消</el-button>
                     </el-form-item>
                 </el-form>
@@ -57,7 +57,7 @@
                     dataSourceType : '',
                     database : '',
                     weight : 0,
-                    privilege : ''
+                    privilege : []
                 },
                 dataSourceConstant: {
                     dataSourceTypes: []

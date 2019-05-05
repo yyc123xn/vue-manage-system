@@ -16,12 +16,9 @@
                     <el-form-item label="描述" prop="description">
                         <el-input type="textarea" rows="5" v-model="fixedAssets.description"></el-input>
                     </el-form-item>
-                    <el-form-item label="破损率" prop="broken">
-                        <el-input-number v-model="fixedAssets.broken" :precision="2" :min="0" :step="0.1" :max="1"></el-input-number>
-                    </el-form-item>
-                    <el-form-item label="破损时间" prop="brokenTime">
+                    <el-form-item label="购入时间" prop="purchaseTime">
                         <el-date-picker
-                                v-model="fixedAssets.brokenTime"
+                                v-model="fixedAssets.purchaseTime"
                                 type="datetime"
                                 placeholder="选择日期时间"
                                 align="right"
@@ -29,7 +26,7 @@
                         </el-date-picker>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="addFixedAssets('fixedAssets')">表单提交</el-button>
+                        <el-button type="primary" @click="addFixedAssets('fixedAssets')">提交</el-button>
                         <el-button @click="redirect2FixedAssetsTable">取消</el-button>
                     </el-form-item>
                 </el-form>
@@ -48,8 +45,7 @@
                     id : 0,
                     name : '',
                     description : '',
-                    broken : 0,
-                    brokenTime: ''
+                    purchaseTime: ''
                 },
 
                 rules: {
@@ -59,11 +55,7 @@
                     description: [
                         { required: true, message: '请输入固定资产描述', trigger: 'blur' }
                     ],
-                    broken: [
-                        { required: true, message: '请输入固定资产破损率'},
-                        { type: 'number', message: '固定资产破损率必须为数字值'}
-                    ],
-                    brokenTime : [
+                    purchaseTime : [
                         { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
                     ]
                 },

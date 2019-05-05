@@ -9,7 +9,7 @@
         </el-col>
         <el-col class="container">
             <el-col class="form-box">
-                <el-form ref="client" :rules="rules" :model="client" label-width="7%">
+                <el-form ref="client" :rules="rules" :model="client" label-width="9%">
                     <el-form-item label="中文名" prop="nameCn">
                         <el-input v-model="client.nameCn"></el-input>
                     </el-form-item>
@@ -25,25 +25,25 @@
                     <el-form-item label="邮箱" prop="email">
                         <el-input v-model="client.email"></el-input>
                     </el-form-item>
-                    <el-form-item label="公司名称" prop="company">
+                    <el-form-item label="所在公司名称" prop="company">
                         <el-input v-model="client.company"></el-input>
                     </el-form-item>
                     <el-form-item label="电话号码" prop="phoneNumber">
                         <el-input v-model="client.phoneNumber"></el-input>
                     </el-form-item>
-                    <el-form-item label="地址" prop="address">
+                    <el-form-item label="公司所在地址" prop="address">
                         <v-distpicker v-model="client.address" @province="onChangeProvince" @city="onChangeCity" @area="onChangeArea"></v-distpicker>
                     </el-form-item>
-                    <el-form-item label="已回款">
+                    <el-form-item label="已回款数">
                         <el-input-number v-model="client.receivedPayments" :precision="2" :min="0" :step="0.1"></el-input-number>
                     </el-form-item>
-                    <el-form-item label="仍欠款">
+                    <el-form-item label="仍欠款数">
                         <el-input-number v-model="client.debt" :precision="2" :min="0" :step="0.1"></el-input-number>
                     </el-form-item>
                     <el-form-item label="描述" prop="description">
                         <el-input type="textarea" rows="5" v-model="client.description"></el-input>
                     </el-form-item>
-                    <el-form-item label="行业" prop="business">
+                    <el-form-item label="客户行业" prop="business">
                         <el-select v-model="client.businessId" placeholder="请选择" filterable>
                             <template v-for="(business, index) in clientConstant.businesses">
                                 <el-option :key="business.nameEn" :label="business.nameCn" :value="business.id">
@@ -56,7 +56,7 @@
                     </el-form-item>
 
                     <el-form-item>
-                        <el-button type="primary" @click="addClient('client')">表单提交</el-button>
+                        <el-button type="primary" @click="addClient('client')">提交</el-button>
                         <el-button @click="redirect2ClientTable">取消</el-button>
                     </el-form-item>
                 </el-form>

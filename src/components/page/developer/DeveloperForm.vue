@@ -9,11 +9,11 @@
         </el-col>
         <el-col class="container">
             <el-col class="form-box">
-                <el-form ref="developer" :rules="rules" :model="developer" label-width="7%">
+                <el-form ref="developer" :rules="rules" :model="developer" label-width="11%">
                     <el-form-item label="中文名" prop="nameCn">
                         <el-input v-model="developer.nameCn"></el-input>
                     </el-form-item>
-                    <el-form-item label="英文名" prop="nameEn">
+                    <el-form-item label="英文名(登录名)" prop="nameEn">
                         <el-input v-model="developer.nameEn"></el-input>
                     </el-form-item>
                     <el-form-item label="性别" prop="sex">
@@ -28,7 +28,7 @@
                     <el-form-item label="电话号码" prop="phoneNumber">
                         <el-input v-model="developer.phoneNumber"></el-input>
                     </el-form-item>
-                    <el-form-item labelWidth="35%" style="width: 20%" label="权限" prop="privilege">
+                    <el-form-item labelWidth="27.5%" style="width: 40%" label="权限" prop="privilege">
                         <multiCascader placeholder="请选择" :options="configOptions" @on-selected="getSelected" :inputValue="configTips"></multiCascader>
                     </el-form-item>
                     <el-form-item label="部门">
@@ -62,7 +62,7 @@
                         <el-input-number v-model="developer.pension" :precision="2" :min="0" :step="0.1"></el-input-number>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="addDeveloper('developer')">表单提交</el-button>
+                        <el-button type="primary" @click="addDeveloper('developer')">提交</el-button>
                         <el-button @click="redirect2DeveloperTable">取消</el-button>
                     </el-form-item>
                 </el-form>

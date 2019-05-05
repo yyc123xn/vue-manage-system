@@ -137,7 +137,7 @@
                         <el-input type="textarea" rows="5" v-model="dataSet.extraExpression" :disabled="dataSetHelper.extraExpressionDisabled"></el-input>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="addDataSet('dataSet')">表单提交</el-button>
+                        <el-button type="primary" @click="addDataSet('dataSet')">提交</el-button>
                         <el-button @click="redirect2DataSetTable">取消</el-button>
                     </el-form-item>
                 </el-form>

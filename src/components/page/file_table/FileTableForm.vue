@@ -84,11 +84,11 @@
                                 :on-error="handleError">
                             <i class="el-icon-upload"></i>
                             <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-                            <div class="el-upload__tip" slot="tip">只能上传csv/txt文件，且不超过1MB</div>
+                            <div class="el-upload__tip" slot="tip">只能上传csv/txt文件，且不超过1MB，文件样例（<el-button type="text" @click="clickSample('csv-sample.csv')">csv-sample</el-button>和<el-button type="text" @click="clickSample('txt-sample.txt')">txt-sample</el-button>）</div>
                         </el-upload>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="addFileTable('fileTable')">表单提交</el-button>
+                        <el-button type="primary" @click="addFileTable('fileTable')">提交</el-button>
                         <el-button @click="redirect2FileTableTable">取消</el-button>
                     </el-form-item>
                 </el-form>
@@ -145,6 +145,10 @@
             }
         },
         methods: {
+
+            clickSample(fileName) {
+                window.location.href = "http://localhost:7777/report/file/download?fileName=" + fileName
+            },
 
             changeTableNameHelper() {
                 this.fileTable.tableName = this.fileTable.tableNameHelper + "_" + new Date().getTime()

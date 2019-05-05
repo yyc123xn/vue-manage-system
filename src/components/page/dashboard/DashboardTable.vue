@@ -22,6 +22,7 @@
                 </el-select>
                 <el-input v-if="!querySelectVisible" v-model="queryCondition[0]" placeholder="筛选关键词" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="getDashboards">搜索</el-button>
+                <el-tag style="margin-left: 1%" size="medium">共{{total}}个数据看板</el-tag>
                 <el-button type="primary" icon="el-icon-lx-add" class="mr10" style="float: right" @click="redirect2DashboardForm">新增看板</el-button>
             </el-col>
             <el-col>
@@ -45,7 +46,7 @@
                 </el-tabs>
             </el-col>
             <el-col class="pagination">
-                <el-pagination background @current-change="handleCurrentChange" layout="prev, pager, next" :page-size="pageSize" :total="total">
+                <el-pagination background @current-change="handleCurrentChange" layout="total, prev, pager, next, jumper" :page-size="pageSize" :total="total">
                 </el-pagination>
             </el-col>
         </el-col>
@@ -133,8 +134,7 @@
             // 分页导航
             handleCurrentChange(pageIndex) {
                 this.pageIndex = pageIndex;
-                this.$message.success(`页面下标 ${pageIndex}`);
-                this.getDataSets()
+                this.getDashboards()
             },
 
             handleEdit(index, row) {

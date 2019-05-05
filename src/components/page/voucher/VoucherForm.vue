@@ -16,7 +16,7 @@
                     <el-form-item label="描述" prop="description">
                         <el-input type="textarea" rows="5" v-model="voucher.description"></el-input>
                     </el-form-item>
-                    <el-form-item label="票据时间" prop="date">
+                    <el-form-item label="开票时间" prop="date">
                         <el-date-picker
                                 v-model="voucher.date"
                                 type="datetime"
@@ -129,7 +129,7 @@
                         ></el-cascader>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="addVoucher('voucher')">表单提交</el-button>
+                        <el-button type="primary" @click="addVoucher('voucher')">提交</el-button>
                         <el-button @click="redirect2VoucherTable">取消</el-button>
                     </el-form-item>
                 </el-form>

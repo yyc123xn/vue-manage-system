@@ -108,7 +108,7 @@
                         <el-button @click="addSubMenu" type="primary">新增子菜单</el-button>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="addMenu('menu')">表单提交</el-button>
+                        <el-button type="primary" @click="addMenu('menu')">提交</el-button>
                         <el-button @click="redirect2MenuTable">取消</el-button>
                     </el-form-item>
                 </el-form>

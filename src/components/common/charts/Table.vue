@@ -22,7 +22,7 @@
         </el-col>
         <el-col v-if="report.config.chartSettings.isPaged">
             <el-col class="pagination">
-                <el-pagination height="50" small @current-change="handleCurrentChange" layout="prev, pager, next" :page-size="report.config.chartSettings.pageSize" :total="total">
+                <el-pagination height="50" small @current-change="handleCurrentChange" layout="total, prev, pager, next, jumper" :page-size="report.config.chartSettings.pageSize" :total="total">
                 </el-pagination>
             </el-col>
         </el-col>
@@ -188,6 +188,7 @@
         watch: {
             reportFilters: {
                 handler (newV, oldV) {
+                    this.pageIndex = 1
                     // do something, 可使用this
                     if (0 !== this.report.id) {
                         this.updateReportData(this.report.id, newV, oldV)
